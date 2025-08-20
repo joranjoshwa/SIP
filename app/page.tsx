@@ -1,7 +1,9 @@
-export const Page = () => {
+const Page = () => {
   return (
    <div>
-    
+    ...
    </div>
   );
 }
+
+export default Page;
