@@ -8,19 +8,19 @@ import { Button } from "../../components/ui/Button";
 
 export const Login = () => {
     return(
-        <AuthCard>
-            <Logo className="mb-6" />
-
+        <AuthCard 
+            headerContent={<Logo className="mb-4" />}
+        >
             <InputField 
                 label="Email institucional"
                 type="email"
-                placeholder="Digite seu email"
+                placeholder="Email institucional"
                 icon={<Mail size={18} />}
             />
 
             <PasswordField />
 
-            <TextLink href="" className="self-end">Esqueci minha senha</TextLink>
+            <TextLink href="*/" className="self-end ml-2">Esqueci minha senha</TextLink>
 
             <Button variant="primary">Entrar na conta</Button>
             <Button variant="secondary">Criar nova conta</Button>

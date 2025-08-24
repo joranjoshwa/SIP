@@ -12,7 +12,7 @@ type Props = {
 
 export const PasswordField = ({
     label = "Senha",
-    placeholder = "Digite sua senha",
+    placeholder = "************",
     value,
     onChange,
     className

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import logo from "../../assets/logo-sip.svg"
 
 type Props = {
     className?: string;
@@ -8,10 +9,10 @@ export const Logo = ({ className }: Props) => {
     return (
         <div className={`flex items-center justify-center ${className}`}>
             <Image 
-                src="./assets/logo-sip.svg"
+                src={logo}
                 alt="Logo SIP"
-                width={28}
-                height={28}
+                width={60}
+                height={90}
                 priority
             />
         </div>

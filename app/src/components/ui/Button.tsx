@@ -17,8 +17,8 @@ export const Button = ({
     const baseStyle = "w-full py-3 rounded-xl font-semibold text-sm transition-colors";
 
     const variants = {
-        primary: "bg-blue-600 text-white hover:bg-blue-700",
-        secondary: "bg-gray-100 text-gray-800 hover:bg-gray-200"
+        primary: "bg-[#D4EED9] text-black",
+        secondary: "bg-white text-black border border-[#9C9C9C] hover:bg-gray-200"
     };
 
     return (

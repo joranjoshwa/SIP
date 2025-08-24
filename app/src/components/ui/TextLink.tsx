@@ -18,7 +18,7 @@ export const TextLink = ({
         return(
             <a 
                 href={href}
-                className={`text-sm text-blue-600 hover:underline ${className}`}
+                className={`text-xs text-gray-800 hover:underline ${className}`}
             >
                 {children}
             </a>

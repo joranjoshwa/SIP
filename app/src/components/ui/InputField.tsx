@@ -30,7 +30,7 @@ export const InputField = ({
                 </label>
             )}
 
-            <div className="flex items-center border rounded-xl px-3 py-2 bg-white 
+            <div className="flex items-center border rounded-xl px-3 py-2 bg-[#ECECEC] 
             focus-within:ring-2 focus-within:ring-blue-500">
 
                 {icon && <span className="mr-2 text-gray-500">{icon}</span>}
@@ -40,7 +40,7 @@ export const InputField = ({
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400"
+                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]"
                 />
             </div>
         </div>
