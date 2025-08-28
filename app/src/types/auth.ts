@@ -4,7 +4,7 @@ export type LoginPayload = {
 }
 
 export type LoginResponse = {
-    type: 'BEAR';
+    type: 'BEARER';
     expiracao: string;
     token: string;
 }

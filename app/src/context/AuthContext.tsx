@@ -14,8 +14,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const response = await loginResponse(payload);
             setUser(response);
-
-            localStorage.setItem("token", response.token)
+            localStorage.setItem("token", response.token);
 
         } catch (error) {
             console.log("Erro no login: ", error);
