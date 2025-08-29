@@ -4,8 +4,43 @@ import { InputField } from "../../components/ui/InputField";
 import { Logo } from "../../components/ui/Logo";
 import { PasswordField } from "../../components/ui/PasswordField";
 import { Button } from "../../components/ui/Button";
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
 
 export const SignUp = () => {
+
+    const { register } = useAuth();
+
+    const [name, setName] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const handleSignUp = async () => {
+        setLoading(true);
+        setError("");
+
+        try {
+            await register({ name, cpf, email, phone, password });
+            alert("Sua conta foi criada! No seu email, você receberá um link para confirmar o email.");
+
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                setError(error.response.data.message);
+            
+            } else {
+                setError("Erro ao criar conta.");
+            }
+        
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
     return (
         <AuthCard headerContent={<Logo className="mb-4" />}>
 
@@ -14,6 +49,8 @@ export const SignUp = () => {
                 type="text"
                 placeholder="Digite seu nome..."
                 icon={<User size={18}/>}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
             />
 
             <InputField 
@@ -21,6 +58,8 @@ export const SignUp = () => {
                 type="text"
                 placeholder="000.000.000-00"
                 icon={<IdCard size={18} />}
+                value={cpf}
+                onChange={(e) => setCpf(e.target.value)}
             />
 
             <InputField 
@@ -28,6 +67,8 @@ export const SignUp = () => {
                 type="email"
                 placeholder="Digite seu email..."
                 icon={<Mail size={18}/>}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
 
             <InputField 
@@ -35,16 +76,23 @@ export const SignUp = () => {
                 type="tel"
                 placeholder="(00) 00000-0000"
                 icon={<Phone size={18} />}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
             />
 
             <PasswordField 
                 label="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
             />
+
+            {error && <p className="text-red-600 text-sm">{error}</p>}
 
             <Button
                 variant="primary"
+                onClick={handleSignUp}
             >
-                Criar conta
+                {loading ? "Criando conta..." : "Criar conta"}
             </Button>
 
             <Button
