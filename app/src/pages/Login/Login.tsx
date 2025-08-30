@@ -1,3 +1,5 @@
+"use client"
+
 import { Mail } from "lucide-react";
 import { AuthCard } from "../../components/layout/AuthCard";
 import { InputField } from "../../components/ui/InputField";
@@ -6,20 +8,28 @@ import { PasswordField } from "../../components/ui/PasswordField";
 import { TextLink } from "../../components/ui/TextLink";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { TopPopup } from "../../components/ui/TopPopup";
 
     export const Login = () => {
 
         const { login } = useAuth();
         const router = useRouter();
+        const searchParams = useSearchParams();
 
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState("");
+        const [showPopup, setShowPopup] = useState(false);
 
-        const [isPopupOpen, setIsPopupOpen] = useState(false);
+        useEffect(() => {
+            if (searchParams.get("success") === "register") {
+                setShowPopup(true);
+                setTimeout(() => setShowPopup(false), 8000)
+            }
+        }, [searchParams]);
 
         const handleLogin = async () => {
             setLoading(true);
@@ -35,6 +45,10 @@ import { useRouter } from "next/navigation";
             } finally {
                 setLoading(false);
             }
+        }
+
+        const handleSignUp = () => {
+            router.push("/signup")
         }
 
         return(
@@ -63,7 +77,16 @@ import { useRouter } from "next/navigation";
                     variant="primary" 
                     onClick={handleLogin}
                 > {loading ? "Entrando..." : "Entrar na conta"} </Button>
-                <Button variant="secondary">Criar nova conta</Button>
+
+                
+                <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
+
+                <TopPopup 
+                    message="Cadastro realizado! Verifique seu email para a ativação da conta."
+                    isOpen={showPopup}
+                    onClose={() => setShowPopup(false)}
+                />                
+                
             </AuthCard>
         );
     }

@@ -1,3 +1,5 @@
+"use client"
+
 import { Mail, User, Phone, IdCard } from "lucide-react";
 import { AuthCard } from "../../components/layout/AuthCard";
 import { InputField } from "../../components/ui/InputField";
@@ -29,7 +31,7 @@ export const SignUp = () => {
 
         try {
             await register({ name, cpf, email, phone, password });
-            setIsPopupOpen(true);
+            router.push("/login?success=register")
 
         } catch (error: any) {
             if (error.response?.data?.message) {
@@ -42,6 +44,10 @@ export const SignUp = () => {
         } finally {
             setLoading(false);
         }
+    }
+
+    const handleLogin = () => {
+        router.push("/login");
     }
 
 
@@ -101,6 +107,7 @@ export const SignUp = () => {
 
             <Button
                 variant="secondary"
+                onClick={handleLogin}
             >
                 Entrar em conta existente
             </Button>
