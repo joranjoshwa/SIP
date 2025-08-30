@@ -19,4 +19,5 @@ export type RegisterPayload = {
 
 export type RegisterResponse = {
     message: string;
+    description: string;
 }
