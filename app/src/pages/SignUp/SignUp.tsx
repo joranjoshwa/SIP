@@ -6,10 +6,14 @@ import { PasswordField } from "../../components/ui/PasswordField";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { TopPopup } from "../../components/ui/TopPopup";
 
 export const SignUp = () => {
 
     const { register } = useAuth();
+    const router = useRouter();
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const [name, setName] = useState("");
     const [cpf, setCpf] = useState("");
@@ -25,7 +29,7 @@ export const SignUp = () => {
 
         try {
             await register({ name, cpf, email, phone, password });
-            alert("Sua conta foi criada! No seu email, você receberá um link para confirmar o email.");
+            setIsPopupOpen(true);
 
         } catch (error: any) {
             if (error.response?.data?.message) {
@@ -100,6 +104,12 @@ export const SignUp = () => {
             >
                 Entrar em conta existente
             </Button>
+
+            <TopPopup 
+                message="Cadastro realizado! Verifique seu email para a ativação da conta."
+                isOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+            />
         </AuthCard>
     );
 }

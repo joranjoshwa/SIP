@@ -7,14 +7,19 @@ import { TextLink } from "../../components/ui/TextLink";
 import { Button } from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
     export const Login = () => {
 
         const { login } = useAuth();
+        const router = useRouter();
+
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
         const [loading, setLoading] = useState(false);
         const [error, setError] = useState("");
+
+        const [isPopupOpen, setIsPopupOpen] = useState(false);
 
         const handleLogin = async () => {
             setLoading(true);

@@ -6,7 +6,7 @@ import { SignUp } from "./src/pages/SignUp/SignUp";
 const Page = () => {
   return (
    <div>
-    <SignUp />
+    <SignUp/> 
    </div>
   );
 }
