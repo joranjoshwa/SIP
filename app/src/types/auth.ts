@@ -8,3 +8,16 @@ export type LoginResponse = {
     expiracao: string;
     token: string;
 }
+
+export type RegisterPayload = {
+    name: string;
+    cpf: string;
+    email: string;
+    phone: string;
+    password: string;
+}
+
+export type RegisterResponse = {
+    message: string;
+    description: string;
+}
