@@ -11,6 +11,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TopPopup } from "../../components/ui/TopPopup";
+import { ApiResponse } from "../../types/user";
+import { AxiosError } from "axios";
 
     export const Login = () => {
 
@@ -40,7 +42,17 @@ import { TopPopup } from "../../components/ui/TopPopup";
                 alert("Login realizado com sucesso!");
 
             } catch (error) {
-                setError("Email ou senha inválidos!");
+                const err = error as AxiosError<ApiResponse>;
+
+                if (err.response?.data) {
+                    const errors =
+                      err.response.data.message ??
+                      Object.values(err.response.data).join(" | ");
+                
+                    setError(errors);
+                  } else {
+                    setError("Erro inesperado");
+                  }
 
             } finally {
                 setLoading(false);
