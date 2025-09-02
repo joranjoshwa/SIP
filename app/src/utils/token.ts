@@ -1,12 +1,5 @@
 import { jwtDecode } from "jwt-decode";
 
-type JwtPayload = {
-    sub: string;
-    exp?: number;
-    iat?: number;
-    [key: string]: any;
-};
-
 export const extractEmailFromToken = (token: string): string | null => {
     try {
         const decoded = jwtDecode<JwtPayload>(token);

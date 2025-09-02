@@ -6,7 +6,6 @@ import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resendVerifyToken, verifyToken } from "../../api/endpoints/user";
-import { extractEmailFromToken } from "../../utils/jwt";
 
 export const VerifyEmail = () => {
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");

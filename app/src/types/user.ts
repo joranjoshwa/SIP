@@ -1,9 +1,4 @@
-export type VerifyTokenResponse = {
-    message: string;
-    description?: string;
-}
-
-export type ResendVerifyResponse = {
+export type ApiResponse = {
     message: string;
     description?: string;
 }

@@ -1,13 +1,13 @@
-import { ResendVerifyResponse, VerifyTokenResponse } from "../../types/user";
-import { extractEmailFromToken } from "../../utils/jwt";
+import { ApiResponse } from "../../types/user";
+import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../axios";
 
-export const verifyToken = async (token: string): Promise<VerifyTokenResponse> => {
+export const verifyToken = async (token: string): Promise<ApiResponse> => {
     const { data } = await api.post(`/user/account/verify/${token}`);
     return data;
 }
 
-export const resendVerifyToken = async (token: string): Promise<ResendVerifyResponse> => {
+export const resendVerifyToken = async (token: string): Promise<ApiResponse> => {
     const email = extractEmailFromToken(token);
 
     if (!email) {
