@@ -1,0 +1,19 @@
+import { ApiResponse } from "../../types/user";
+import { extractEmailFromToken } from "../../utils/token";
+import { api } from "../axios";
+
+export const verifyToken = async (token: string): Promise<ApiResponse> => {
+    const { data } = await api.post(`/user/account/verify/${token}`);
+    return data;
+}
+
+export const resendVerifyToken = async (token: string): Promise<ApiResponse> => {
+    const email = extractEmailFromToken(token);
+
+    if (!email) {
+        throw new Error("Não foi possível extrair o email de token.");
+    }
+
+    const { data } = await api.post(`/user/account/resend-verify-account/${email}`);
+    return data;
+}
