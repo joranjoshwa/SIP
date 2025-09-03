@@ -1,4 +1,5 @@
 export type ApiResponse = {
-    message: string;
+    message?: string;
     description?: string;
+    [key: string]: string | undefined;
 }
