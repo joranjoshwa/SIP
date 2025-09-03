@@ -74,11 +74,13 @@ import { AxiosError } from "axios";
                     icon={<Mail size={18} />}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required={true}
                 />
 
                 <PasswordField 
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}           
+                    onChange={(e) => setPassword(e.target.value)} 
+                    required={true}          
                 />
 
                 {error && <p className="text-red-600 text-sm">{error}</p>}
