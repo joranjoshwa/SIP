@@ -8,6 +8,7 @@ type Props = {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     className?: string;
+    required?: boolean;
 };
 
 export const PasswordField = ({
@@ -15,7 +16,8 @@ export const PasswordField = ({
     placeholder = "************",
     value,
     onChange,
-    className
+    className,
+    required = true
 }: Props) => {
 
     const [showPassword, setShowPassword] = useState(false);
@@ -29,6 +31,7 @@ export const PasswordField = ({
             onChange={onChange}
             icon={<Lock size={18} />}
             className={className}
+            required={required}
         >
 
             <button

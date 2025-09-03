@@ -61,6 +61,7 @@ export const SignUp = () => {
                 icon={<User size={18}/>}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                required={true}
             />
 
             <InputField 
@@ -70,6 +71,7 @@ export const SignUp = () => {
                 icon={<IdCard size={18} />}
                 value={cpf}
                 onChange={(e) => setCpf(e.target.value)}
+                required
             />
 
             <InputField 
@@ -79,6 +81,7 @@ export const SignUp = () => {
                 icon={<Mail size={18}/>}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
             />
 
             <InputField 
@@ -88,12 +91,14 @@ export const SignUp = () => {
                 icon={<Phone size={18} />}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                required
             />
 
             <PasswordField 
                 label="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
             />
 
             {error && <p className="text-red-600 text-sm">{error}</p>}

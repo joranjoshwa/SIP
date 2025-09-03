@@ -9,6 +9,7 @@ type Props = {
     icon?: ReactNode;
     children?: ReactNode;
     className?: string;
+    required?: boolean;
 }
 
 export const InputField = ({
@@ -19,7 +20,8 @@ export const InputField = ({
     onChange,
     icon,
     children,
-    className
+    className,
+    required = false
 }: Props) => {
 
     return(
@@ -41,6 +43,7 @@ export const InputField = ({
                     value={value}
                     onChange={onChange}
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]"
+                    required={required}
                 />
             </div>
         </div>
