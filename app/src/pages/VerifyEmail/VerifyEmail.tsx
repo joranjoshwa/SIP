@@ -6,12 +6,12 @@ import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resendVerifyToken, verifyReactivationToken, verifyToken } from "../../api/endpoints/user";
-import { extractTokenType } from "../../utils/token";
+import { TokenType } from "../../types/token";
 
 export const VerifyEmail = () => {
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [token, setToken] = useState<string | null>(null);
-    const [tokenType, setTokenType] = useState<"verify" | "reactivation" | null>(null);
+    const [tokenType, setTokenType] = useState<TokenType | null>(null);
     const searchParams = useSearchParams();
     const router = useRouter();
 
@@ -24,15 +24,15 @@ export const VerifyEmail = () => {
             return;
         }
 
-        const tokenType = extractTokenType(token);
+        const tokenType = searchParams.get("type") as TokenType | null;
         setTokenType(tokenType);
 
         const checkToken = async () => {
             try {
-                if (tokenType === "verify") {
+                if (tokenType === TokenType.VERIFICATION) {
                     await verifyToken(token);
 
-                } else if (tokenType === "reactivation") {
+                } else if (tokenType === TokenType.REACTIVATE) {
                     await verifyReactivationToken(token);
                 }
 
@@ -68,7 +68,7 @@ export const VerifyEmail = () => {
     if (status === "loading") {
         return (
             <AuthCard
-                title={tokenType === "reactivation" ? "Reativando conta..." : "Verificando o seu e-mail..."}
+                title={tokenType === TokenType.REACTIVATE ? "Reativando conta..." : "Verificando o seu e-mail..."}
                 subtitle="Aguarde alguns segundos enquanto confirmamos."
                 headerContent={<Loader2 className="w-12 h-12 animate-spin text-blue-600" />}
             >
@@ -80,7 +80,7 @@ export const VerifyEmail = () => {
     if (status === "success") {
         return (
             <AuthCard
-                title={tokenType === "reactivation" ? "Conta reativada!" : "E-mail verificado com sucesso!"}
+                title={tokenType === TokenType.REACTIVATE ? "Conta reativada!" : "E-mail verificado com sucesso!"}
                 subtitle="Agora você já pode acessar a sua conta."
                 headerContent={<CheckCircle className="w-12 h-12 text-green-600" />}
             >
@@ -94,13 +94,13 @@ export const VerifyEmail = () => {
     if (status === "error") {
         return (
             <AuthCard
-                title={tokenType === "reactivation" ? "Falha ao reativar conta" : "Link inválido ou expirado"}
-                subtitle={tokenType === "reactivation"
+                title={tokenType === TokenType.REACTIVATE ? "Falha ao reativar conta" : "Link inválido ou expirado"}
+                subtitle={tokenType === TokenType.REACTIVATE
                     ? "Solicite um novo link para reativação."
                     : "Solicite um novo link para verificar o seu e-mail."}
                 headerContent={<XCircle className="w-12 h-12 text-red-600" />}
             >
-                {tokenType === "verify" &&
+                {tokenType === TokenType.VERIFICATION &&
                     <Button variant="secondary" onClick={handleResend}>
                         Reenviar e-mail
                     </Button>

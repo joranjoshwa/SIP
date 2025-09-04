@@ -1,6 +1,8 @@
-type JwtPayload = {
+import { TokenType } from "./token";
+
+export type JwtPayload = {
     sub: string;
-    type?: "verify" | "reactivation";
+    type?: TokenType;
     exp?: number;
     iat?: number;
     [key: string]: any;
