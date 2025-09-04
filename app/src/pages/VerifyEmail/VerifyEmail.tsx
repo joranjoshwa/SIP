@@ -5,7 +5,7 @@ import { AuthCard } from "../../components/layout/AuthCard";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { resendVerifyToken, verifyReactivationToken, verifyToken } from "../../api/endpoints/user";
+import { resendReactivationToken, resendVerifyToken, verifyReactivationToken, verifyToken } from "../../api/endpoints/user";
 import { TokenType } from "../../types/token";
 
 export const VerifyEmail = () => {
@@ -65,6 +65,18 @@ export const VerifyEmail = () => {
         }
     }
 
+    const handleResendReactivation = async () => {
+        if (!token) return;
+
+        try {
+            await resendReactivationToken(token);
+            alert("Novo link de reativação enviado para seu e-mail.");
+        } catch (error) {
+            console.error("Erro ao reenviar reativação: ", error);
+            alert("Erro ao reenviar link de reativação. Tente novamente.");
+        }
+    };
+
     if (status === "loading") {
         return (
             <AuthCard
@@ -105,6 +117,13 @@ export const VerifyEmail = () => {
                         Reenviar e-mail
                     </Button>
                 }
+
+                {tokenType === TokenType.REACTIVATE && (
+                    <Button variant="secondary" onClick={handleResendReactivation}>
+                        Reenviar link de reativação
+                    </Button>
+                )}
+
             </AuthCard>
         );
     }

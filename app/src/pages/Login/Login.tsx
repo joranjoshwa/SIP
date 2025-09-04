@@ -113,7 +113,7 @@ export const Login = () => {
                     <p
                         onClick={() => handleReactivation(email)}
                         className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
-                    >  {error}
+                    >  {error} Clique aqui para reativar a conta.
                     </p>
                 ) : (
                     <p className="text-red-600 text-sm">{error}</p>

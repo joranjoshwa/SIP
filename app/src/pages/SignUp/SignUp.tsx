@@ -10,6 +10,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TopPopup } from "../../components/ui/TopPopup";
+import { AxiosError } from "axios";
+import { ApiResponse } from "../../types/user";
 
 export const SignUp = () => {
 
@@ -34,13 +36,18 @@ export const SignUp = () => {
             router.push("/login?success=register")
 
         } catch (error: any) {
-            if (error.response?.data?.message) {
-                setError(error.response.data.message);
-            
+            const err = error as AxiosError<ApiResponse>
+
+            if (err.response?.data) {
+                const errors =
+                    err.response.data.message ??
+                    Object.values(err.response.data).join(" | ");
+
+                setError(errors);
             } else {
                 setError("Erro ao criar conta.");
             }
-        
+
         } finally {
             setLoading(false);
         }
@@ -54,17 +61,17 @@ export const SignUp = () => {
     return (
         <AuthCard headerContent={<Logo className="mb-4" />}>
 
-            <InputField 
+            <InputField
                 label="Nome Completo"
                 type="text"
                 placeholder="Digite seu nome..."
-                icon={<User size={18}/>}
+                icon={<User size={18} />}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required={true}
             />
 
-            <InputField 
+            <InputField
                 label="CPF"
                 type="text"
                 placeholder="000.000.000-00"
@@ -74,17 +81,17 @@ export const SignUp = () => {
                 required
             />
 
-            <InputField 
+            <InputField
                 label="Email Institucional"
                 type="email"
                 placeholder="Digite seu email..."
-                icon={<Mail size={18}/>}
+                icon={<Mail size={18} />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
             />
 
-            <InputField 
+            <InputField
                 label="Telefone"
                 type="tel"
                 placeholder="(00) 00000-0000"
@@ -94,7 +101,7 @@ export const SignUp = () => {
                 required
             />
 
-            <PasswordField 
+            <PasswordField
                 label="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -117,7 +124,7 @@ export const SignUp = () => {
                 Entrar em conta existente
             </Button>
 
-            <TopPopup 
+            <TopPopup
                 message="Cadastro realizado! Verifique seu email para a ativação da conta."
                 isOpen={isPopupOpen}
                 onClose={() => setIsPopupOpen(false)}

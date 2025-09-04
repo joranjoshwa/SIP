@@ -27,3 +27,14 @@ export const verifyReactivationToken = async (token: string): Promise<ApiRespons
     const { data } = await api.post(`/user/account/reactivate/${token}`);
     return data;
 }
+
+export const resendReactivationToken = async (token: string): Promise<ApiResponse> => {
+    const email = extractEmailFromToken(token);
+
+    if (!email) {
+        throw new Error("Não foi possível extrair o email do token.");
+    }
+
+    const { data } = await api.post(`/user/account/request-reactivation/${email}`);
+    return data;
+};
