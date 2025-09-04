@@ -22,3 +22,8 @@ export const requestReactivation = async (email: string): Promise<ApiResponse> =
     const { data } = await api.post(`/user/account/request-reactivation/${email}`);
     return data;
 }
+
+export const verifyReactivationToken = async (token: string): Promise<ApiResponse> => {
+    const { data } = await api.post(`/user/account/reactivate/${token}`);
+    return data;
+}

@@ -12,6 +12,15 @@ export const extractEmailFromToken = (token: string): string | null => {
     }
 }
 
+export const extractTokenType = (token: string): "verify" | "reactivation" | null => {
+    try {
+      const decoded = jwtDecode<JwtPayload>(token);
+      return decoded.type || null;
+    } catch {
+      return null;
+    }
+};
+
 export const isTokenExpired = (token: string): boolean => {
     try {
         const decoded = jwtDecode<JwtPayload>(token);

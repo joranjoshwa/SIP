@@ -5,28 +5,39 @@ import { AuthCard } from "../../components/layout/AuthCard";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { resendVerifyToken, verifyToken } from "../../api/endpoints/user";
+import { resendVerifyToken, verifyReactivationToken, verifyToken } from "../../api/endpoints/user";
+import { extractTokenType } from "../../utils/token";
 
 export const VerifyEmail = () => {
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [token, setToken] = useState<string | null>(null);
+    const [tokenType, setTokenType] = useState<"verify" | "reactivation" | null>(null);
     const searchParams = useSearchParams();
     const router = useRouter();
 
     useEffect(() => {
         const token = searchParams.get("token");
         setToken(token);
-        
+
         if (!token) {
             setStatus("error")
             return;
         }
 
+        const tokenType = extractTokenType(token);
+        setTokenType(tokenType);
+
         const checkToken = async () => {
             try {
-                await verifyToken(token);
+                if (tokenType === "verify") {
+                    await verifyToken(token);
+
+                } else if (tokenType === "reactivation") {
+                    await verifyReactivationToken(token);
+                }
+
                 setStatus("success");
-            
+
             } catch (error) {
                 console.error("Erro ao verificar token: ", error);
                 setStatus("error");
@@ -47,7 +58,7 @@ export const VerifyEmail = () => {
         try {
             await resendVerifyToken(token);
             alert("Novo link enviado para seu e-mail.");
-        
+
         } catch (error) {
             console.error("Erro ao reenviar: ", error);
             alert("Erro ao reenviar link. Tente novamente.")
@@ -56,8 +67,8 @@ export const VerifyEmail = () => {
 
     if (status === "loading") {
         return (
-            <AuthCard 
-                title="Verificando o seu e-mail..."
+            <AuthCard
+                title={tokenType === "reactivation" ? "Reativando conta..." : "Verificando o seu e-mail..."}
                 subtitle="Aguarde alguns segundos enquanto confirmamos."
                 headerContent={<Loader2 className="w-12 h-12 animate-spin text-blue-600" />}
             >
@@ -69,7 +80,7 @@ export const VerifyEmail = () => {
     if (status === "success") {
         return (
             <AuthCard
-                title="E-mail verificado com sucesso!"
+                title={tokenType === "reactivation" ? "Conta reativada!" : "E-mail verificado com sucesso!"}
                 subtitle="Agora você já pode acessar a sua conta."
                 headerContent={<CheckCircle className="w-12 h-12 text-green-600" />}
             >
@@ -82,17 +93,20 @@ export const VerifyEmail = () => {
 
     if (status === "error") {
         return (
-        <AuthCard
-            title="Link inválido ou expirado"
-            subtitle="Solicite um novo link para verificar o seu e-mail."
-            headerContent={<XCircle className="w-12 h-12 text-red-600" />}
-        >
-            <Button variant="secondary" onClick={handleResend}>
-                Reenviar e-mail
-            </Button>
-
-        </AuthCard>
-    );
+            <AuthCard
+                title={tokenType === "reactivation" ? "Falha ao reativar conta" : "Link inválido ou expirado"}
+                subtitle={tokenType === "reactivation"
+                    ? "Solicite um novo link para reativação."
+                    : "Solicite um novo link para verificar o seu e-mail."}
+                headerContent={<XCircle className="w-12 h-12 text-red-600" />}
+            >
+                {tokenType === "verify" &&
+                    <Button variant="secondary" onClick={handleResend}>
+                        Reenviar e-mail
+                    </Button>
+                }
+            </AuthCard>
+        );
     }
-    
+
 }
