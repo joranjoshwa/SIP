@@ -9,7 +9,7 @@ import { VerifyEmail } from "./src/pages/VerifyEmail/VerifyEmail";
 const Page = () => {
   return (
    <div>
-    <ResetPassword /> 
+    <Login /> 
    </div>
   );
 }
