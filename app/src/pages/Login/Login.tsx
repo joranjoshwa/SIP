@@ -13,94 +13,135 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TopPopup } from "../../components/ui/TopPopup";
 import { ApiResponse } from "../../types/user";
 import { AxiosError } from "axios";
+import { requestReactivation } from "../../api/endpoints/user";
 
-    export const Login = () => {
+export const Login = () => {
 
-        const { login } = useAuth();
-        const router = useRouter();
-        const searchParams = useSearchParams();
+    const { login } = useAuth();
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-        const [email, setEmail] = useState("");
-        const [password, setPassword] = useState("");
-        const [loading, setLoading] = useState(false);
-        const [error, setError] = useState("");
-        const [showPopup, setShowPopup] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [showPopup, setShowPopup] = useState(false);
+    const [blocked, setBlocked] = useState(false);
+    const [showReactivationPopup, setShowReactivationPopup] = useState(false);
 
-        useEffect(() => {
-            if (searchParams.get("success") === "register") {
-                setShowPopup(true);
-                setTimeout(() => setShowPopup(false), 8000)
-            }
-        }, [searchParams]);
-
-        const handleLogin = async () => {
-            setLoading(true);
-            setError("");
-
-            try {
-                await login({ email, password });
-                alert("Login realizado com sucesso!");
-
-            } catch (error) {
-                const err = error as AxiosError<ApiResponse>;
-
-                if (err.response?.data) {
-                    const errors =
-                      err.response.data.message ??
-                      Object.values(err.response.data).join(" | ");
-                
-                    setError(errors);
-                  } else {
-                    setError("Erro inesperado");
-                  }
-
-            } finally {
-                setLoading(false);
-            }
+    useEffect(() => {
+        if (searchParams.get("success") === "register") {
+            setShowPopup(true);
+            setTimeout(() => setShowPopup(false), 8000)
         }
+    }, [searchParams]);
 
-        const handleSignUp = () => {
-            router.push("/signup")
+    const handleLogin = async () => {
+        setLoading(true);
+        setError("");
+
+        try {
+            await login({ email, password });
+            alert("Login realizado com sucesso!");
+
+        } catch (error) {
+            const err = error as AxiosError<ApiResponse>;
+
+            if (err.response?.data) {
+                const errors =
+                    err.response.data.message ??
+                    Object.values(err.response.data).join(" | ");
+
+                setError(errors);
+
+                if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
+                    setBlocked(true);
+                }
+
+
+            } else {
+                setError("Erro inesperado");
+            }
+
+        } finally {
+            setLoading(false);
         }
-
-        return(
-            <AuthCard 
-                headerContent={<Logo className="mb-4" />}
-            >
-                <InputField 
-                    label="Email institucional"
-                    type="email"
-                    placeholder="Email institucional"
-                    icon={<Mail size={18} />}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={true}
-                />
-
-                <PasswordField 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required={true}          
-                />
-
-                {error && <p className="text-red-600 text-sm">{error}</p>}
-
-                <TextLink href="*/" className="self-end ml-2">Esqueci minha senha</TextLink>
-
-                <Button 
-                    variant="primary" 
-                    onClick={handleLogin}
-                > {loading ? "Entrando..." : "Entrar na conta"} </Button>
-
-                
-                <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
-
-                <TopPopup 
-                    message="Cadastro realizado! Verifique seu email para a ativação da conta."
-                    isOpen={showPopup}
-                    onClose={() => setShowPopup(false)}
-                />                
-                
-            </AuthCard>
-        );
     }
+
+    const handleSignUp = () => {
+        router.push("/signup")
+    }
+
+    const handleReactivation = async (email: string) => {
+        setLoading(true);
+        setError("");
+
+        try {
+            await requestReactivation(email);
+            setShowReactivationPopup(true);
+
+        } catch (error) {
+            setError("Erro ao solicitar reativação. Tente novamente.");
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <AuthCard
+            headerContent={<Logo className="mb-4" />}
+        >
+            <InputField
+                label="Email institucional"
+                type="email"
+                placeholder="Email institucional"
+                icon={<Mail size={18} />}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required={true}
+            />
+
+            <PasswordField
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required={true}
+            />
+
+            {error && (
+                blocked ? (
+                    <p
+                        onClick={() => handleReactivation(email)}
+                        className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
+                    >  {error} Clique aqui para reativar a conta.
+                    </p>
+                ) : (
+                    <p className="text-red-600 text-sm">{error}</p>
+                )
+            )}
+
+            <TextLink href="*/" className="self-end ml-2">Esqueci minha senha</TextLink>
+
+            <Button
+                variant="primary"
+                onClick={handleLogin}
+            > {loading ? "Entrando..." : "Entrar na conta"} </Button>
+
+
+            <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
+
+            <TopPopup
+                message="Cadastro realizado! Verifique seu email para a ativação da conta."
+                isOpen={showPopup}
+                onClose={() => setShowPopup(false)}
+            />
+
+            <TopPopup
+                message="E-mail de reativação enviado! Verifique sua caixa de entrada."
+                isOpen={showReactivationPopup}
+                onClose={() => setShowReactivationPopup(false)}
+            />
+
+        </AuthCard>
+    );
+}
