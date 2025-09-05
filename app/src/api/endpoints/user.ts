@@ -38,3 +38,8 @@ export const resendReactivationToken = async (token: string): Promise<ApiRespons
     const { data } = await api.post(`/user/account/request-reactivation/${email}`);
     return data;
 };
+
+export const recoverPassword = async (email: string) => {
+    const { data } = await api.post(`/user/account/password-recovery/${email}`);
+    return data;
+}
