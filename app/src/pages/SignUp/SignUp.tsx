@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import { TopPopup } from "../../components/ui/TopPopup";
 import { AxiosError } from "axios";
 import { ApiResponse } from "../../types/user";
+import InputMask from "react-input-mask"
+import { formatCPF, formatPhone } from "../../utils/masks";
 
 export const SignUp = () => {
 
@@ -26,6 +28,14 @@ export const SignUp = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setCpf(formatCPF(e.target.value));
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPhone(formatPhone(e.target.value));
+    };
 
     const handleSignUp = async () => {
         setLoading(true);
@@ -77,7 +87,7 @@ export const SignUp = () => {
                 placeholder="000.000.000-00"
                 icon={<IdCard size={18} />}
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onChange={handleCpfChange}
                 required
             />
 
@@ -97,7 +107,7 @@ export const SignUp = () => {
                 placeholder="(00) 00000-0000"
                 icon={<Phone size={18} />}
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={handlePhoneChange}
                 required
             />
 

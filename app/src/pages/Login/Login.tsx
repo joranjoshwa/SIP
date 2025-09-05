@@ -27,12 +27,30 @@ export const Login = () => {
     const [error, setError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [blocked, setBlocked] = useState(false);
-    const [showReactivationPopup, setShowReactivationPopup] = useState(false);
+    const [popup, setPopup] = useState<{ message: string; isOpen: boolean }>({
+        message: "",
+        isOpen: false,
+    });
 
     useEffect(() => {
-        if (searchParams.get("success") === "register") {
-            setShowPopup(true);
-            setTimeout(() => setShowPopup(false), 8000)
+        const success = searchParams.get("success");
+
+        if (success === "register") {
+            setPopup({
+                message: "Cadastro realizado! Verifique seu email para a ativação da conta.",
+                isOpen: true,
+            });
+        }
+
+        if (success === "password-reset") {
+            setPopup({
+                message: "Senha redefinida com sucesso! Agora você pode entrar com a nova senha.",
+                isOpen: true,
+            });
+        }
+
+        if (success) {
+            setTimeout(() => setPopup((prev) => ({ ...prev, isOpen: false })), 8000);
         }
     }, [searchParams]);
 
@@ -78,7 +96,10 @@ export const Login = () => {
 
         try {
             await requestReactivation(email);
-            setShowReactivationPopup(true);
+            setPopup({
+                message: "E-mail de reativação enviado! Verifique sua caixa de entrada.",
+                isOpen: true,
+            });
 
         } catch (error) {
             setError("Erro ao solicitar reativação. Tente novamente.");
@@ -120,7 +141,7 @@ export const Login = () => {
                 )
             )}
 
-            <TextLink href="*/" className="self-end ml-2">Esqueci minha senha</TextLink>
+            <TextLink href="/forgot-password" className="self-end ml-2">Esqueci minha senha</TextLink>
 
             <Button
                 variant="primary"
@@ -137,9 +158,9 @@ export const Login = () => {
             />
 
             <TopPopup
-                message="E-mail de reativação enviado! Verifique sua caixa de entrada."
-                isOpen={showReactivationPopup}
-                onClose={() => setShowReactivationPopup(false)}
+                message={popup.message}
+                isOpen={popup.isOpen}
+                onClose={() => setPopup((prev) => ({ ...prev, isOpen: false }))}
             />
 
         </AuthCard>

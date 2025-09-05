@@ -43,3 +43,11 @@ export const recoverPassword = async (email: string) => {
     const { data } = await api.post(`/user/account/password-recovery/${email}`);
     return data;
 }
+
+export const resetPassword = async (token: string, password: string) => {
+    const { data } = await api.post("/user/account/password-reset", {
+        token,
+        password,
+    });
+    return data;
+}

@@ -45,6 +45,10 @@ export const InputField = ({
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]"
                     required={required}
                 />
+
+                
+
+                {children}
             </div>
         </div>
     );
