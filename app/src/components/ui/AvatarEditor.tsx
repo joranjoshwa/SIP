@@ -4,10 +4,10 @@ import { Camera } from "lucide-react";
 
 export const AvatarEditor = () => {
     return (
-        <div className="relative w-28 h-28 md:w-32 md:h-32 mx-auto">
+        <div className="relative w-28 h-28 md:w-32 md:h-32">
             <Image
                 src={avatar}
-                alt="Logo"
+                alt="Avatar"
                 className="w-full h-full object-cover rounded-full border-2 border-gray-100 shadow-sm"
             />
 

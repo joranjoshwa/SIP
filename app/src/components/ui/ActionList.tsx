@@ -23,7 +23,7 @@ export const ActionList = () => {
                     key={key}
                     variant="primary"
                     onClick={onClick}
-                    className="flex items-center justify-center gap-3"
+                    className="flex items-center justify-center gap-3 md:w-1/2 md:py-2 md:px-3"
                 >
                     <Icon size={18} />
                     <span>{label}</span>
