@@ -1,12 +1,14 @@
 import { Gift, Home, LogOut, Moon, Search, User } from "lucide-react";
 import { Button } from "./Button";
-import { Logo } from "./Logo";
+import { useAuth } from "../../context/AuthContext";
 
 export const Sidebar = () => {
+    const { logout } = useAuth();
+
     return (
         <aside className="hidden md:flex md:flex-col md:col-span-3 md:border-r md:pr-6 md: pt-8">
             <nav className="flex flex-col gap-3">
-                <Button variant="primary" className="flex items-center gap-3 justify-start">
+                <Button variant="primary" className="flex items-center gap-3 justify-start border-0 pl-2 bg-gray-200">
                     <Home size={18} />
                     <span>Página inicial</span>
                 </Button>
@@ -33,7 +35,7 @@ export const Sidebar = () => {
                     <span>Tema escuro</span>
                 </Button>
 
-                <Button variant="secondary" className="flex items-center gap-3 justify-start border-0 pl-2">
+                <Button variant="secondary" className="flex items-center gap-3 justify-start border-0 pl-2" onClick={logout}>
                     <LogOut size={18} />
                     <span>Sair</span>
                 </Button>

@@ -14,6 +14,7 @@ import { TopPopup } from "../../components/ui/TopPopup";
 import { ApiResponse } from "../../types/user";
 import { AxiosError } from "axios";
 import { requestReactivation } from "../../api/endpoints/user";
+import { isTokenValid } from "../../utils/token";
 
 export const Login = () => {
 
@@ -31,6 +32,13 @@ export const Login = () => {
         message: "",
         isOpen: false,
     });
+
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     if (token && isTokenValid(token)) {
+    //         router.replace("/profile");
+    //     }
+    // }, [router]);
 
     useEffect(() => {
         const success = searchParams.get("success");
@@ -60,7 +68,7 @@ export const Login = () => {
 
         try {
             await login({ email, password });
-            alert("Login realizado com sucesso!");
+            router.push("/profile");
 
         } catch (error) {
             const err = error as AxiosError<ApiResponse>;

@@ -1,5 +1,6 @@
 import { Box, Key, Moon, LogOut } from "lucide-react";
 import { Button } from "./Button";
+import { useAuth } from "../../context/AuthContext";
 
 type Action = {
     key: string;
@@ -8,14 +9,16 @@ type Action = {
     onClick?: () => void;
 };
 
-const actions: Action[] = [
-    { key: "history", label: "Histórico de itens", Icon: Box },
-    { key: "password", label: "Alterar senha", Icon: Key },
-    { key: "theme", label: "Alterar tema", Icon: Moon },
-    { key: "logout", label: "Sair da conta", Icon: LogOut },
-];
-
 export const ActionList = () => {
+    const { logout } = useAuth();
+
+    const actions: Action[] = [
+        { key: "history", label: "Histórico de itens", Icon: Box },
+        { key: "password", label: "Alterar senha", Icon: Key },
+        { key: "theme", label: "Alterar tema", Icon: Moon },
+        { key: "logout", label: "Sair da conta", Icon: LogOut, onClick: logout },
+    ];
+
     return (
         <div className="mt-4 space-y-3">
             {actions.map(({ key, label, Icon, onClick }) => (

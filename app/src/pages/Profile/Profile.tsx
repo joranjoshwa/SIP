@@ -1,21 +1,82 @@
+"use client"
+
+import { useEffect, useState } from "react";
 import { ActionList } from "../../components/ui/ActionList";
 import { AvatarEditor } from "../../components/ui/AvatarEditor";
 import { BottomNav } from "../../components/ui/BottomNav";
 import { Header } from "../../components/ui/Header";
 import { InfoItem } from "../../components/ui/InfoItem";
 import { Sidebar } from "../../components/ui/Sidebar";
+import { ApiResponse, User } from "../../types/user";
+import { extractEmailFromToken, isTokenValid } from "../../utils/token";
+import { api } from "../../api/axios";
+import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export const Profile = () => {
-    const user = {
-        name: "Valentino Silveira",
-        email: "202313580007@ifba.edu.br",
-        avatar: "/assets/avatar-placeholder.jpg",
-        stats: {
-            recovered: 16,
-            lastRecovered: "24 de maio de 2025",
-            createdAt: "11 de fevereiro de 2025",
-        },
-    };
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) return;
+
+                if (!token || !isTokenValid(token)) {
+                    router.replace("/login");
+                    return;
+                }
+
+                const email = extractEmailFromToken(token);
+                if (!email) return;
+
+                const { data } = await api.get(`/user/user-details/${email}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                setUser({
+                    name: data.name,
+                    email: data.email,
+                });
+
+            } catch (err: any) {
+                const axiosErr = err as AxiosError<ApiResponse>;
+
+                if (axiosErr.response?.data) {
+                    const errors =
+                        axiosErr.response.data.message ??
+                        Object.values(axiosErr.response.data).join(" | ");
+                    setError(errors);
+                } else {
+                    setError("Erro ao carregar dados do usuário.");
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchUser();
+
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Carregando...</p>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Não foi possível carregar os dados do usuário.</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-white text-gray-900 pb-20">
@@ -30,15 +91,15 @@ export const Profile = () => {
 
                     <AvatarEditor />
 
-                    <div className="text-center md:text-left mt-4">
+                    <div className="text-left mt-4">
                         <p className="font-semibold">{user.name}</p>
                         <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
 
                     <section>
-                        <InfoItem label="Total de itens recuperados" value={`${user.stats.recovered} itens`} />
-                        <InfoItem label="Última vez que recuperou item" value={`${user.stats.lastRecovered} itens`} />
-                        <InfoItem label="Cadastrado desde" value={user.stats.createdAt} />
+                        <InfoItem label="Total de itens recuperados" value={`... itens`} />
+                        <InfoItem label="Última vez que recuperou item" value={`... itens`} />
+                        <InfoItem label="Cadastrado desde" value="..." />
                     </section>
 
                     <section className="mt-6">

@@ -107,7 +107,7 @@ export const SignUp = () => {
                 placeholder="(00) 00000-0000"
                 icon={<Phone size={18} />}
                 value={phone}
-                onChange={handlePhoneChange}
+                onChange={(e) => setPhone(e.target.value)}
                 required
             />
 
