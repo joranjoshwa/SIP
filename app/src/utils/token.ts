@@ -26,18 +26,6 @@ export const getTokenTypeFromString = (value: string | null): TokenType | null =
     return null;
 }
 
-export const isTokenValid = (token: string | null): boolean => {
-    if (!token) return false;
-    try {
-        const decoded = jwtDecode<JwtPayload>(token);
-        if (!decoded?.exp) return false;
-        const now = Date.now() / 1000;
-        return decoded.exp > now;
-    } catch {
-        return false;
-    }
-};
-
 export const scheduleTokenExpiryLogout = (
     token: string | null,
     onExpire: () => void
@@ -70,24 +58,3 @@ export const logout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
 };
-
-
-// export const extractTokenType = (token: string): TokenType | null => {
-//     try {
-//         const decoded = jwtDecode<JwtPayload>(token);
-
-//         if (decoded.type === TokenType.VERIFICATION) {
-//             return TokenType.VERIFICATION;
-//         }
-
-//         if (decoded.type === TokenType.REACTIVATE) {
-//             return TokenType.REACTIVATE;
-//         }
-
-//         return null;
-
-//     } catch (error) {
-//         console.error("Erro ao decodificar o token: ", error)
-//         return null;
-//     }
-// };

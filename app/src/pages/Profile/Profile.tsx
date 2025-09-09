@@ -8,7 +8,7 @@ import { Header } from "../../components/ui/Header";
 import { InfoItem } from "../../components/ui/InfoItem";
 import { Sidebar } from "../../components/ui/Sidebar";
 import { ApiResponse, User } from "../../types/user";
-import { extractEmailFromToken, isTokenValid } from "../../utils/token";
+import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../../api/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
@@ -24,9 +24,17 @@ export const Profile = () => {
             try {
                 const token = localStorage.getItem("token");
 
-                if (!token || !isTokenValid(token)) {
+                if (!token) {
                     router.replace("/login");
                     return;
+                }
+
+                try {
+                    await api.get("/authentication/token-teste", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                } catch {
+                    router.replace("/login");
                 }
 
                 const email = extractEmailFromToken(token);
