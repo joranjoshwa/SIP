@@ -3,6 +3,7 @@ import avatar from "../../assets/avatar-placeholder.png"
 import { Camera } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 import { useAvatarUpload } from "../../utils/useAvatarUpload";
+import { useTheme } from "../../context/ThemeContext";
 
 type Props = {
     currentAvatar?: string | null;
@@ -12,6 +13,7 @@ type Props = {
 export const AvatarEditor = ({ currentAvatar,  onAvatarUpdated }: Props) => {
     const [preview, setPreview] = useState(currentAvatar || "");
     const { uploadAvatar, loading } = useAvatarUpload();
+    const { theme } = useTheme();
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0]) return;
@@ -41,8 +43,9 @@ export const AvatarEditor = ({ currentAvatar,  onAvatarUpdated }: Props) => {
             <label
                 htmlFor="avatar-upload"
                 aria-label="Editar foto"
-                className="absolute right-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full
-                shadow-md hover:scale-105 focus:outline-none"
+                className={`absolute right-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full
+                    shadow-md hover:scale-105 focus:outline-none 
+                    ${theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"}}`}
             >
                 <Camera size={16}/>
                 <input 

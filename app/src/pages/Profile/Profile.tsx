@@ -12,6 +12,7 @@ import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../../api/axios";
 import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
+import { Loading } from "../../components/ui/Loading";
 
 export const Profile = () => {
     const [user, setUser] = useState<User | null>(null);
@@ -88,37 +89,41 @@ export const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen bg-white text-gray-900 pb-20">
-            <Header />
+        <>
+            <div className="min-h-screen bg-background text-foreground pb-20 transition-colors duration-300">
+                <Header />
 
-            <div className="md:grid md:grid-cols-12 md:gap-6 px-4 md:px-8">
-                <Sidebar />
+                <div className="md:grid md:grid-cols-12 md:gap-6 px-4 md:px-8">
+                    <Sidebar />
 
-                <main className="md:col-span-9 max-w-2xl w-full py-6">
-                    <h1 className="text-lg font-bold mb-4">Perfil</h1>
+                    <main className="md:col-span-9 max-w-2xl w-full py-6">
+                        <h1 className="text-lg font-bold mb-4">Perfil</h1>
 
 
-                    <AvatarEditor currentAvatar={user.avatar || undefined} />
+                        <AvatarEditor currentAvatar={user.avatar || undefined} />
 
-                    <div className="text-left mt-4">
-                        <p className="font-semibold">{user.name}</p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
+                        <div className="text-left mt-4">
+                            <p className="font-semibold">{user.name}</p>
+                            <p className="text-sm text-foreground/70">{user.email}</p>
+                        </div>
 
-                    <section>
-                        <InfoItem label="Total de itens recuperados" value={`... itens`} />
-                        <InfoItem label="Última vez que recuperou item" value={`... itens`} />
-                        <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
-                    </section>
+                        <section>
+                            <InfoItem label="Total de itens recuperados" value={`... itens`} />
+                            <InfoItem label="Última vez que recuperou item" value={`... itens`} />
+                            <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
+                        </section>
 
-                    <section className="mt-6">
-                        <p className="text-sm text-gray-500 mb-2">Ações disponíveis</p>
-                        <ActionList />
-                    </section>
-                </main>
+                        <section className="mt-6">
+                            <p className="text-sm text-foreground/70 mb-2">Ações disponíveis</p>
+                            <ActionList />
+                        </section>
+                    </main>
+                </div>
+
+                <BottomNav />
             </div>
 
-            <BottomNav />
-        </div>
+            <Loading isLoading={loading} />
+        </>
     );
 }

@@ -10,6 +10,7 @@ import { recoverPassword } from "../../api/endpoints/user";
 import { AxiosError } from "axios";
 import { ApiResponse } from "../../types/user";
 import { TopPopup } from "../../components/ui/TopPopup";
+import { Loading } from "../../components/ui/Loading";
 
 export const ForgotPassword = () => {
     const [email, setEmail] = useState("");
@@ -85,6 +86,8 @@ export const ForgotPassword = () => {
                 isOpen={isPopupOpen}
                 onClose={() => setIsPopupOpen(false)}
             />
+
+            <Loading isLoading={loading} />
         </>
 
     );
