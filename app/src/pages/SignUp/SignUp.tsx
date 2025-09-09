@@ -14,6 +14,7 @@ import { AxiosError } from "axios";
 import { ApiResponse } from "../../types/user";
 import InputMask from "react-input-mask"
 import { formatCPF, formatPhone } from "../../utils/masks";
+import { Loading } from "../../components/ui/Loading";
 
 export const SignUp = () => {
 
@@ -69,76 +70,81 @@ export const SignUp = () => {
 
 
     return (
-        <AuthCard headerContent={<Logo className="mb-4" />}>
 
-            <InputField
-                label="Nome Completo"
-                type="text"
-                placeholder="Digite seu nome..."
-                icon={<User size={18} />}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required={true}
-            />
+        <>
+            <AuthCard headerContent={<Logo className="mb-4" />}>
 
-            <InputField
-                label="CPF"
-                type="text"
-                placeholder="000.000.000-00"
-                icon={<IdCard size={18} />}
-                value={cpf}
-                onChange={handleCpfChange}
-                required
-            />
+                <InputField
+                    label="Nome Completo"
+                    type="text"
+                    placeholder="Digite seu nome..."
+                    icon={<User size={18} />}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required={true}
+                />
 
-            <InputField
-                label="Email Institucional"
-                type="email"
-                placeholder="Digite seu email..."
-                icon={<Mail size={18} />}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
+                <InputField
+                    label="CPF"
+                    type="text"
+                    placeholder="000.000.000-00"
+                    icon={<IdCard size={18} />}
+                    value={cpf}
+                    onChange={handleCpfChange}
+                    required
+                />
 
-            <InputField
-                label="Telefone"
-                type="tel"
-                placeholder="(00) 00000-0000"
-                icon={<Phone size={18} />}
-                value={phone}
-                onChange={handlePhoneChange}
-                required
-            />
+                <InputField
+                    label="Email Institucional"
+                    type="email"
+                    placeholder="Digite seu email..."
+                    icon={<Mail size={18} />}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
 
-            <PasswordField
-                label="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
+                <InputField
+                    label="Telefone"
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    icon={<Phone size={18} />}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                />
 
-            {error && <p className="text-red-600 text-sm">{error}</p>}
+                <PasswordField
+                    label="Senha"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
 
-            <Button
-                variant="primary"
-                onClick={handleSignUp}
-            >
-                {loading ? "Criando conta..." : "Criar conta"}
-            </Button>
+                {error && <p className="text-red-600 text-sm">{error}</p>}
 
-            <Button
-                variant="secondary"
-                onClick={handleLogin}
-            >
-                Entrar em conta existente
-            </Button>
+                <Button
+                    variant="primary"
+                    onClick={handleSignUp}
+                >
+                    {loading ? "Criando conta..." : "Criar conta"}
+                </Button>
 
-            <TopPopup
-                message="Cadastro realizado! Verifique seu email para a ativação da conta."
-                isOpen={isPopupOpen}
-                onClose={() => setIsPopupOpen(false)}
-            />
-        </AuthCard>
+                <Button
+                    variant="secondary"
+                    onClick={handleLogin}
+                >
+                    Entrar em conta existente
+                </Button>
+
+                <TopPopup
+                    message="Cadastro realizado! Verifique seu email para a ativação da conta."
+                    isOpen={isPopupOpen}
+                    onClose={() => setIsPopupOpen(false)}
+                />
+            </AuthCard>
+
+            <Loading isLoading={loading} />
+        </>
     );
 }

@@ -14,6 +14,7 @@ import { TopPopup } from "../../components/ui/TopPopup";
 import { ApiResponse } from "../../types/user";
 import { AxiosError } from "axios";
 import { requestReactivation } from "../../api/endpoints/user";
+import { Loading } from "../../components/ui/Loading";
 
 export const Login = () => {
 
@@ -60,7 +61,7 @@ export const Login = () => {
 
         try {
             await login({ email, password });
-            alert("Login realizado com sucesso!");
+            router.push("/profile");
 
         } catch (error) {
             const err = error as AxiosError<ApiResponse>;
@@ -110,59 +111,63 @@ export const Login = () => {
     }
 
     return (
-        <AuthCard
-            headerContent={<Logo className="mb-4" />}
-        >
-            <InputField
-                label="Email institucional"
-                type="email"
-                placeholder="Email institucional"
-                icon={<Mail size={18} />}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required={true}
-            />
+        <>
+            <AuthCard
+                headerContent={<Logo className="mb-4" />}
+            >
+                <InputField
+                    label="Email institucional"
+                    type="email"
+                    placeholder="Email institucional"
+                    icon={<Mail size={18} />}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required={true}
+                />
 
-            <PasswordField
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required={true}
-            />
+                <PasswordField
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required={true}
+                />
 
-            {error && (
-                blocked ? (
-                    <p
-                        onClick={() => handleReactivation(email)}
-                        className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
-                    >  {error} Clique aqui para reativar a conta.
-                    </p>
-                ) : (
-                    <p className="text-red-600 text-sm">{error}</p>
-                )
-            )}
+                {error && (
+                    blocked ? (
+                        <p
+                            onClick={() => handleReactivation(email)}
+                            className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
+                        >  {error} Clique aqui para reativar a conta.
+                        </p>
+                    ) : (
+                        <p className="text-red-600 text-sm">{error}</p>
+                    )
+                )}
 
-            <TextLink href="/forgot-password" className="self-end ml-2">Esqueci minha senha</TextLink>
+                <TextLink href="/forgot-password" className="self-end ml-2 dark:text-gray-300">Esqueci minha senha</TextLink>
 
-            <Button
-                variant="primary"
-                onClick={handleLogin}
-            > {loading ? "Entrando..." : "Entrar na conta"} </Button>
+                <Button
+                    variant="primary"
+                    onClick={handleLogin}
+                > {loading ? "Entrando..." : "Entrar na conta"} </Button>
 
 
-            <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
+                <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
 
-            <TopPopup
-                message="Cadastro realizado! Verifique seu email para a ativação da conta."
-                isOpen={showPopup}
-                onClose={() => setShowPopup(false)}
-            />
+                <TopPopup
+                    message="Cadastro realizado! Verifique seu email para a ativação da conta."
+                    isOpen={showPopup}
+                    onClose={() => setShowPopup(false)}
+                />
 
-            <TopPopup
-                message={popup.message}
-                isOpen={popup.isOpen}
-                onClose={() => setPopup((prev) => ({ ...prev, isOpen: false }))}
-            />
+                <TopPopup
+                    message={popup.message}
+                    isOpen={popup.isOpen}
+                    onClose={() => setPopup((prev) => ({ ...prev, isOpen: false }))}
+                />
 
-        </AuthCard>
+            </AuthCard>
+
+            <Loading isLoading={loading} />
+        </>
     );
 }
