@@ -23,7 +23,6 @@ export const Profile = () => {
         const fetchUser = async () => {
             try {
                 const token = localStorage.getItem("token");
-                if (!token) return;
 
                 if (!token || !isTokenValid(token)) {
                     router.replace("/login");
@@ -40,6 +39,8 @@ export const Profile = () => {
                 setUser({
                     name: data.name,
                     email: data.email,
+                    avatar: data.profileImageUrl || null,
+                    registrationDate: data.registrationDate,
                 });
 
             } catch (err: any) {
@@ -89,7 +90,7 @@ export const Profile = () => {
                     <h1 className="text-lg font-bold mb-4">Perfil</h1>
 
 
-                    <AvatarEditor />
+                    <AvatarEditor currentAvatar={user.avatar || undefined} />
 
                     <div className="text-left mt-4">
                         <p className="font-semibold">{user.name}</p>
@@ -99,7 +100,7 @@ export const Profile = () => {
                     <section>
                         <InfoItem label="Total de itens recuperados" value={`... itens`} />
                         <InfoItem label="Última vez que recuperou item" value={`... itens`} />
-                        <InfoItem label="Cadastrado desde" value="..." />
+                        <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
                     </section>
 
                     <section className="mt-6">
