@@ -1,10 +1,13 @@
 "use client";
 
 import { Logo } from "../../components/ui/Logo";
+import { SideBarItem } from "../../components/ui/SideBarItem";
 import {
-    House, HandHeart, CircleUserRound, Search, MoonStar, LogOut, BellRing, Sun
+    House, HandHeart, CircleUserRound, Search, MoonStar, LogOut, BellRing, Sun,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CategoryItem } from "../../components/ui/CategoryItem";
+import { ItemCarousel } from "../../components/ui/ItemCarousel";
 
 export const Dashboard = () => {
     const [mounted, setMounted] = useState(false);
@@ -34,18 +37,49 @@ export const Dashboard = () => {
 
     const toggleTheme = () => setDarkMode(v => !v);
 
+    const items = [
+        {
+            photo: "",
+            description: "Garrafa de água preta e transparente com canudo",
+            time: 4,
+        },
+        {
+            photo: "",
+            description: "Vasilha tupperware estampada com tampa laranja",
+            time: 20,
+        },
+    ];
+
+    const items2 = [
+        {
+            photo: "",
+            description: "Garrafa de água preta e transparente com canudo",
+        },
+        {
+            photo: "",
+            description: "Vasilha tupperware estampada com tampa laranja",
+        },
+    ];
+
     return (
-        <div className="flex min-h-screen bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100">
+        <div className="
+            flex min-h-screen
+            flex-col-reverse md:flex-row
+            bg-white text-gray-900
+            dark:bg-neutral-900 dark:text-neutral-100
+        ">
             {/* SIDEBAR */}
-            <aside
-                className="
-          sticky top-0 hidden h-screen w-[368px] shrink-0
-          bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
-          md:flex md:flex-col pt-16 pl-16
-        "
+            <aside className="
+                    sticky md:top-0
+                    flex md:flex-col
+                    w-full md:w-[368px]
+                    h-auto md:h-screen
+                    bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
+                    px-4 py-4 md:pt-16 md:pl-16
+                "
             >
                 {/* Logo */}
-                <div className="flex items-center gap-2 px-4 py-4 mb-8">
+                <div className="flex items-center gap-2 px-4 py-4 mb-8 hidden md:flex">
                     <Logo
                         imageClassName="w-[87px] h-8"
                         mode={darkMode ? "dark" : "light"}
@@ -54,103 +88,68 @@ export const Dashboard = () => {
 
                 {/* Nav */}
                 <nav className="flex-1 px-2">
-                    <ul className="space-y-3">
-                        <li>
-                            <a
-                                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-gray-700 hover:bg-gray-100 hover:text-gray-900
-                           dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
-                                href="#home"
-                            >
-                                <House className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                Página inicial
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-gray-700 hover:bg-gray-100 hover:text-gray-900
-                           dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
-                                href="#donation"
-                            >
-                                <HandHeart className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                Itens para doação
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-gray-700 hover:bg-gray-100 hover:text-gray-900
-                           dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
-                                href="#profile"
-                            >
-                                <CircleUserRound className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                Perfil
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                className="group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-gray-700 hover:bg-gray-100 hover:text-gray-900
-                           dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
-                                href="#search"
-                            >
-                                <Search className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                Buscar
-                            </a>
-                        </li>
+                    <ul className="
+                        flex flex-row justify-between md:flex-col
+                        space-x-3 md:space-x-0 md:space-y-3
+                    ">
+                        <SideBarItem icon={House} text="Página inicial" href="/" exact />
+                        <SideBarItem icon={HandHeart} text="Itens para doação" href="/donation" exact />
+                        <SideBarItem icon={CircleUserRound} text="Perfil" href="/profile" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/search" exact />
                     </ul>
                 </nav>
 
                 {/* Footer actions */}
-                <div className="px-2 pb-4 pt-2">
+                <div className="px-2 pb-4 pt-2 hidden md:block">
                     <ul className="space-y-3">
-                        <li>
-                            <button
-                                onClick={toggleTheme}
-                                aria-pressed={darkMode}
-                                title={darkMode ? "Switch to light theme" : "Switch to dark theme"}
-                                className="w-full group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-gray-700 hover:bg-gray-100 hover:text-gray-900
-                           dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white"
-                            >
-                                {
-                                    mounted && (darkMode
-                                        ? <Sun className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                        : <MoonStar className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                                    )
-                                }
-                                {mounted && (darkMode ? "Tema claro" : "Tema escuro")}
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className="w-full group flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium
-                           text-red-600 hover:bg-red-50
-                           dark:text-red-400 dark:hover:bg-red-900/20"
-                            >
-                                <LogOut className="h-7 w-7 opacity-80" />
-                                Sair
-                            </button>
-                        </li>
+                        {/* Theme toggle */}
+                        <SideBarItem
+                            icon={darkMode ? Sun : MoonStar}
+                            text={darkMode ? "Tema claro" : "Tema escuro"}
+                            onClick={toggleTheme}
+                            className="text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                        />
+
+                        {/* Logout */}
+                        <SideBarItem
+                            icon={LogOut}
+                            text="Sair"
+                            onClick={() => console.log("logout")}
+                            className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                        />
                     </ul>
                 </div>
             </aside>
 
             {/* MAIN */}
-            <main className="flex min-w-0 flex-1 flex-col pt-16">
+            <main className="flex min-w-0 flex-1 flex-col md:pt-16 pr-0 md:pr-8">
+                {/* Logo */}
+                <div className="flex items-center justify-center gap-2 px-4 py-4 mb-0 block md:hidden">
+                    <Logo
+                        imageClassName="h-6 md:w-[87px] md:h-8"
+                        mode={darkMode ? "dark" : "light"}
+                    />
+                </div>
                 <header
                     className="sticky top-0 z-10 flex items-center justify-between
                      bg-white/70 px-5 py-0 backdrop-blur-sm dark:bg-neutral-900/70"
                 >
-                    <h1 className="text-2xl font-semibold">Itens perdidos</h1>
+                    <h1 className="text-[18px] font-semibold md:text-2xl">Itens perdidos</h1>
                     <button className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                        <BellRing className="h-7 w-7" />
+                        <BellRing className="h-6 w-6 md:h-7 md:w-7" />
                     </button>
                 </header>
 
-                <section className="p-5">
+                <section className="p-5 pt-0 md:pt-5">
                     {/* your page content */}
+                    <CategoryItem />
+                    <div className="py-1 pt-4">
+                        <ItemCarousel title="Prestes a serem doados…" items={items} />
+                    </div>
+
+                    <div className="py-1">
+                        <ItemCarousel title="Perdidos nas últimas 48 horas" items={items2} />
+                    </div>
                 </section>
             </main>
         </div>
