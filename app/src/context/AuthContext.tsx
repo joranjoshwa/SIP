@@ -34,10 +34,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }
 
-    const logout = () => {
+    const logout = (redirectUrl?: string) => {
         setUser(null);
         localStorage.removeItem("token");
-        router.replace("/login")
+
+        router.replace(redirectUrl ?? "/login");
     };
 
     return (

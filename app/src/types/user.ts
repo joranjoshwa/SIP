@@ -10,3 +10,8 @@ export type User = {
     avatar?: string;
     registrationDate: string;
 }
+
+export interface ChangePasswordRequest {
+    password: string;
+    newPassword: string; 
+  }

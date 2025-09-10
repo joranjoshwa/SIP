@@ -1,3 +1,5 @@
+"use client"
+
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AuthCard } from "../../components/layout/AuthCard";
@@ -5,15 +7,58 @@ import { Button } from "../../components/ui/Button";
 import { Loading } from "../../components/ui/Loading";
 import { Logo } from "../../components/ui/Logo";
 import { PasswordField } from "../../components/ui/PasswordField";
+import { changePassword } from "../../api/endpoints/user";
+import { AxiosError } from "axios";
+import { ApiResponse } from "../../types/user";
+import { useAuth } from "../../context/AuthContext";
 
 export const ChangePassword = () => {
     const router = useRouter();
+    const { logout } = useAuth();
 
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        if (newPassword !== confirmPassword) {
+            setError("As senhas não coincidem.")
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await changePassword(token, { 
+                password: oldPassword,
+                newPassword: newPassword 
+            });
+    
+            logout("/login?success=password-changed");
+
+        } catch (err: any) {
+            const errorResp = err as AxiosError<ApiResponse>;
+            if (errorResp.response?.data) {
+                const errors =
+                    errorResp.response.data.message ??
+                    Object.values(errorResp.response.data).join(" | ");
+                setError(errors);
+            } else {
+                setError("Erro ao alterar a senha. Tente novamente.");
+            }
+        
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <>
@@ -22,7 +67,7 @@ export const ChangePassword = () => {
                 title="Alterar Senha"
                 subtitle="Digite sua senha atual e escolha uma nova"
             >
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <PasswordField
                         label="Senha Atual"
                         placeholder="Digite sua senha atual"

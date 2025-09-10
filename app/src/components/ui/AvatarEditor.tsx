@@ -43,9 +43,9 @@ export const AvatarEditor = ({ currentAvatar,  onAvatarUpdated }: Props) => {
             <label
                 htmlFor="avatar-upload"
                 aria-label="Editar foto"
-                className={`absolute right-0 bottom-0 -translate-x-1/4 translate-y-1/4 bg-white p-2 rounded-full
+                className={`absolute right-0 bottom-0 -translate-x-1/4 translate-y-1/4 p-2 rounded-full
                     shadow-md hover:scale-105 focus:outline-none 
-                    ${theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"}}`}
+                    ${theme === "light" ? "bg-white text-black" : "bg-gray-800 text-white"}`}
             >
                 <Camera size={16}/>
                 <input 
