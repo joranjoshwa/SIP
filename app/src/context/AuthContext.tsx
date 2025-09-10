@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         localStorage.removeItem("token");
 
-        // Só aceita string ou padrão "/login"
         const path = typeof redirectUrl === "string" ? redirectUrl : "/login";
         router.replace(path);
     };
