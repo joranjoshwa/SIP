@@ -1,14 +1,5 @@
-import { UUID } from "crypto";
-import { ItemPage } from "../../types/item";
-import { extractEmailFromToken } from "../../utils/token";
+import { ItemPage, CarouselItem } from "../../types/item";
 import { api } from "../axios";
-
-export type Items = {
-    id?: UUID;
-    picture: string;
-    description: string;
-    time?: number;
-};
 
 const CategoryEnum: Record<string, string> = {
     GARRAFA: "BOTTLE",
@@ -22,7 +13,7 @@ const CategoryEnum: Record<string, string> = {
     OUTROS: "OTHER",
 };
 
-export const itemFromLast48Hours = async (category: string): Promise<Items[]> => {
+export const itemFromLast48Hours = async (category: string): Promise<CarouselItem[]> => {
     const categoryParam = category ? `&category=${CategoryEnum[category.toUpperCase()]}` : "";
     const result: ItemPage = await api.get(`/items?page=0&size=10${categoryParam}&lastDays=2`);
     const items = result.data.content.map(item => {
@@ -32,13 +23,12 @@ export const itemFromLast48Hours = async (category: string): Promise<Items[]> =>
             picture: item.pictures[0],
         };
     });
-    return items as Items[];
+    return items as CarouselItem[];
 }
 
-export const itemAboutToBeDonated = async (category: string): Promise<Items[]> => {
+export const itemAboutToBeDonated = async (category: string): Promise<CarouselItem[]> => {
     const categoryParam = category ? `&category=${CategoryEnum[category.toUpperCase()]}` : "";
-    const result: ItemPage = await api.get(`/items?page=0&size=10${categoryParam}&aboutToBeDonated=true${categoryParam}`);
-    console.log(result);
+    const result: ItemPage = await api.get(`/items?page=0&size=10${categoryParam}&aboutToBeDonated=true`);
     const items = result.data.content.map(item => {
         return {
             id: item.id,
@@ -49,5 +39,5 @@ export const itemAboutToBeDonated = async (category: string): Promise<Items[]> =
             ),
         };
     });
-    return items as Items[];
+    return items as CarouselItem[];
 }

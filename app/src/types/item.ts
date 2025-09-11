@@ -64,7 +64,7 @@ export type CarouselItem = {
 export type Item = {
     id: string;
     description: string;
-    findingAt?: string;
+    donationDate?: string;
     time?: number | undefined;
     picture?: { id: string, url: string };
 };
