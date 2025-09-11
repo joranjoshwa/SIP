@@ -21,17 +21,17 @@ function formatDays(days?: number) {
     return `${weeks} semana${weeks > 1 ? "s" : ""} restante${weeks > 1 ? "s" : ""}`;
 }
 
-export default function ItemCard({ photo, description, time }: { photo: string; description: string; time?: number }) {
+export default function ItemCard({ picture, description, time }: { picture: string; description: string; time?: number }) {
 
     const bg = getTimeBgColor(time);
-    const validPhoto = photo && photo.trim() !== "";
+    const validPhoto = picture && picture.trim() !== "";
     return (
         <div className="w-40 flex-shrink-0 rounded-2xl overflow-hidden bg-white dark:bg-neutral-900">
 
             {/* Image */}
             <div className="relative w-full h-[140px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
                 {validPhoto ? (
-                    <Image src={photo} alt={description} fill className="object-cover" />
+                    <Image src={picture} alt={description} fill className=" w-10 h-10 object-cover rounded-2xl" />
                 ) : (
                     <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-600" />
                 )}

@@ -3,28 +3,17 @@
 import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import ItemCard from "./ItemCard"; // ensure the path is correct
-import type { UUID } from "crypto";
-
-// Types
-export type Items = {
-    id?: UUID;
-    photo: string;
-    description: string;
-    time?: number;
-};
+import ItemCard from "./ItemCard";
+import { CarouselItem } from "../../types/item";
 
 export type Props = {
     title: string;
-    items: Items[];
+    items: CarouselItem[];
 };
 
-/**
- * Horizontal slider for product cards using native scroll + scroll-snap.
- * Dark mode: uses Tailwind `dark:` variants.
- */
 export function ItemCarousel({ title = "", items = [] }: Props) {
     const trackRef = useRef<HTMLDivElement | null>(null);
+    console.log(items);
 
     return (
         <section className="w-full">
@@ -48,7 +37,7 @@ export function ItemCarousel({ title = "", items = [] }: Props) {
                 className="relative flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none]"
                 style={{ scrollbarWidth: "none" }}
             >
-                {/* Hide scrollbar (WebKit) */}
+                {/* Hide scrollbar*/}
                 <style jsx>{`
                     div::-webkit-scrollbar { display: none; }
                 `}</style>
@@ -56,7 +45,7 @@ export function ItemCarousel({ title = "", items = [] }: Props) {
                 {items.map((item, idx) => (
                     <div key={(item.id as unknown as string) ?? idx} className="snap-start shrink-0">
                         <ItemCard
-                            photo={item.photo}
+                            picture={item.picture}
                             description={item.description}
                             time={item.time}
                         />

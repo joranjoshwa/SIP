@@ -2,27 +2,80 @@
 
 import { Logo } from "../../components/ui/Logo";
 import { SideBarItem } from "../../components/ui/SideBarItem";
-import {
-    House, HandHeart, CircleUserRound, Search, MoonStar, LogOut, BellRing, Sun,
-} from "lucide-react";
+import { House, HandHeart, CircleUserRound, Search, MoonStar, LogOut, BellRing, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { CategoryItem } from "../../components/ui/CategoryItem";
 import { ItemCarousel } from "../../components/ui/ItemCarousel";
+import { CarouselItem, Item, UUID, } from "../../types/item";
+import { itemFromLast48Hours, itemAboutToBeDonated } from "../../api/endpoints/item";
+
+const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
+const mapToCarouselItem = (dto: Item): CarouselItem => ({
+    id: dto.id as UUID,
+    picture: firstPic(dto.picture),
+    description: dto.description,
+    time: dto.time,
+});
 
 export const Dashboard = () => {
     const [mounted, setMounted] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
+    const [itemsLast48Hours, setItemsLast48Hours] = useState<CarouselItem[]>([]);
+    const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
+    const [chosenCategory, setChosenCategory] = useState("");
+    const [loading, setLoading] = useState(true);
 
-    // Apply saved theme on mount (and mark mounted to avoid label mismatch)
+    const handleCategorySelection = (category: string) => {
+        if (category !== chosenCategory) {
+            setChosenCategory(category);
+        } else {
+            setChosenCategory("");
+        }
+    }
+
     useEffect(() => {
-        const saved = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
-        const shouldDark = saved === "dark";
-        setDarkMode(shouldDark);
-        if (shouldDark) document.documentElement.classList.add("dark");
         setMounted(true);
+        const saved = localStorage.getItem("theme");
+        if (saved === "dark") {
+            setDarkMode(true);
+        }
     }, []);
 
-    // React to changes and persist
+    const fetchItems = async <T,>(
+        fetcher: (category: string) => Promise<T>,
+        mapper: (item: Item) => CarouselItem,
+        setter: (items: CarouselItem[]) => void
+    ) => {
+        try {
+            setLoading(true);
+            const res = await fetcher(chosenCategory);
+            const dtos: Item[] = res as Item[];
+            setter(dtos.map(mapper));
+        } catch (err) {
+            console.error("Failed to fetch items:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        let active = true;
+        (async () => {
+            if (!active) return;
+            await fetchItems(itemFromLast48Hours, mapToCarouselItem, setItemsLast48Hours);
+        })();
+        return () => { active = false; };
+    }, [chosenCategory]);
+
+    useEffect(() => {
+        let active = true;
+        (async () => {
+            if (!active) return;
+            await fetchItems(itemAboutToBeDonated, mapToCarouselItem, setItemAboutToBeDonated);
+        })();
+        return () => { active = false; };
+    }, [chosenCategory]);
+
     useEffect(() => {
         if (!mounted) return;
         const root = document.documentElement;
@@ -35,63 +88,40 @@ export const Dashboard = () => {
         }
     }, [darkMode, mounted]);
 
-    const toggleTheme = () => setDarkMode(v => !v);
-
-    const items = [
-        {
-            photo: "",
-            description: "Garrafa de água preta e transparente com canudo",
-            time: 4,
-        },
-        {
-            photo: "",
-            description: "Vasilha tupperware estampada com tampa laranja",
-            time: 20,
-        },
-    ];
-
-    const items2 = [
-        {
-            photo: "",
-            description: "Garrafa de água preta e transparente com canudo",
-        },
-        {
-            photo: "",
-            description: "Vasilha tupperware estampada com tampa laranja",
-        },
-    ];
-
+    const toggleTheme = () => setDarkMode((v) => !v);
     return (
-        <div className="
-            flex min-h-screen
-            flex-col-reverse md:flex-row
-            bg-white text-gray-900
-            dark:bg-neutral-900 dark:text-neutral-100
-        ">
+        <div
+            className="
+        flex min-h-screen
+        flex-col-reverse md:flex-row
+        bg-white text-gray-900
+        dark:bg-neutral-900 dark:text-neutral-100
+      "
+        >
             {/* SIDEBAR */}
-            <aside className="
-                    sticky md:top-0
-                    flex md:flex-col
-                    w-full md:w-[368px]
-                    h-auto md:h-screen
-                    bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
-                    px-4 py-4 md:pt-16 md:pl-16
-                "
+            <aside
+                className="
+          sticky md:top-0
+          flex md:flex-col
+          w-full md:w-[368px]
+          h-auto md:h-screen
+          bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
+          px-4 py-4 md:pt-16 md:pl-16
+        "
             >
                 {/* Logo */}
-                <div className="flex items-center gap-2 px-4 py-4 mb-8 hidden md:flex">
-                    <Logo
-                        imageClassName="w-[87px] h-8"
-                        mode={darkMode ? "dark" : "light"}
-                    />
+                <div className="hidden md:flex items-center gap-2 px-4 py-4 mb-8">
+                    <Logo imageClassName="w-[87px] h-8" mode={darkMode ? "dark" : "light"} />
                 </div>
 
                 {/* Nav */}
                 <nav className="flex-1 px-2">
-                    <ul className="
-                        flex flex-row justify-between md:flex-col
-                        space-x-3 md:space-x-0 md:space-y-3
-                    ">
+                    <ul
+                        className="
+              flex flex-row justify-between md:flex-col
+              space-x-3 md:space-x-0 md:space-y-3
+            "
+                    >
                         <SideBarItem icon={House} text="Página inicial" href="/" exact />
                         <SideBarItem icon={HandHeart} text="Itens para doação" href="/donation" exact />
                         <SideBarItem icon={CircleUserRound} text="Perfil" href="/profile" exact />
@@ -102,15 +132,12 @@ export const Dashboard = () => {
                 {/* Footer actions */}
                 <div className="px-2 pb-4 pt-2 hidden md:block">
                     <ul className="space-y-3">
-                        {/* Theme toggle */}
                         <SideBarItem
                             icon={darkMode ? Sun : MoonStar}
                             text={darkMode ? "Tema claro" : "Tema escuro"}
                             onClick={toggleTheme}
                             className="text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
                         />
-
-                        {/* Logout */}
                         <SideBarItem
                             icon={LogOut}
                             text="Sair"
@@ -123,17 +150,12 @@ export const Dashboard = () => {
 
             {/* MAIN */}
             <main className="flex min-w-0 flex-1 flex-col md:pt-16 pr-0 md:pr-8">
-                {/* Logo */}
-                <div className="flex items-center justify-center gap-2 px-4 py-4 mb-0 block md:hidden">
-                    <Logo
-                        imageClassName="h-6 md:w-[87px] md:h-8"
-                        mode={darkMode ? "dark" : "light"}
-                    />
+                {/* Mobile Logo */}
+                <div className="block md:hidden flex items-center justify-center gap-2 px-4 py-4 pt-8 mb-0">
+                    <Logo imageClassName="h-6 md:w-[87px] md:h-8" mode={darkMode ? "dark" : "light"} />
                 </div>
-                <header
-                    className="sticky top-0 z-10 flex items-center justify-between
-                     bg-white/70 px-5 py-0 backdrop-blur-sm dark:bg-neutral-900/70"
-                >
+
+                <header className="sticky top-0 z-10 flex items-center justify-between bg-white/70 px-5 py-0 backdrop-blur-sm dark:bg-neutral-900/70">
                     <h1 className="text-[18px] font-semibold md:text-2xl">Itens perdidos</h1>
                     <button className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
                         <BellRing className="h-6 w-6 md:h-7 md:w-7" />
@@ -141,14 +163,30 @@ export const Dashboard = () => {
                 </header>
 
                 <section className="p-5 pt-0 md:pt-5">
-                    {/* your page content */}
-                    <CategoryItem />
+                    <CategoryItem setCategory={handleCategorySelection} />
+
                     <div className="py-1 pt-4">
-                        <ItemCarousel title="Prestes a serem doados…" items={items} />
+                        <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} />
+                        {loading && (
+                            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
+                        )}
+                        {!loading && itemsAboutToBeDonated.length === 0 && (
+                            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+                                Nenhum item encontrado nas últimas 48 horas.
+                            </p>
+                        )}
                     </div>
 
                     <div className="py-1">
-                        <ItemCarousel title="Perdidos nas últimas 48 horas" items={items2} />
+                        <ItemCarousel title="Perdidos nas últimas 48 horas" items={itemsLast48Hours} />
+                        {loading && (
+                            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
+                        )}
+                        {!loading && itemsLast48Hours.length === 0 && (
+                            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+                                Nenhum item encontrado nas últimas 48 horas.
+                            </p>
+                        )}
                     </div>
                 </section>
             </main>

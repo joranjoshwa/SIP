@@ -27,16 +27,12 @@ const categories = [
 ];
 
 type CategoryItemProps = {
+    setCategory: (category: string) => void,
     onSelect?: (key: string | null) => void;
 };
 
-export const CategoryItem = ({ onSelect }: CategoryItemProps) => {
+export const CategoryItem = ({ onSelect, setCategory }: CategoryItemProps) => {
     const [activeCat, setActiveCat] = useState<string | null>(null);
-
-    const pillBase =
-        "inline-flex items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium " +
-        "shadow-sm" +
-        "transition-all hover:shadow ";
 
     const activeRing =
         "ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900";
@@ -44,50 +40,51 @@ export const CategoryItem = ({ onSelect }: CategoryItemProps) => {
     const handleClick = (key: string) => {
         const newActive = activeCat === key ? null : key;
         setActiveCat(newActive);
+        setCategory(newActive as string);
         if (onSelect) onSelect(newActive);
     };
 
     return (
-  <div className="relative">
-    <ul
-      className={[
-        "mt-0 md:mt-4 flex gap-3 py-1 px-4 text-sm",
-        // Mobile: horizontal scroll
-        "overflow-x-auto flex-nowrap snap-x snap-mandatory",
-        // Hide scrollbar (WebKit + Firefox + old IE)
-        "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']",
-        // Desktop: wrap and no overflow
-        "md:flex-wrap md:overflow-visible md:snap-none",
-      ].join(" ")}
-      aria-label="Categories"
-    >
-      {categories.map(({ key, label, Icon, bg, ring }) => {
-        const isActive = activeCat === key;
-        return (
-          <li className="shrink-0 snap-start flex flex-col items-center text-center md:flex-1" key={key}>
-            <button
-              type="button"
-              aria-pressed={isActive}
-              onClick={() => handleClick(key)}
-              className={[
-                    bg,
-                    "w-12 h-12 rounded-full flex items-center justify-center mb-2",
-                    "md:rounded-2xl md:px-4 md:py-2 md:text-sm md:font-medium md:w-full",
-                    "text-gray-800 dark:text-neutral-900",
-                    "dark:brightness-90 dark:hover:brightness-100",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-                    isActive ? `${activeRing} ${ring}` : "",
-                    ].join(" ")}
-                >
-              <span className="grid h-6 w-full place-items-center rounded-lg">
-                <Icon className="h-6 w-6 md:h-7 md:w-7 text-gray-800" />
-              </span>
-            </button>
-            <span className="leading-none text-[10px] md:text-sm">{label}</span>
-          </li>
-        );
-      })}
-    </ul>
-  </div>
-);
+        <div className="relative">
+            <ul
+                className={[
+                    "mt-0 md:mt-4 flex gap-3 py-1 px-4 text-sm",
+                    // Mobile: horizontal scroll
+                    "overflow-x-auto flex-nowrap snap-x snap-mandatory",
+                    // Hide scrollbar (WebKit + Firefox + old IE)
+                    "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']",
+                    // Desktop: wrap and no overflow
+                    "md:flex-wrap md:overflow-visible md:snap-none",
+                ].join(" ")}
+                aria-label="Categories"
+            >
+                {categories.map(({ key, label, Icon, bg, ring }) => {
+                    const isActive = activeCat === key;
+                    return (
+                        <li className="shrink-0 snap-start flex flex-col items-center text-center md:flex-1" key={key}>
+                            <button
+                                type="button"
+                                aria-pressed={isActive}
+                                onClick={() => handleClick(key)}
+                                className={[
+                                    bg,
+                                    "w-12 h-12 rounded-full flex items-center justify-center mb-2",
+                                    "md:rounded-2xl md:px-4 md:py-2 md:text-sm md:font-medium md:w-full",
+                                    "text-gray-800 dark:text-neutral-900",
+                                    "dark:brightness-90 dark:hover:brightness-100",
+                                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+                                    isActive ? `${activeRing} ${ring}` : "",
+                                ].join(" ")}
+                            >
+                                <span className="grid h-6 w-full place-items-center rounded-lg">
+                                    <Icon className="h-6 w-6 md:h-7 md:w-7 text-gray-800" />
+                                </span>
+                            </button>
+                            <span className="leading-none text-[10px] md:text-sm">{label}</span>
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
+    );
 };
