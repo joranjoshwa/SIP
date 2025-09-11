@@ -172,7 +172,7 @@ export const Dashboard = () => {
                         )}
                         {!loading && itemsAboutToBeDonated.length === 0 && (
                             <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-                                Nenhum item encontrado nas últimas 48 horas.
+                                Nenhum item para ser doado.
                             </p>
                         )}
                     </div>
