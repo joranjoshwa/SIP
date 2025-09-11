@@ -1,4 +1,4 @@
-import { ApiResponse } from "../../types/user";
+import { ApiResponse, ChangePasswordRequest } from "../../types/user";
 import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../axios";
 
@@ -51,3 +51,23 @@ export const resetPassword = async (token: string, password: string) => {
     });
     return data;
 }
+
+export const changePassword = async (
+    token: string,
+    payload: ChangePasswordRequest
+): Promise<ApiResponse> => {
+    const email = extractEmailFromToken(token);
+
+    if (!email) {
+        throw new Error("Não foi possível extrair o email do token.");
+    }
+
+    const { data } = await api.patch(`/user/update-password/${email}`, payload,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+    return data;
+};

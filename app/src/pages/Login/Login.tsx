@@ -50,6 +50,13 @@ export const Login = () => {
             });
         }
 
+        if (success === "password-changed") {
+            setPopup({
+                message: "Senha alterada com sucesso! Faça login com a nova senha.",
+                isOpen: true,
+            });
+        }
+
         if (success) {
             setTimeout(() => setPopup((prev) => ({ ...prev, isOpen: false })), 8000);
         }

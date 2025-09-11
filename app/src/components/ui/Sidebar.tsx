@@ -10,7 +10,7 @@ export const Sidebar = () => {
     return (
         <aside className="hidden md:flex md:flex-col md:col-span-3 md:border-r md:pr-6 md: pt-8">
             <nav className="flex flex-col gap-3">
-                <Button variant="primary" className="flex items-center gap-3 justify-start border-0 pl-2 bg-gray-200">
+                <Button variant="primary" className="flex items-center gap-3 justify-start border-0 pl-2">
                     <Home size={18} />
                     <span>Página inicial</span>
                 </Button>
