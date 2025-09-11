@@ -13,7 +13,6 @@ export type Props = {
 
 export function ItemCarousel({ title = "", items = [] }: Props) {
     const trackRef = useRef<HTMLDivElement | null>(null);
-    console.log(items);
 
     return (
         <section className="w-full">

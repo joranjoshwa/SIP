@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig = {
     images: {
-
-        // Option B: more precise (port/protocol) with remotePatterns
         remotePatterns: [
             {
                 protocol: 'http',

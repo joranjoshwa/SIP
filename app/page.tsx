@@ -8,11 +8,11 @@ import { VerifyEmail } from "./src/pages/VerifyEmail/VerifyEmail";
 import { Dashboard } from "./src/pages/Dashboard/Dashboard";
 
 const Page = () => {
-  return (
-   <div>
-    <Dashboard />
-   </div>
-  );
+    return (
+        <div>
+            <Dashboard />
+        </div>
+    );
 }
 
 export default Page;
