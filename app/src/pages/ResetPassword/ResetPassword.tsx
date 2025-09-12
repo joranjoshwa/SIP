@@ -9,6 +9,7 @@ import { resetPassword } from "../../api/endpoints/user";
 import { AxiosError } from "axios";
 import { ApiResponse } from "../../types/user";
 import { PasswordField } from "../../components/ui/PasswordField";
+import { Loading } from "../../components/ui/Loading";
 
 export const ResetPassword = () => {
     const searchParams = useSearchParams();
@@ -58,34 +59,37 @@ export const ResetPassword = () => {
     }
 
     return (
-        <AuthCard
-            headerContent={<Logo className="mb-4" />}
-            title="Redefinir Senha"
-            subtitle="Crie uma nova senha para acessar sua conta"
-        >
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <PasswordField
-                    label="Nova Senha"
-                    placeholder="Digite sua nova senha"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+        <>
+            <AuthCard
+                headerContent={<Logo className="mb-4" />}
+                title="Redefinir Senha"
+                subtitle="Crie uma nova senha para acessar sua conta"
+            >
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <PasswordField
+                        label="Nova Senha"
+                        placeholder="Digite sua nova senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
-                <PasswordField
-                    label="Confirmar Senha"
-                    placeholder="Confirme sua nova senha"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                    <PasswordField
+                        label="Confirmar Senha"
+                        placeholder="Confirme sua nova senha"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
 
-                <Button variant="primary" className={loading ? "opacity-70" : ""}>
-                    {loading ? "Redefinindo..." : "Redefinir Senha"}
-                </Button>
+                    <Button variant="primary" className={loading ? "opacity-70" : ""}>
+                        {loading ? "Redefinindo..." : "Redefinir Senha"}
+                    </Button>
 
-                {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-            </form>
+                    {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+                </form>
+            </AuthCard>
 
+            <Loading isLoading={loading} />
+        </>
 
-        </AuthCard>
     );
 }

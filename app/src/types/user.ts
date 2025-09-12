@@ -3,3 +3,15 @@ export type ApiResponse = {
     description?: string;
     [key: string]: string | undefined;
 }
+
+export type User = {
+    name: string;
+    email: string;
+    avatar?: string;
+    registrationDate: string;
+}
+
+export interface ChangePasswordRequest {
+    password: string;
+    newPassword: string; 
+  }

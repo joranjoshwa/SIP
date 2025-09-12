@@ -1,22 +1,16 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
-    images: {
-        remotePatterns: [
-            {
-                protocol: 'http',
-                hostname: process.env.NEXT_PUBLIC_BUCKET_HOSTNAME,
-                port: process.env.NEXT_PUBLIC_BUCKET_PORT,
-                pathname: '/itemsimage/**',
-            },
-            {
-                protocol: 'http',
-                hostname: process.env.NEXT_PUBLIC_BUCKET_HOSTNAME,
-                port: process.env.NEXT_PUBLIC_BUCKET_PORT,
-                pathname: '/profimage/**',
-            },
-        ],
-    },
+const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: process.env.NEXT_PUBLIC_IMAGE_HOST!,
+        port: process.env.NEXT_PUBLIC_IMAGE_PORT,
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
