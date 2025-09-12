@@ -20,6 +20,17 @@ export const extractEmailFromToken = (token: string): string | null => {
     }
 };
 
+export const isTokenExpired = (token: string): boolean => {
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        if (!decoded.exp) return false;
+        return decoded.exp * 1000 < Date.now();
+
+    } catch {
+        return true;
+    }
+};
+
 export const getTokenTypeFromString = (value: string | null): TokenType | null => {
     if (value === TokenType.VERIFICATION) return TokenType.VERIFICATION;
     if (value === TokenType.REACTIVATE) return TokenType.REACTIVATE;

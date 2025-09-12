@@ -6,13 +6,14 @@ import { Profile } from "./src/pages/Profile/Profile";
 import { ResetPassword } from "./src/pages/ResetPassword/ResetPassword";
 import { SignUp } from "./src/pages/SignUp/SignUp";
 import { VerifyEmail } from "./src/pages/VerifyEmail/VerifyEmail";
+import { Dashboard } from "./src/pages/Dashboard/Dashboard";
 
 const Page = () => {
-  return (
-   <div>
-    <Login /> 
-   </div>
-  );
+    return (
+        <div>
+            <Dashboard />
+        </div>
+    );
 }
 
 export default Page;

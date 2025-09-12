@@ -1,4 +1,5 @@
 import axios from "axios";
+import { isTokenExpired } from "../utils/token";
 
 export const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -6,15 +7,32 @@ export const api = axios.create({
         "Content-Type": "application/json",
     },
 });
+export const extractEmailFromToken = (token: string): string | null => {
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        const sub = JSON.parse(decoded.sub);
+        return sub.to || null;
 
-api.interceptors.request.use((config) => {
-  const storedUser = localStorage.getItem("user");
-  if (storedUser) {
-    const user = JSON.parse(storedUser);
-    if (user.token) {
-      config.headers.Authorization = `${user.type} ${user.token}`;
+    } catch (err) {
+        console.log("Erro ao extrair email do token: ", err);
+        return null;
     }
-  }
-  return config;
-});
+}
+api.interceptors.request.use((config) => {
 
+        const raw = localStorage.getItem("token");
+
+        if (raw) {
+            if (isTokenExpired(raw)) {
+                localStorage.removeItem("token");
+                return config;
+            }
+
+            const token = raw.startsWith("Bearer ") ? raw : `Bearer ${raw}`;
+            config.headers = config.headers ?? {};
+            config.headers.Authorization = token;
+        }
+
+
+    return config;
+});
