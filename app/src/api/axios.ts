@@ -7,7 +7,17 @@ export const api = axios.create({
         "Content-Type": "application/json",
     },
 });
+export const extractEmailFromToken = (token: string): string | null => {
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        const sub = JSON.parse(decoded.sub);
+        return sub.to || null;
 
+    } catch (err) {
+        console.log("Erro ao extrair email do token: ", err);
+        return null;
+    }
+}
 api.interceptors.request.use((config) => {
 
         const raw = localStorage.getItem("token");
