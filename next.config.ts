@@ -5,14 +5,14 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'http',
-                hostname: '10.0.0.103',
-                port: '9000',
+                hostname: process.env.NEXT_PUBLIC_BUCKET_HOSTNAME,
+                port: process.env.NEXT_PUBLIC_BUCKET_PORT,
                 pathname: '/itemsimage/**',
             },
             {
                 protocol: 'http',
-                hostname: '10.0.0.103',
-                port: '9000',
+                hostname: process.env.NEXT_PUBLIC_BUCKET_HOSTNAME,
+                port: process.env.NEXT_PUBLIC_BUCKET_PORT,
                 pathname: '/profimage/**',
             },
         ],

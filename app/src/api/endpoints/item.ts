@@ -1,20 +1,12 @@
 import { ItemPage, CarouselItem } from "../../types/item";
+import { CategoryEnum } from "@/app/enums/category";
 import { api } from "../axios";
 
-const CategoryEnum: Record<string, string> = {
-    GARRAFA: "BOTTLE",
-    ROUPA: "CLOTHING",
-    ELETRONICO: "ELECTRONIC",
-    ACESSORIO: "ACCESSORY",
-    VASILHA: "CONTAINER",
-    LIVRO: "BOOK",
-    MATERIAL: "SCHOOL_SUPPLY",
-    DOCUMENTO: "DOCUMENT",
-    OUTROS: "OTHER",
-};
-
 export const itemFromLast48Hours = async (category: string): Promise<CarouselItem[]> => {
-    const categoryParam = category ? `&category=${CategoryEnum[category.toUpperCase()]}` : "";
+    const normalized = category?.toUpperCase();
+    const enumValue = normalized ? CategoryEnum[normalized as keyof typeof CategoryEnum] : undefined;
+
+    const categoryParam = enumValue ? `&category=${enumValue}` : "";
     const result: ItemPage = await api.get(`/items?page=0&size=10${categoryParam}&lastDays=2`);
     const items = result.data.content.map(item => {
         return {
@@ -27,7 +19,10 @@ export const itemFromLast48Hours = async (category: string): Promise<CarouselIte
 }
 
 export const itemAboutToBeDonated = async (category: string): Promise<CarouselItem[]> => {
-    const categoryParam = category ? `&category=${CategoryEnum[category.toUpperCase()]}` : "";
+    const normalized = category?.toUpperCase();
+    const enumValue = normalized ? CategoryEnum[normalized as keyof typeof CategoryEnum] : undefined;
+
+    const categoryParam = enumValue ? `&category=${enumValue}` : "";
     const result: ItemPage = await api.get(`/items?page=0&size=10${categoryParam}&aboutToBeDonated=true`);
     const items = result.data.content.map(item => {
         return {
