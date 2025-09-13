@@ -7,11 +7,12 @@ import { ResetPassword } from "./src/pages/ResetPassword/ResetPassword";
 import { SignUp } from "./src/pages/SignUp/SignUp";
 import { VerifyEmail } from "./src/pages/VerifyEmail/VerifyEmail";
 import { Dashboard } from "./src/pages/Dashboard/Dashboard";
+import { LostItems } from "./src/pages/LostItems/LostItems";
 
 const Page = () => {
     return (
         <div>
-            <Dashboard />
+            <LostItems />
         </div>
     );
 }
