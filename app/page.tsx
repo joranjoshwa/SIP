@@ -7,11 +7,13 @@ import { ResetPassword } from "./src/pages/ResetPassword/ResetPassword";
 import { SignUp } from "./src/pages/SignUp/SignUp";
 import { VerifyEmail } from "./src/pages/VerifyEmail/VerifyEmail";
 import { Dashboard } from "./src/pages/Dashboard/Dashboard";
+import { redirect } from "next/navigation";
 
 const Page = () => {
+    redirect("/dashboard");
     return (
         <div>
-            <Dashboard />
+
         </div>
     );
 }

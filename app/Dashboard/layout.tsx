@@ -64,10 +64,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               space-x-3 md:space-x-0 md:space-y-3
             "
                     >
-                        <SideBarItem icon={House} text="Página inicial" href="/" exact />
-                        <SideBarItem icon={HandHeart} text="Itens para doação" href="/donation" exact />
-                        <SideBarItem icon={CircleUserRound} text="Perfil" href="/profile" exact />
-                        <SideBarItem icon={Search} text="Buscar" href="/search" exact />
+                        <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
+                        <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
+                        <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
                     </ul>
                 </nav>
 

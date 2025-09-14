@@ -1,5 +1,5 @@
 import { ItemPage, CarouselItem } from "../../types/item";
-import { CategoryEnum } from "@/app/enums/category";
+import { CategoryEnum } from "@/app/src/pages/enums/category";
 import { api } from "../axios";
 
 export const itemFromLast48Hours = async (category: string): Promise<CarouselItem[]> => {

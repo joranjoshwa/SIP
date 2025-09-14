@@ -21,10 +21,13 @@ export const SideBarItem = ({
     exact = false,
 }: Props) => {
     const pathname = usePathname();
+
     const isActive = href
         ? exact
             ? pathname === href
-            : pathname.startsWith(href)
+            : href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(href)
         : false;
 
     const base =
