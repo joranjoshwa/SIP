@@ -40,7 +40,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         dark:bg-neutral-900 dark:text-neutral-100
       "
         >
-            {/* SIDEBAR */}
             <aside
                 className="
           sticky md:top-0
@@ -51,12 +50,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           px-4 py-4 md:pt-16 md:pl-16
         "
             >
-                {/* Logo */}
                 <div className="hidden md:flex items-center gap-2 px-4 py-4 mb-8">
                     <Logo imageClassName="w-[87px] h-8" mode={darkMode ? "dark" : "light"} />
                 </div>
 
-                {/* Nav */}
                 <nav className="flex-1 px-2">
                     <ul
                         className="
@@ -71,7 +68,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     </ul>
                 </nav>
 
-                {/* Footer actions */}
                 <div className="px-2 pb-4 pt-2 hidden md:block">
                     <ul className="space-y-3">
                         <SideBarItem
@@ -90,9 +86,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             </aside>
 
-            {/* MAIN */}
             <main className="flex min-w-0 flex-1 flex-col md:pt-16 pr-0 md:pr-8">
-                {/* Mobile Logo */}
                 <div className="block md:hidden flex items-center justify-center gap-2 px-4 py-4 pt-8 mb-0">
                     <Logo imageClassName="h-6 md:w-[87px] md:h-8" mode={darkMode ? "dark" : "light"} />
                 </div>
