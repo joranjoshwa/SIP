@@ -18,8 +18,8 @@ export const SearchFilter = ({ handleCategorySelection }: Props) => {
     ];
 
     return (
-        <div className="md:border md:border-gray-300 md:dark:border-gray-600 md:rounded-lg md:p-4 md:mt-4">
-            <h2 className="text-md mt-4">Filtros</h2>
+        <div className="md:border md:border-gray-300 md:dark:border-gray-600 md:rounded-2xl md:p-6">
+            <h2 className="text-md">Filtros</h2>
             <div className="mt-7">
                 <span className="text-sm">Categoria</span>
                 <SearchCategorySelect setCategory={handleCategorySelection} />
