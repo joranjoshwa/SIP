@@ -4,6 +4,7 @@ import { SearchBar } from "@/src/components/ui/SearchBar";
 import { SearchFilter } from "@/src/components/ui/SearchFilter";
 import { FilterBar } from "@/src/components/ui/FilterBar";
 import { useState, useRef, useEffect } from "react";
+import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 
 export default function SearchPage() {
     const [chosenCategory, setChosenCategory] = useState<string[]>([]);
@@ -14,16 +15,11 @@ export default function SearchPage() {
         setChosenCategory(categories);
     };
 
-    const toggleFilter = () => {
-        setShowFilters((prev) => !prev);
-    };
+    const toggleFilter = () => setShowFilters((prev) => !prev);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                filterRef.current &&
-                !filterRef.current.contains(event.target as Node)
-            ) {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
                 setShowFilters(false);
             }
         };
@@ -40,7 +36,7 @@ export default function SearchPage() {
     }, [showFilters]);
 
     return (
-        <section className="p-5">
+        <section className="flex flex-col flex-1 min-h-0 p-5">
             <SearchBar />
 
             <div className="relative mt-2" ref={filterRef}>
@@ -54,13 +50,21 @@ export default function SearchPage() {
 
                 <div
                     id="filterForm"
-                    className={`absolute top-0 lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
-                            ? "opacity-100 scale-100 translate-y-0"
-                            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                    className={`absolute top-0 left-0 right-0 z-50 lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                         }`}
                 >
-                    <SearchFilter handleCategorySelection={handleCategorySelection} />
+                    <div className="
+                        filter-scroll
+                        overscroll-y-contain touch-pan-y
+                        rounded-xl bg-white dark:bg-neutral-900
+                    ">
+                        <SearchFilter handleCategorySelection={handleCategorySelection} />
+                    </div>
                 </div>
+                
+                <ScrollableArea>
+                    <div></div>
+                </ScrollableArea>
             </div>
         </section>
     );

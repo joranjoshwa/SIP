@@ -22,3 +22,18 @@
 body {
     @apply bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300;
 }
+
+
+@media (max-height: 740px) {
+    .filter-scroll {
+        max-height: 65svh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        touch-action: pan-y;
+    }
+    .filter-scroll::-webkit-scrollbar {
+        display: none;
+    }
+}

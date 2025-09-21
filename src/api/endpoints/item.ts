@@ -36,3 +36,10 @@ export const itemAboutToBeDonated = async (category: string): Promise<CarouselIt
     });
     return items as CarouselItem[];
 }
+
+export const itemPaginated = async (category: string) => {
+    const normalized = category?.toUpperCase();
+    const enumValue = normalized ? CategoryEnum[normalized as keyof typeof CategoryEnum] : undefined;
+    const categoryParam = enumValue ? `&category=${enumValue}` : "";
+    const result: ItemPage = await api.get(`/items?page=0&size=40`);
+}

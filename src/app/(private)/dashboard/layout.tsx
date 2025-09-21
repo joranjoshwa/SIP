@@ -1,3 +1,4 @@
+// dashboard/layout.tsx
 "use client";
 
 import { Logo } from "../../../components/ui/Logo";
@@ -12,9 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     useEffect(() => {
         setMounted(true);
         const saved = localStorage.getItem("theme");
-        if (saved === "dark") {
-            setDarkMode(true);
-        }
+        if (saved === "dark") setDarkMode(true);
     }, []);
 
     useEffect(() => {
@@ -34,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <div
             className="
-        flex min-h-screen
+        flex h-screen min-h-0
         flex-col-reverse md:flex-row
         bg-white text-gray-900
         dark:bg-neutral-900 dark:text-neutral-100
@@ -86,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             </aside>
 
-            <main className="flex min-w-0 flex-1 flex-col md:pt-16 pr-0 md:pr-8">
+            <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
                 <div className="block md:hidden flex items-center justify-center gap-2 px-4 py-4 pt-8 mb-0">
                     <Logo imageClassName="h-6 md:w-[87px] md:h-8" mode={darkMode ? "dark" : "light"} />
                 </div>

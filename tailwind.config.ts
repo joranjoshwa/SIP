@@ -9,6 +9,11 @@ export default {
     ],
     theme: {
         extend: {
+            extend: {
+                screens: {
+                    'short': { 'raw': '(max-height: 667px)' },
+                },
+            },
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
