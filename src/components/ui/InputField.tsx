@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 
 type Props = {
     label?: string;
@@ -13,7 +13,7 @@ type Props = {
 }
 
 export const InputField = ({
-    label, 
+    label,
     type = "text",
     placeholder,
     value,
@@ -23,6 +23,12 @@ export const InputField = ({
     className,
     required = false
 }: Props) => {
+    const [isMozilla, setIsMozilla] = useState(false);
+
+    useEffect(() => {
+        const isFirefox = /firefox/i.test(navigator.userAgent);
+        setIsMozilla(isFirefox);
+    }, []);
 
     return(
         <div className={`flex flex-col w-full ${className}`}>
@@ -32,23 +38,23 @@ export const InputField = ({
                 </label>
             )}
 
-            <div className="flex items-center border rounded-xl px-3 py-2 bg-[#ECECEC] 
+            <div className="flex items-center rounded-xl px-3 py-3 bg-[#ECECEC]
                 focus-within:ring-2 focus-within:ring-blue-500
-                dark:bg-gray-800 dark:border-gray-700">
+                dark:bg-[#292929] dark:border-gray-700">
 
-                {icon && <span className="mr-2 text-gray-500 dark:text-gray-400">{icon}</span>}
+                {!(isMozilla && type === "date") && icon && (
+                    <span className="mr-2 text-gray-500 dark:text-gray-400">{icon}</span>
+                )}
 
-                <input 
+                <input
                     type={type}
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
-                            dark:text-gray-100 dark:placeholder-gray-500 dark:bg-gray-800"
+                            dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input"
                     required={required}
                 />
-
-                
 
                 {children}
             </div>

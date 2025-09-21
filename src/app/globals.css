@@ -9,6 +9,11 @@
     --foreground: #000000;
 }
 
+.custom-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
 .dark {
     --background: #0F0F0F;
     --foreground: #f8fafc;
@@ -16,4 +21,4 @@
 
 body {
     @apply bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300;
-  }
+}

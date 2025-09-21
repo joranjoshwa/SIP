@@ -88,8 +88,7 @@ export default function ProfilePage() {
 
       return (
           <>
-              <div className="min-h-screen bg-background text-foreground pb-20 transition-colors duration-300">
-                  <Header />
+              <div className="text-foreground transition-colors duration-300">
 
                   <div className="md:grid md:grid-cols-12 md:gap-6 px-4 md:px-8">
 
