@@ -6,6 +6,7 @@ import { ItemCarousel } from "../../../components/ui/ItemCarousel";
 import { useEffect, useState } from "react";
 import { CarouselItem, Item, UUID } from "../../../types/item";
 import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoints/item";
+import { useRouter } from "next/navigation";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
@@ -20,6 +21,8 @@ export default function DashboardPage() {
     const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
     const [chosenCategory, setChosenCategory] = useState("");
     const [loading, setLoading] = useState(true);
+
+    const router = useRouter();
 
     const handleCategorySelection = (category: string) => {
         if (category !== chosenCategory) {
@@ -68,7 +71,9 @@ export default function DashboardPage() {
         <>
             <header className="sticky top-0 z-10 flex items-center justify-between bg-white/70 px-5 py-0 backdrop-blur-sm dark:bg-neutral-900/70">
                 <h1 className="text-[18px] font-semibold md:text-2xl">Itens perdidos</h1>
-                <button className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
+                <button 
+                    className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    onClick={() => router.push("/dashboard/notifications")}>
                     <BellRing className="h-6 w-6 md:h-7 md:w-7" />
                 </button>
             </header>
