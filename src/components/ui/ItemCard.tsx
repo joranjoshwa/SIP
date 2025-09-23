@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { CalendarClock, ImageOff } from "lucide-react";
+import type { ItemCard } from "@/src/types/item";
 
 function getTimeBgColor(days?: number) {
     if (days === undefined) return "bg-gray-100 dark:bg-neutral-800";
@@ -21,7 +22,7 @@ function formatDays(days?: number) {
     return `${weeks} semana${weeks > 1 ? "s" : ""} restante${weeks > 1 ? "s" : ""}`;
 }
 
-export default function ItemCard({ picture, description, time }: { picture: string; description: string; time?: number }) {
+export default function ItemCard({ picture, description, time }: ItemCard) {
 
     const bg = getTimeBgColor(time);
     const validPhoto = picture && picture.trim() !== "";

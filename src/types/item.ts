@@ -1,31 +1,31 @@
 export type PaginatedApiResponse<T> = {
     data: {
         content: T[];
-    pageable: {
-        pageNumber: number;
-        pageSize: number;
+        pageable: {
+            pageNumber: number;
+            pageSize: number;
+            sort: {
+                empty: boolean;
+                unsorted: boolean;
+                sorted: boolean;
+            };
+            offset: number;
+            paged: boolean;
+            unpaged: boolean;
+        };
+        last: boolean;
+        totalElements: number;
+        totalPages: number;
+        size: number;
+        number: number;
         sort: {
             empty: boolean;
             unsorted: boolean;
             sorted: boolean;
         };
-        offset: number;
-        paged: boolean;
-        unpaged: boolean;
-    };
-    last: boolean;
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-    sort: {
+        first: boolean;
+        numberOfElements: number;
         empty: boolean;
-        unsorted: boolean;
-        sorted: boolean;
-    };
-    first: boolean;
-    numberOfElements: number;
-    empty: boolean;
     }
 }
 
@@ -72,3 +72,18 @@ export type Item = {
 export type ItemPage = PaginatedApiResponse<ItemDTO>;
 
 export type ApiResponse<T> = T[] | { content: T[] };
+
+export type SearchRequest = {
+    page: number;
+    sort: string;
+    size: number;
+    category: string[];
+    dateStart: Date | null;
+    dateEnd: Date | null;
+};
+
+export type ItemCard = {
+    picture: string;
+    description: string;
+    time?: number
+};

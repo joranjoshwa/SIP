@@ -1,14 +1,16 @@
 import { ReactNode } from "react";
 
 type Props = {
-    className?: string;
-    children: ReactNode;
+  className?: string;
+  children: ReactNode;
 };
 
 export function ScrollableArea({ className = "", children }: Props) {
-    return (
-        <div className={`flex-1 min-h-0 overflow-y-auto overscroll-y-contain ${className}`}>
-            {children}
-        </div>
-    );
+  return (
+    <div
+      className={`flex-1 overflow-y-auto overscroll-y-contain scrollbar-hide ${className}`}
+    >
+      {children}
+    </div>
+  );
 }

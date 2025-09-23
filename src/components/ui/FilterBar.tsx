@@ -1,7 +1,7 @@
 import { Filter, CalendarDays, MapPin } from "lucide-react";
 
 type Props = {
-    active: "categoria" | "data" | "local";
+    active: ("categoria" | "data" | "local")[];
     onSelect: (value: "categoria" | "data" | "local") => void;
 };
 
@@ -11,10 +11,9 @@ export const FilterBar = ({ active, onSelect }: Props) => {
 
     return (
         <div className="flex gap-3">
-            {/* Categoria */}
             <button
                 onClick={() => onSelect("categoria")}
-                className={`${baseClass} ${active === "categoria"
+                className={`${baseClass} ${active.includes("categoria")
                         ? "bg-green-100 text-black border-green-300 dark:bg-[#183E1F] dark:text-white dark:border-green-[#183E1F]"
                         : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-transparent dark:text-white dark:border"
                     }`}
@@ -23,28 +22,15 @@ export const FilterBar = ({ active, onSelect }: Props) => {
                 Categoria
             </button>
 
-            {/* Data */}
             <button
                 onClick={() => onSelect("data")}
-                className={`${baseClass} ${active === "data"
+                className={`${baseClass} ${active.includes("data")
                         ? "bg-green-100 text-black border-green-300 dark:bg-[#183E1F] dark:text-white dark:border-green-[#183E1F]"
                         : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-transparent dark:text-white dark:border"
                     }`}
             >
                 <CalendarDays className="w-4 h-4" />
                 Data
-            </button>
-
-            {/* Local */}
-            <button
-                onClick={() => onSelect("local")}
-                className={`${baseClass} ${active === "local"
-                        ? "bg-green-100 text-black border-green-300 dark:bg-[#183E1F] dark:text-white dark:border-green-[#183E1F]"
-                        : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-transparent dark:text-white dark:border"
-                    }`}
-            >
-                <MapPin className="w-4 h-4" />
-                Local
             </button>
         </div>
     );
