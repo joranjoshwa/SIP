@@ -30,7 +30,7 @@ export default function ItemCard({ picture, description, time }: ItemCard) {
         <div className="w-40 flex-shrink-0 rounded-2xl overflow-hidden bg-white dark:bg-neutral-900">
 
             {/* Image */}
-            <div className="relative w-full h-[140px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
+            <div className="relative w-full h-[140px] md:h-[170px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
                 {validPhoto ? (
                     <Image src={picture} alt={description} fill className=" w-10 h-10 object-cover rounded-2xl" />
                 ) : (

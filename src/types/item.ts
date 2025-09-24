@@ -80,6 +80,8 @@ export type SearchRequest = {
     category: string[];
     dateStart: Date | null;
     dateEnd: Date | null;
+    donation: boolean;
+    lastDays: number | null;
 };
 
 export type ItemCard = {
@@ -87,3 +89,5 @@ export type ItemCard = {
     description: string;
     time?: number
 };
+
+export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays";

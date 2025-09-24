@@ -7,7 +7,7 @@ import { itemPaginated } from "@/src/api/endpoints/item";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
 import { useState, useRef, useEffect } from "react";
-import { SearchRequest } from "@/src/types/item";
+import { SearchRequest, FilterType } from "@/src/types/item";
 
 export default function SearchPage() {
     const [filters, setFilters] = useState<SearchRequest>({
@@ -17,11 +17,13 @@ export default function SearchPage() {
         category: [],
         dateStart: null,
         dateEnd: null,
+        donation: false,
+        lastDays: null,
     });
 
     const [results, setResults] = useState<any[]>([]);
     const [showFilters, setShowFilters] = useState(false);
-    const [activeFilters, setActiveFilters] = useState<("categoria" | "data" | "local")[]>([]);
+    const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
     const filterRef = useRef<HTMLDivElement>(null);
 
     const toggleFilter = () => setShowFilters((prev) => !prev);
@@ -64,23 +66,38 @@ export default function SearchPage() {
             category: [],
             dateStart: null,
             dateEnd: null,
+            donation: false,
+            lastDays: null,
         });
         setActiveFilters([]);
     };
 
     const handleSubmit = async () => {
         const result = await itemPaginated(filters);
-        const activeFilters: ("categoria" | "data")[] = [];
+        const activeFilters: FilterType[] = [];
         if (filters.category.length !== 0) {
             activeFilters.push("categoria");
         }
         if (filters.dateStart !== null && filters.dateEnd !== null) {
             activeFilters.push("data");
         }
+        if (filters.donation) {
+            activeFilters.push("donation");
+        }
+        if(filters.lastDays != null) {
+            activeFilters.push("lastDays");
+        }
 
         setActiveFilters(activeFilters);
         setResults(result || []);
     };
+    const handleToggleChange = () => {
+        setFilters((prev) => ({ ...prev, donation: !prev.donation }));
+    };
+
+    const handleNumberChange = (lastDays: number | null) => {
+        setFilters((prev) => ({ ...prev, lastDays }));
+    }
 
     return (
         <section className="flex flex-col flex-1 min-h-0 p-5">
@@ -107,11 +124,15 @@ export default function SearchPage() {
                         <SearchFilter
                             handleCategorySelection={handleCategorySelection}
                             handleDateSelection={handleDateChange}
+                            handleNumberChange={handleNumberChange}
+                            handleToggleChange={handleToggleChange}
                             handleSubmit={handleSubmit}
                             handleCleanFilters={handleCleanFilters}
                         />
                     </div>
                 </div>
+
+                <h2 className="mt-4 text-lg font-bold">Resultados da busca</h2>
 
                 <ScrollableArea className="pt-4 mt-4">
                     <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center">

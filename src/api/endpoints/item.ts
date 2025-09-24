@@ -43,6 +43,7 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     params.set("page", filters.page.toString());
     params.set("sort", filters.sort);
     params.set("size", filters.size.toString());
+    params.set("aboutToBeDonated", filters.donation.toString());
 
     if (filters.category.length > 0) {
         filters.category.forEach((cat) => params
@@ -54,6 +55,10 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     }
     if (filters.dateEnd) {
         params.set("dateEnd", filters.dateEnd.toISOString());
+    }
+
+    if (filters.lastDays) {
+        params.set("lastDays", filters.lastDays.toString());
     }
 
     const { data } = await api.get(`/items?${params.toString()}`);
