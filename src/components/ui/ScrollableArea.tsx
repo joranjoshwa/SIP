@@ -1,16 +1,23 @@
-import { ReactNode } from "react";
+"use client";
+
+import { forwardRef } from "react";
 
 type Props = {
-  className?: string;
-  children: ReactNode;
+    children: React.ReactNode;
+    className?: string;
 };
 
-export function ScrollableArea({ className = "", children }: Props) {
-  return (
-    <div
-      className={`flex-1 overflow-y-auto overscroll-y-contain scrollbar-hide ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
+export const ScrollableArea = forwardRef<HTMLDivElement, Props>(
+    ({ children, className }, ref) => {
+        return (
+            <div
+                ref={ref}
+                className={`overflow-y-auto flex-1 min-h-0 scrollbar-hide ${className}`}
+            >
+                {children}
+            </div>
+        );
+    }
+);
+
+ScrollableArea.displayName = "ScrollableArea";

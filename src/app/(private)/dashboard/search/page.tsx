@@ -6,8 +6,8 @@ import { FilterBar } from "@/src/components/ui/FilterBar";
 import { itemPaginated } from "@/src/api/endpoints/item";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
-import { useState, useRef, useEffect } from "react";
-import { SearchRequest, FilterType } from "@/src/types/item";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { SearchRequest, FilterType, Item } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 
 export default function SearchPage() {
@@ -26,38 +26,50 @@ export default function SearchPage() {
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
     const filterRef = useRef<HTMLDivElement>(null);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
 
     const toggleFilter = () => setShowFilters((prev) => !prev);
 
-    const handleCategorySelection = (categories: string[]) => {
-        setFilters((prev) => ({ ...prev, category: categories }));
+    const fetchItems = useCallback(
+        async (reset = false) => {
+            if (loading) return;
+            setLoading(true);
+
+            const data = await itemPaginated(filters);
+
+            setResults((prev) => {
+                const combined = reset ? data : [...prev, ...data];
+
+                const unique = Array.from(
+                    new Map(combined.map((item) => [item.id, item])).values()
+                );
+
+                return unique;
+            });
+
+            setHasMore(data.length === filters.size);
+            setLoading(false);
+        },
+        [filters, loading]
+    );
+
+    const updateFilters = (patch: Partial<SearchRequest>) => {
+        setFilters((prev) => ({ ...prev, ...patch, page: 0 }));
     };
 
-    const handleDateChange = (start: Date | null, end: Date | null) => {
-        setFilters((prev) => ({ ...prev, dateStart: start, dateEnd: end }));
-    };
+    const handleCategorySelection = (categories: string[]) =>
+        updateFilters({ category: categories });
 
-    useEffect(() => {
-        handleSubmit();
-    }, []);
+    const handleDateChange = (start: Date | null, end: Date | null) =>
+        updateFilters({ dateStart: start, dateEnd: end });
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
-                setShowFilters(false);
-            }
-        };
+    const handleToggleChange = () =>
+        updateFilters({ donation: !filters.donation });
 
-        if (showFilters) {
-            document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [showFilters]);
+    const handleNumberChange = (lastDays: number | null) =>
+        updateFilters({ lastDays });
 
     const handleCleanFilters = () => {
         setFilters({
@@ -73,35 +85,57 @@ export default function SearchPage() {
         setActiveFilters([]);
     };
 
-    const handleSubmit = async () => {
-        const result = await itemPaginated(filters);
-        const activeFilters: FilterType[] = [];
-        if (filters.category.length !== 0) {
-            activeFilters.push("categoria");
-        }
-        if (filters.dateStart !== null && filters.dateEnd !== null) {
-            activeFilters.push("data");
-        }
-        if (filters.donation) {
-            activeFilters.push("donation");
-        }
-        if (filters.lastDays != null) {
-            activeFilters.push("lastDays");
-        }
+    useEffect(() => {
+        fetchItems(true);
+    }, []);
 
-        setActiveFilters(activeFilters);
-        setResults(result || []);
-    };
-    const handleToggleChange = () => {
-        setFilters((prev) => ({ ...prev, donation: !prev.donation }));
-    };
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+                setShowFilters(false);
+            }
+        };
+        if (showFilters) {
+            document.addEventListener("mousedown", handleClickOutside);
+        } else {
+            document.removeEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showFilters]);
 
-    const handleNumberChange = (lastDays: number | null) => {
-        setFilters((prev) => ({ ...prev, lastDays }));
-    }
+    useEffect(() => {
+        const el = scrollAreaRef.current;
+        if (!el) return;
+        const handleScroll = () => {
+            if (loading || !hasMore) return;
+            const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
+            if (nearBottom) {
+                setFilters((prev) => ({ ...prev, page: prev.page + 1 }));
+            }
+        };
+        el.addEventListener("scroll", handleScroll);
+        return () => el.removeEventListener("scroll", handleScroll);
+    }, [loading, hasMore]);
+
+    useEffect(() => {
+        const af: FilterType[] = [];
+        if (filters.category.length) af.push("categoria");
+        if (filters.dateStart && filters.dateEnd) af.push("data");
+        if (filters.donation) af.push("donation");
+        if (filters.lastDays != null) af.push("lastDays");
+        setActiveFilters(af);
+    }, [filters]);
+
+    useEffect(() => {
+        if (filters.page > 0) {
+            fetchItems(false);
+        }
+    }, [filters.page]);
 
     return (
-        <section className="flex flex-col flex-1 min-h-0 p-5">
+        <section className="flex flex-col flex-1 min-h-0 p-5 pb-0">
             <SearchBar />
 
             <div className="relative mt-2 flex flex-col flex-1 min-h-0">
@@ -116,10 +150,10 @@ export default function SearchPage() {
                 <div
                     id="filterForm"
                     ref={filterRef}
-                    className={`absolute top-0 left-0 right-0 z-50 lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
+                    className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 md:bg-transparent lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
                         ? "opacity-100 scale-100 translate-y-0"
                         : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                        }`}
+                    }`}
                 >
                     <div className="filter-scroll overscroll-y-contain touch-pan-y rounded-xl bg-white dark:bg-neutral-900">
                         <SearchFilter
@@ -127,7 +161,7 @@ export default function SearchPage() {
                             handleDateSelection={handleDateChange}
                             handleNumberChange={handleNumberChange}
                             handleToggleChange={handleToggleChange}
-                            handleSubmit={handleSubmit}
+                            handleSubmit={() => fetchItems(true)}
                             handleCleanFilters={handleCleanFilters}
                         />
                     </div>
@@ -135,19 +169,26 @@ export default function SearchPage() {
 
                 <h2 className="mt-4 text-lg font-bold">Resultados da busca</h2>
 
-                <ScrollableArea className="pt-4 mt-4">
-                    {results && results.length > 0 ? (<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center">
-                        {
-                            results.map((item, idx) => (
+                <ScrollableArea ref={scrollAreaRef} className="pt-4 mt-4">
+                    {results.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center">
+                            {results.map((item) => (
                                 <ItemCard
-                                    key={item.id || idx}
+                                    key={item.id}
                                     picture={item.picture}
                                     description={item.description}
                                 />
-                            ))
-                        }
-                    </div>) : (<SearchNotFound />)}
+                            ))}
+                        </div>
+                    ) : (
+                        !loading && <SearchNotFound />
+                    )}
 
+                    {loading && (
+                        <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
+                            Carregando…
+                        </p>
+                    )}
                 </ScrollableArea>
             </div>
         </section>

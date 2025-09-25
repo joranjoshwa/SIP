@@ -79,7 +79,7 @@ export const SearchFilter = ({
             </div>
 
             {/* Buttons */}
-            <div className="mt-20">
+            <div className="mt-10">
                 <Button variant="secondary" onClick={cleanFilters}>
                     Limpar Filtros
                 </Button>

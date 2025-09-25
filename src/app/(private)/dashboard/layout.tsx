@@ -1,64 +1,58 @@
-// dashboard/layout.tsx
 "use client";
 
 import { Logo } from "../../../components/ui/Logo";
 import { SideBarItem } from "../../../components/ui/SideBarItem";
-import { House, HandHeart, CircleUserRound, Search, MoonStar, LogOut, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import {
+    House,
+    HandHeart,
+    CircleUserRound,
+    Search,
+    MoonStar,
+    LogOut,
+    Sun,
+} from "lucide-react";
+import { useTheme } from "@/src/context/ThemeContext";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const [mounted, setMounted] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-        const saved = localStorage.getItem("theme");
-        if (saved === "dark") setDarkMode(true);
-    }, []);
-
-    useEffect(() => {
-        if (!mounted) return;
-        const root = document.documentElement;
-        if (darkMode) {
-            root.classList.add("dark");
-            localStorage.setItem("theme", "dark");
-        } else {
-            root.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-        }
-    }, [darkMode, mounted]);
-
-    const toggleTheme = () => setDarkMode((v) => !v);
+export default function DashboardLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    const { theme, toggleTheme } = useTheme();
+    const darkMode = theme === "dark";
 
     return (
         <div
             className="
-        flex h-screen min-h-0
-        flex-col-reverse md:flex-row
-        bg-white text-gray-900
-        dark:bg-neutral-900 dark:text-neutral-100
-      "
+                flex h-screen min-h-0
+                flex-col-reverse md:flex-row
+                bg-white text-gray-900
+                dark:bg-neutral-900 dark:text-neutral-100
+            "
         >
             <aside
                 className="
-          sticky md:top-0
-          flex md:flex-col
-          w-full md:w-[368px]
-          h-auto md:h-screen
-          bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
-          px-4 py-4 md:pt-16 md:pl-16
-        "
+                    sticky md:top-0
+                    flex md:flex-col
+                    w-full md:w-[368px]
+                    h-auto md:h-screen
+                    bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
+                    px-4 py-4 md:pt-16 md:pl-16
+                "
             >
                 <div className="hidden md:flex items-center gap-2 px-4 py-4 mb-8">
-                    <Logo imageClassName="w-[87px] h-8" mode={darkMode ? "dark" : "light"} />
+                    <Logo
+                        imageClassName="w-[87px] h-8"
+                        mode={darkMode ? "dark" : "light"}
+                    />
                 </div>
 
                 <nav className="flex-1 px-2">
                     <ul
                         className="
-              flex flex-row justify-between md:flex-col
-              space-x-3 md:space-x-0 md:space-y-3
-            "
+                            flex flex-row justify-between md:flex-col
+                            space-x-3 md:space-x-0 md:space-y-3
+                        "
                     >
                         <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                         <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
@@ -87,7 +81,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
             <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
                 <div className="block md:hidden flex items-center justify-center gap-2 px-4 py-4 pt-8 mb-0">
-                    <Logo imageClassName="h-6 md:w-[87px] md:h-8" mode={darkMode ? "dark" : "light"} />
+                    <Logo
+                        imageClassName="h-6 md:w-[87px] md:h-8"
+                        mode={darkMode ? "dark" : "light"}
+                    />
                 </div>
                 {children}
             </main>
