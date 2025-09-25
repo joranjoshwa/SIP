@@ -6,6 +6,7 @@ import { ItemCarousel } from "../../../components/ui/ItemCarousel";
 import { useEffect, useState } from "react";
 import { CarouselItem, Item, UUID } from "../../../types/item";
 import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoints/item";
+import { CategoryKey } from "@/src/constants/categories";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
@@ -18,14 +19,14 @@ const mapToCarouselItem = (dto: Item): CarouselItem => ({
 export default function DashboardPage() {
     const [itemsLast48Hours, setItemsLast48Hours] = useState<CarouselItem[]>([]);
     const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
-    const [chosenCategory, setChosenCategory] = useState("");
+    const [chosenCategory, setChosenCategory] = useState<CategoryKey | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const handleCategorySelection = (category: string) => {
+    const handleCategorySelection = (category: CategoryKey | null) => {
         if (category !== chosenCategory) {
             setChosenCategory(category);
         } else {
-            setChosenCategory("");
+            setChosenCategory(null);
         }
     };
 
@@ -36,7 +37,7 @@ export default function DashboardPage() {
     ) => {
         try {
             setLoading(true);
-            const res = await fetcher(chosenCategory);
+            const res = await fetcher(chosenCategory ? chosenCategory : "");
             const dtos: Item[] = res as Item[];
             setter(dtos.map(mapper));
         } catch (err) {
@@ -74,7 +75,7 @@ export default function DashboardPage() {
             </header>
 
             <section className="p-5 pt-0 md:pt-5">
-                <CategoryItem setCategory={handleCategorySelection} />
+                <CategoryItem handleCategorySelection={handleCategorySelection} />
 
                 <div className="py-1 pt-4">
                     <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} />

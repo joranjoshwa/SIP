@@ -4,11 +4,11 @@ import { useState } from "react";
 import { categories, CategoryKey } from "@/src/constants/categories";
 
 type CategoryItemProps = {
-    setCategory: (category: CategoryKey | null) => void;
+    handleCategorySelection: (category: CategoryKey | null) => void;
     onSelect?: (key: CategoryKey | null) => void;
 };
 
-export const CategoryItem = ({ onSelect, setCategory }: CategoryItemProps) => {
+export const CategoryItem = ({ onSelect, handleCategorySelection }: CategoryItemProps) => {
     const [activeCat, setActiveCat] = useState<CategoryKey | null>(null);
 
     const activeRing =
@@ -17,7 +17,7 @@ export const CategoryItem = ({ onSelect, setCategory }: CategoryItemProps) => {
     const handleClick = (key: CategoryKey) => {
         const newActive = activeCat === key ? null : key;
         setActiveCat(newActive);
-        setCategory(newActive);
+        handleCategorySelection(newActive);
         onSelect?.(newActive);
     };
 

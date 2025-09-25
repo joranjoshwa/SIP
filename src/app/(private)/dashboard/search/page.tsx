@@ -8,6 +8,7 @@ import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
 import { useState, useRef, useEffect } from "react";
 import { SearchRequest, FilterType } from "@/src/types/item";
+import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 
 export default function SearchPage() {
     const [filters, setFilters] = useState<SearchRequest>({
@@ -84,7 +85,7 @@ export default function SearchPage() {
         if (filters.donation) {
             activeFilters.push("donation");
         }
-        if(filters.lastDays != null) {
+        if (filters.lastDays != null) {
             activeFilters.push("lastDays");
         }
 
@@ -135,8 +136,8 @@ export default function SearchPage() {
                 <h2 className="mt-4 text-lg font-bold">Resultados da busca</h2>
 
                 <ScrollableArea className="pt-4 mt-4">
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center">
-                        {results && results.length > 0 ? (
+                    {results && results.length > 0 ? (<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center">
+                        {
                             results.map((item, idx) => (
                                 <ItemCard
                                     key={item.id || idx}
@@ -144,10 +145,9 @@ export default function SearchPage() {
                                     description={item.description}
                                 />
                             ))
-                        ) : (
-                            <p>Faça uma pesquisa</p>
-                        )}
-                    </div>
+                        }
+                    </div>) : (<SearchNotFound />)}
+
                 </ScrollableArea>
             </div>
         </section>

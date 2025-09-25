@@ -63,8 +63,8 @@ export const SearchCategorySelect = forwardRef<
                             >
                                 <Icon
                                     className={`h-6 w-6 ${isSelected
-                                            ? "text-black dark:text-white"
-                                            : "text-gray-600 dark:text-gray-300"
+                                        ? "text-black dark:text-white"
+                                        : "text-gray-600 dark:text-gray-300"
                                         }`}
                                 />
                             </button>
