@@ -6,6 +6,7 @@ import { ItemCarousel } from "../../../components/ui/ItemCarousel";
 import { useEffect, useState } from "react";
 import { CarouselItem, Item, UUID } from "../../../types/item";
 import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoints/item";
+import { useRouter } from "next/navigation";
 import { CategoryKey } from "@/src/constants/categories";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
@@ -21,6 +22,8 @@ export default function DashboardPage() {
     const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
     const [chosenCategory, setChosenCategory] = useState<CategoryKey | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const router = useRouter();
 
     const handleCategorySelection = (category: CategoryKey | null) => {
         if (category !== chosenCategory) {
