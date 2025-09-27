@@ -9,6 +9,19 @@
     --foreground: #000000;
 }
 
+.custom-date-input::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 .dark {
     --background: #0F0F0F;
     --foreground: #f8fafc;
@@ -16,4 +29,19 @@
 
 body {
     @apply bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300;
-  }
+}
+
+
+@media (max-height: 740px) {
+    .filter-scroll {
+        max-height: 65svh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        touch-action: pan-y;
+    }
+    .filter-scroll::-webkit-scrollbar {
+        display: none;
+    }
+}

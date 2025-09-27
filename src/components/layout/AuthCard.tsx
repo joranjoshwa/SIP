@@ -19,9 +19,8 @@ export const AuthCard = ({
     return (
         <div className={`flex flex-col items-center justify-center min-h-screen
             px-2 ${className}`}>
-            
-            <div className="w-full max-w-sm bg-white p-6 rounded-2xl
-                            dark:bg-[#0F0F0F]">
+
+            <div className="w-full max-w-sm p-6 rounded-2xl">
 
                 {headerContent  && <div className="flex justify-center mb-4">{headerContent}</div>}
 

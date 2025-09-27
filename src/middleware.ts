@@ -1,52 +1,27 @@
 import { NextResponse, type MiddlewareConfig, type NextRequest } from "next/server";
 import { isTokenExpired } from "./utils/token";
 
-const publicRoutes = [
-    { path: "/", whenAuthenticated: "redirect" },
-    { path: "/login", whenAuthenticated: "redirect" },
-    { path: "/signup", whenAuthenticated: "redirect" },
-    { path: "/recover-password", whenAuthenticated: "redirect" },
-    { path: "/forgot-password", whenAuthenticated: "redirect" },
-    { path: "/verification", whenAuthenticated: "redirect" },
-] as const;
+const publicRoutes = new Set([
+    "/", "/login", "/signup", "/recover-password", "/forgot-password", "/verification"
+]);
 
 const REDIRECT_WHEN_NOT_AUTHENTICATED = "/login";
 const AUTHENTICATED_HOME = "/dashboard";
 
 export function middleware(request: NextRequest) {
-    const path = request.nextUrl.pathname;
-    const publicRoute = publicRoutes.find((route) => route.path === path);
+    const { pathname } = request.nextUrl;
     const authToken = request.cookies.get("token")?.value;
+    const isPublicRoute = publicRoutes.has(pathname);
 
-    if (!authToken && publicRoute) {
-        return NextResponse.next();
-    }
-
-    if (!authToken && !publicRoute) {
-        if (path !== REDIRECT_WHEN_NOT_AUTHENTICATED) {
-            const redirectUrl = request.nextUrl.clone();
-            redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED;
-            return NextResponse.redirect(redirectUrl);
+    if (!authToken || (authToken && isTokenExpired(authToken))) {
+        if (!isPublicRoute) {
+            return NextResponse.redirect(new URL(REDIRECT_WHEN_NOT_AUTHENTICATED, request.url));
         }
         return NextResponse.next();
     }
 
-    if (authToken && isTokenExpired(authToken)) {
-        if (path !== REDIRECT_WHEN_NOT_AUTHENTICATED) {
-            const redirectUrl = request.nextUrl.clone();
-            redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED;
-            return NextResponse.redirect(redirectUrl);
-        }
-        return NextResponse.next();
-    }
-
-    if (authToken && publicRoute?.whenAuthenticated === "redirect") {
-        if (path !== AUTHENTICATED_HOME) {
-            const redirectUrl = request.nextUrl.clone();
-            redirectUrl.pathname = AUTHENTICATED_HOME;
-            return NextResponse.redirect(redirectUrl);
-        }
-        return NextResponse.next();
+    if (isPublicRoute) {
+        return NextResponse.redirect(new URL(AUTHENTICATED_HOME, request.url));
     }
 
     return NextResponse.next();

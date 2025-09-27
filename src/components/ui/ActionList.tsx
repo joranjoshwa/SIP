@@ -1,7 +1,8 @@
-import { Box, Key, Moon, LogOut } from "lucide-react";
+import { Box, Key, Moon, LogOut, Sun } from "lucide-react";
 import { Button } from "./Button";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useTheme } from "@/src/context/ThemeContext";
 
 type Action = {
     key: string;
@@ -13,12 +14,33 @@ type Action = {
 export const ActionList = () => {
     const { logout } = useAuth();
     const router = useRouter();
+    const { theme, toggleTheme } = useTheme();
 
     const actions: Action[] = [
-        { key: "history", label: "Histórico de itens", Icon: Box },
-        { key: "password", label: "Alterar senha", Icon: Key, onClick: () => router.push("change-password") },
-        { key: "theme", label: "Alterar tema", Icon: Moon },
-        { key: "logout", label: "Sair da conta", Icon: LogOut, onClick: logout },
+        {
+            key: "history",
+            label: "Histórico de itens",
+            Icon: Box,
+            onClick: () => router.push("/dashboard/history"),
+        },
+        {
+            key: "password",
+            label: "Alterar senha",
+            Icon: Key,
+            onClick: () => router.push("/dashboard/change-password"),
+        },
+        {
+            key: "theme",
+            label: `Alterar tema`,
+            Icon: theme === "dark" ? Moon : Sun,
+            onClick: toggleTheme,
+        },
+        {
+            key: "logout",
+            label: "Sair da conta",
+            Icon: LogOut,
+            onClick: () => logout("/login"),
+        },
     ];
 
     return (
@@ -36,4 +58,4 @@ export const ActionList = () => {
             ))}
         </div>
     );
-}
+};
