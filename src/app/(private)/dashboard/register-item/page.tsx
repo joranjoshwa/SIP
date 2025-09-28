@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
@@ -9,37 +11,31 @@ export default function RegisterLostItem() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: implementar lógica para registrar item
         console.log("Item registrado!");
     };
 
     return (
-        <main className="w-full flex flex-col">
-            {/* Header */}
+        <main className="w-full flex flex-col px-4 py-4 md:ml-3 md:pl-6 pb-[90px] md:pb-0">
             <h1 className="text-lg md:text-xl font-semibold mb-4">
                 Registrar novo item perdido
             </h1>
 
-            {/* Formulário */}
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col gap-4 md:gap-6 max-w-3xl"
+                className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
             >
-                {/* Nome */}
                 <InputField
                     label="Nome"
                     placeholder="Ex.: Marmita rosa com amarelo pequena"
                     required
                 />
 
-                {/* Descrição */}
                 <InputField
                     label="Descrição"
                     placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
                     required
                 />
 
-                {/* Local */}
                 <div className="flex flex-col w-full">
                     <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                         Local onde foi encontrado
@@ -56,21 +52,18 @@ export default function RegisterLostItem() {
                     </select>
                 </div>
 
-                {/* Nome de quem encontrou */}
                 <InputField
                     label="Nome de quem encontrou"
                     placeholder="Digite o nome"
                     required
                 />
 
-                {/* Data */}
                 <InputField
                     label="Dia que encontraram"
                     type="date"
                     required
                 />
 
-                {/* Categorias */}
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Categoria
@@ -78,7 +71,6 @@ export default function RegisterLostItem() {
                     <CategoryItem handleCategorySelection={setSelectedCategory} />
                 </div>
 
-                {/* Imagem */}
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Imagem do item
@@ -90,13 +82,12 @@ export default function RegisterLostItem() {
                     />
                 </div>
 
-                {/* Botões */}
                 <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
-                    <Button variant="secondary" className="md:w-40">
-                        Cancelar
-                    </Button>
                     <Button variant="primary" className="md:w-40">
                         Registrar item
+                    </Button>
+                    <Button variant="secondary" className="md:w-40">
+                        Cancelar
                     </Button>
                 </div>
             </form>
