@@ -91,3 +91,14 @@ export const createItem = async (data: CreateItemRequest): Promise<ItemResponse>
     const response = await api.post<ItemResponse>("/items/admin/create", data);
     return response.data;
 }
+
+export const uploadItemImage = async (itemId: string, file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await api.post(`/items/admin/images/${itemId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+};
