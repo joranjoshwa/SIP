@@ -1,17 +1,46 @@
 "use client"
 
+import { createItem } from "@/src/api/endpoints/item";
 import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey } from "@/src/constants/categories";
+import { Area, Category, CreateItemRequest, DayPeriod } from "@/src/types/item";
 import { useState } from "react";
 
 export default function RegisterLostItem() {
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
+    const [description, setDescription] = useState("");
+    const [findingDate, setFindingDate] = useState("");
+    const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
+    const [category, setCategory] = useState<Category | null>(null);
+    const [area, setArea] = useState<Area | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Item registrado!");
+
+        if (!selectedCategory || !area) {
+            alert("Por favor, selecione a categoria e o local");
+            return;
+        }
+
+        const payload: CreateItemRequest = {
+            description,
+            finding_date: findingDate,
+            day_period: dayPeriod,
+            category: selectedCategory,
+            area,
+        };
+
+        try {
+            const created = await createItem(payload);
+            console.log("Item registrado com sucesso: ", created) // tenho que tirar isso dps
+            alert("Item registrado com sucesso!");
+
+        } catch (error) {
+            console.error("Erro ao registrar item:", error);
+            alert("Erro ao registrar o item.");
+        }
     };
 
     return (
@@ -24,16 +53,13 @@ export default function RegisterLostItem() {
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
             >
-                <InputField
-                    label="Nome"
-                    placeholder="Ex.: Marmita rosa com amarelo pequena"
-                    required
-                />
 
                 <InputField
                     label="Descrição"
                     placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
                     required
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                 />
 
                 <div className="flex flex-col w-full">
@@ -43,26 +69,39 @@ export default function RegisterLostItem() {
                     <select
                         className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
                         required
+                        value={area ?? ""}
+                        onChange={(e) => setArea(e.target.value as Area)}
                     >
                         <option value="">Selecione uma das opções</option>
-                        <option value="biblioteca">Biblioteca</option>
-                        <option value="cantina">Cantina</option>
-                        <option value="sala">Sala de aula</option>
-                        <option value="outro">Outro</option>
+                        <option value="LIBRARY">Biblioteca</option>
+                        <option value="RC">Cantina</option>
+                        <option value="BLOCK_ONE">Sala de aula</option>
+                        <option value="BLOCK_TWO">Outro</option>
                     </select>
                 </div>
-
-                <InputField
-                    label="Nome de quem encontrou"
-                    placeholder="Digite o nome"
-                    required
-                />
 
                 <InputField
                     label="Dia que encontraram"
                     type="date"
                     required
+                    value={findingDate}
+                    onChange={(e) => setFindingDate(e.target.value)}
                 />
+
+                <div className="flex flex-col gap-2">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Período do dia
+                    </label>
+                    <select
+                        value={dayPeriod}
+                        onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
+                        className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    >
+                        <option value="MORNING">Manhã</option>
+                        <option value="AFTERNOON">Tarde</option>
+                        <option value="NIGHT">Noite</option>
+                    </select>
+                </div>
 
                 <div className="flex flex-col gap-2">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
