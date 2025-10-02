@@ -1,5 +1,6 @@
 import { Filter, CalendarDays, Clock, HandHeart } from "lucide-react";
 import { FilterType } from "@/src/types/item";
+import { JSX } from "react/jsx-runtime";
 
 type Props = {
     active: FilterType[];
