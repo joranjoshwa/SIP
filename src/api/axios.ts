@@ -3,7 +3,6 @@ import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "../types/jwt";
 import { isTokenExpired } from "../utils/token";
 
-// ------------------ Cookie Helpers ------------------
 export function getTokenFromCookie(): string | null {
     if (typeof window !== "undefined") {
         const match = document.cookie.match(/(^| )token=([^;]+)/);
@@ -32,7 +31,6 @@ export const extractEmailFromToken = (token: string): string | null => {
     }
 };
 
-// ------------------ Axios Instance ------------------
 export const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
     headers: { "Content-Type": "application/json" },

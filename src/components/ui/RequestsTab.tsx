@@ -8,7 +8,7 @@ type Props = {
 export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
     return (
         <div className="w-full md:w-[90%] rounded-lg pt-3 md:pt-0">
-            <hr className="border-t border-gray-300 dark:border-gray-700" />
+            <hr className="border-t border-gray-300 dark:border-gray-700 md:hidden" />
 
             <h2 className="hidden md:block text-lg font-semibold mb-4">Solicitações</h2>
 

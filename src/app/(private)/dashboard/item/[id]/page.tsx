@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Calendar, MapPin, Tag } from "lucide-react";
+import { Calendar, MapPin, Tag, ClipboardPen } from "lucide-react";
 import { Button } from "@/src/components/ui/Button";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { singleItem } from "@/src/api/endpoints/item";
@@ -20,9 +20,10 @@ type Props = {
 };
 
 export default async function ItemPage({ params }: Props) {
-    const cookieStore = cookies() as unknown as ReadonlyRequestCookies;
+    const cookieStore = await cookies() as unknown as ReadonlyRequestCookies;
     const token = cookieStore.get("token")?.value;
-    const data = await singleItem(params.id, token as string);
+    const { id } = await params;
+    const data = await singleItem(id, token as string);
 
     const item: ItemDTO = data;
     const role = extractRoleFromToken(token as string);
@@ -86,12 +87,22 @@ export default async function ItemPage({ params }: Props) {
                             </span>
                         </div>
 
-                        <h2 className="mt-4 font-semibold text-gray-900 dark:text-gray-100">
+                        <h2 className="mt-4 font-semibold md:text-[20px] text-gray-900 dark:text-gray-100">
                             {item.description}
                         </h2>
 
                         <Button variant="secondary" className={`mt-8 md:w-[100%] ${role !== Role.COMMON ? "hidden" : ""}`}>
                             Reivindicar item
+                        </Button>
+
+                        <Button
+                            variant="primary"
+                            className={`mt-8 text-lg md:w-full ${role !== Role.ADMIN || requestsData.length !== 0 ? "hidden" : ""}`}
+                        >
+                            <div className="flex items-center justify-center gap-2 text-[16px]">
+                                <ClipboardPen className="w-5 h-5" />
+                                <span>Editar item</span>
+                            </div>
                         </Button>
                     </div>
                     <div className={`md:basis-2/5 ${role !== Role.ADMIN ? "hidden" : ""}`}>
