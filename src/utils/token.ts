@@ -64,6 +64,16 @@ export const scheduleTokenExpiryLogout = (
     }
 };
 
+export const extractRoleFromToken = (token: string): string | null => {
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        return decoded.role || null;
+    } catch (err) {
+        console.error("Error extracting role from token: ", err);
+        return null;
+    }
+};
+
 export const logout = () => {
     if (typeof window === "undefined") return;
     localStorage.removeItem("token");

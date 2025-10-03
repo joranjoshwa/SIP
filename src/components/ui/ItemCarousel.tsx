@@ -65,7 +65,7 @@ export function ItemCarousel({ title = "", items = [] }: Props) {
                         key={(item.id as unknown as string) ?? idx}
                         className="snap-start flex-none shrink-0 w-[140px] md:w-[160px]"
                     >
-                        <ItemCard picture={item.picture} description={item.description} time={item.time} />
+                        <ItemCard id={item.id} picture={item.picture} description={item.description} time={item.time} />
                     </div>
                 ))}
             </div>
