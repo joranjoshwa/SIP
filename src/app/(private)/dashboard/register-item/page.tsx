@@ -4,9 +4,10 @@ import { createItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
-import { CategoryKey } from "@/src/constants/categories";
-import { Area, Category, CreateItemRequest, DayPeriod } from "@/src/types/item";
+import { CategoryKey, categoryKeyToCategory } from "@/src/constants/categories";
+import { Area, CreateItemRequest, DayPeriod } from "@/src/types/item";
 import { useState } from "react";
+import { areaLabels } from "@/src/constants/areaLabels";
 
 export default function RegisterLostItem() {
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
@@ -34,18 +35,23 @@ export default function RegisterLostItem() {
             description,
             finding_date: findingDate,
             day_period: dayPeriod,
-            category: selectedCategory,
+            category: categoryKeyToCategory(selectedCategory),
             area,
         };
 
         try {
-            const created = await createItem(payload);
-            console.log("Item registrado com sucesso: ", created) // tenho que tirar isso dps
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Você não está autenticado!");
+                return;
+            }
+
+            const created = await createItem(payload, token);
 
             if (imageFile) {
-                await uploadItemImage(created.id, imageFile);
+                await uploadItemImage(created.itemId, imageFile);
             }
-            
+
             alert("Item registrado com sucesso!");
 
         } catch (error) {
@@ -84,10 +90,11 @@ export default function RegisterLostItem() {
                         onChange={(e) => setArea(e.target.value as Area)}
                     >
                         <option value="">Selecione uma das opções</option>
-                        <option value="LIBRARY">Biblioteca</option>
-                        <option value="RC">Cantina</option>
-                        <option value="BLOCK_ONE">Sala de aula</option>
-                        <option value="BLOCK_TWO">Outro</option>
+                        {Object.entries(areaLabels).map(([key, label]) => (
+                            <option key={key} value={key}>
+                                {label}
+                            </option>
+                        ))}
                     </select>
                 </div>
 

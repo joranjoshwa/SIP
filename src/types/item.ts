@@ -98,12 +98,12 @@ export type CreateItemRequest = {
     description: string;
     finding_date: string; 
     day_period: DayPeriod;
-    category: CategoryKey;
+    category: Category;
     area: Area;
 };
 
 export type ItemResponse = {
-    id: string;
+    itemId: string;
     description: string;
     finding_date: string;
     day_period: DayPeriod;

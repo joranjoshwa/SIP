@@ -9,11 +9,13 @@ import {
     SquareUserRound,
     FileQuestion,
 } from "lucide-react";
+import { Category } from "../types/item";
 
 export const categories = [
     {
         key: "garrafa",
         label: "Garrafa",
+        backend: "BOTTLE" as Category,
         Icon: CupSoda,
         bg: "bg-[#D0F0F9]",
         bgDark: "dark:bg-[#00495D]",
@@ -22,6 +24,7 @@ export const categories = [
     {
         key: "roupa",
         label: "Roupa",
+        backend: "CLOTHING" as Category,
         Icon: Shirt,
         bg: "bg-[#F9D0D0]",
         bgDark: "dark:bg-[#570000]",
@@ -30,6 +33,7 @@ export const categories = [
     {
         key: "eletronico",
         label: "Eletrônico",
+        backend: "ELECTRONIC" as Category,
         Icon: Zap,
         bg: "bg-[#FDF6C2]",
         bgDark: "dark:bg-[#594E00]",
@@ -38,6 +42,7 @@ export const categories = [
     {
         key: "acessorio",
         label: "Acessório",
+        backend: "ACCESSORY" as Category,
         Icon: Glasses,
         bg: "bg-[#D0F9EF]",
         bgDark: "dark:bg-[#005641]",
@@ -46,6 +51,7 @@ export const categories = [
     {
         key: "vasilha",
         label: "Vasilha",
+        backend: "CONTAINER" as Category,
         Icon: Salad,
         bg: "bg-[#D4F9D0]",
         bgDark: "dark:bg-[#064800]",
@@ -54,6 +60,7 @@ export const categories = [
     {
         key: "livro",
         label: "Livro",
+        backend: "BOOK" as Category,
         Icon: BookMarked,
         bg: "bg-[#F9E9D0]",
         bgDark: "dark:bg-[#4A2E00]",
@@ -62,6 +69,7 @@ export const categories = [
     {
         key: "material",
         label: "Material",
+        backend: "SCHOOL_SUPPLY" as Category,
         Icon: NotebookPen,
         bg: "bg-[#E2D0F9]",
         bgDark: "dark:bg-[#21004D]",
@@ -70,6 +78,7 @@ export const categories = [
     {
         key: "documento",
         label: "Documento",
+        backend: "DOCUMENT" as Category,
         Icon: SquareUserRound,
         bg: "bg-[#FFE2F7]",
         bgDark: "dark:bg-[#55003D]",
@@ -78,6 +87,7 @@ export const categories = [
     {
         key: "outros",
         label: "Outros",
+        backend: "OTHER" as Category,
         Icon: FileQuestion,
         bg: "bg-[#EDEDED]",
         bgDark: "dark:bg-[#4B0000]",
@@ -86,3 +96,9 @@ export const categories = [
 ] as const;
 
 export type CategoryKey = (typeof categories)[number]["key"];
+
+export const categoryKeyToCategory = (key: CategoryKey): Category => {
+    const found = categories.find((c) => c.key === key);
+    if (!found) throw new Error(`Categoria inválida: ${key}`);
+    return found.backend;
+};

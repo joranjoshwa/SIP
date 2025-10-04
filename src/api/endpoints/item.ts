@@ -87,14 +87,18 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     })) as ItemCard[];
 };
 
-export const createItem = async (data: CreateItemRequest): Promise<ItemResponse> => {
-    const response = await api.post<ItemResponse>("/items/admin/create", data);
+export const createItem = async (data: CreateItemRequest, token: string): Promise<ItemResponse> => {
+    const response = await api.post<ItemResponse>("/items/admin/create", data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
     return response.data;
-}
+};
 
 export const uploadItemImage = async (itemId: string, file: File): Promise<void> => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("itemImages", file);
 
     await api.post(`/items/admin/images/${itemId}`, formData, {
         headers: {
