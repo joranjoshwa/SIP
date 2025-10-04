@@ -53,6 +53,13 @@ export default function RegisterLostItem() {
             }
 
             alert("Item registrado com sucesso!");
+            
+            setDescription("");
+            setFindingDate("");
+            setDayPeriod("MORNING");
+            setSelectedCategory(null);
+            setArea(null);
+            setImageFile(null);
 
         } catch (error) {
             console.error("Erro ao registrar item:", error);
