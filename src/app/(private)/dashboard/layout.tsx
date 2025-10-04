@@ -32,28 +32,18 @@ export default function DashboardLayout({
         >
             <aside
                 className="
-                    sticky md:top-0
-                    flex md:flex-col
-                    w-full md:w-[368px]
-                    h-auto md:h-screen
-                    bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
-                    px-4 py-4 md:pt-16 md:pl-16
-                "
+          hidden md:flex md:flex-col
+          w-[368px] h-screen
+          bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
+          px-4 py-4 md:pt-16 md:pl-16
+        "
             >
-                <div className="hidden md:flex items-center gap-2 px-4 py-4 mb-8">
-                    <Logo
-                        imageClassName="w-[87px] h-8"
-                        mode={darkMode ? "dark" : "light"}
-                    />
+                <div className="flex items-center gap-2 px-4 py-4 mb-8">
+                    <Logo imageClassName="w-[87px] h-8" mode={darkMode ? "dark" : "light"} />
                 </div>
 
                 <nav className="flex-1 px-2">
-                    <ul
-                        className="
-                            flex flex-row justify-between md:flex-col
-                            space-x-3 md:space-x-0 md:space-y-3
-                        "
-                    >
+                    <ul className="flex flex-col space-y-3">
                         <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                         <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
                         <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
@@ -61,7 +51,7 @@ export default function DashboardLayout({
                     </ul>
                 </nav>
 
-                <div className="px-2 pb-4 pt-2 hidden md:block">
+                <div className="px-2 pb-4 pt-2">
                     <ul className="space-y-3">
                         <SideBarItem
                             icon={darkMode ? Sun : MoonStar}
@@ -88,6 +78,15 @@ export default function DashboardLayout({
                 </div>
                 {children}
             </main>
+
+            <div className="fixed bottom-0 left-0 w-full md:hidden bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700 z-50">
+                <nav className="flex justify-around py-2">
+                    <SideBarItem icon={House} text="" href="/dashboard" isMobile exact />
+                    <SideBarItem icon={HandHeart} text="" href="/dashboard/donation" isMobile exact />
+                    <SideBarItem icon={CircleUserRound} text="" href="/dashboard/profile" isMobile exact />
+                    <SideBarItem icon={Search} text="" href="/dashboard/search" isMobile exact />
+                </nav>
+            </div>
         </div>
     );
 }

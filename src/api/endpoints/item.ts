@@ -1,4 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -85,4 +85,24 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
         description: item.description,
         picture: item.pictures[0],
     })) as ItemCard[];
+};
+
+export const createItem = async (data: CreateItemRequest, token: string): Promise<ItemResponse> => {
+    const response = await api.post<ItemResponse>("/items/admin/create", data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
+export const uploadItemImage = async (itemId: string, file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append("itemImages", file);
+
+    await api.post(`/items/admin/images/${itemId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
 };

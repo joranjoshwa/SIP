@@ -10,6 +10,7 @@ type Props = {
     exact?: boolean;
     onClick?: () => void;
     className?: string;
+    isMobile?: boolean;
 };
 
 export const SideBarItem = ({
@@ -19,6 +20,7 @@ export const SideBarItem = ({
     onClick,
     className = "",
     exact = false,
+    isMobile
 }: Props) => {
     const pathname = usePathname();
 
@@ -35,6 +37,7 @@ export const SideBarItem = ({
 
     const combined = [
         base,
+        isMobile ? "p-2" : "px-3 py-2 text-md font-medium",
         isActive ? "text-black" : "text-gray-700",
         "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
         "dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white",
@@ -44,20 +47,20 @@ export const SideBarItem = ({
 
     if (href) {
         return (
-            <li>
+            <li className="list-none">
                 <Link href={href} className={combined}>
                     <Icon className={`h-7 w-7 opacity-70 group-hover:opacity-100`} />
-                    <span className="hidden md:block">{text}</span>
+                    {!isMobile && <span className="hidden md:block">{text}</span>}
                 </Link>
             </li>
         );
     }
 
     return (
-        <li>
+        <li className="list-none">
             <button onClick={onClick} className={combined}>
                 <Icon className="h-7 w-7 opacity-70 group-hover:opacity-100" />
-                <span className="hidden md:block">{text}</span>
+                {!isMobile && <span className="hidden md:block">{text}</span>}
             </button>
         </li>
     );
