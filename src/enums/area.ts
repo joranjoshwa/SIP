@@ -1,0 +1,14 @@
+export enum Area {
+    REFEITORIO_CENTRAL = "RC",
+    BLOCO_1 = "BLOCK_ONE",
+    BLOCO_2 = "BLOCK_TWO",
+    BLOCO_3 = "BLOCK_THREE",
+    BLOCO_4 = "BLOCK_FOUR",
+    BLOCO_5 = "BLOCK_FIVE",
+    BLOCO_6 = "BLOCK_SIX",
+    BLOCO_7 = "BLOCK_SEVEN",
+    BLOCO_8 = "BLOCK_EIGHT",
+    BLOCO_9 = "BLOCK_NINE",
+    BIBLIOTECA = "LIBRARY",
+    SALA_DE_VIDEO = "VIDEO_ROOM",
+}
