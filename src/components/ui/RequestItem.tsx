@@ -29,13 +29,11 @@ export function RequestItem({ requestItem, onApprove, onReject, itemStatus }: Pr
             {requestItem.status === "PENDING" && itemStatus === ItemStatus.DISPONIBLE && (
                 <div className="flex gap-2">
                     <button
-                        //onClick={() => onReject?.(request.id)}
                         className="text-red-600 hover:text-red-800"
                     >
                         <X className="w-8 h-8" />
                     </button>
                     <button
-                        //onClick={() => onApprove?.(request.id)}
                         className="text-green-600 hover:text-green-800"
                     >
                         <Check className="w-8 h-8" />
