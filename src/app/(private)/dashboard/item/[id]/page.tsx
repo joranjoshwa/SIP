@@ -13,6 +13,7 @@ import { RequestsTab } from "@/src/components/ui/RequestsTab";
 import { extractRoleFromToken } from "@/src/utils/token";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { Role } from "@/src/enums/role";
+import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 
 
 type Props = {
@@ -110,6 +111,7 @@ export default async function ItemPage({ params }: Props) {
                     </div>
                 </div>
             </ScrollableArea>
+            <AdminActionsMobile />
         </div>
     );
 }

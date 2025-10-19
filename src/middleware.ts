@@ -3,7 +3,7 @@ import { isTokenExpired, extractRoleFromToken } from "./utils/token";
 import { Role } from "./enums/role";
 
 const PUBLIC_ROUTES = ["/", "/login", "/signup", "/recover-password", "/forgot-password", "/verification"];
-const ADMIN_PREFIXES = ["/dashboard/schedule"];
+const ADMIN_PREFIXES = ["/dashboard/schedule", "/dashboard/requests", "dashboard/schedule/new-block", "/dashboard/items/new"];
 
 const LOGIN = "/login";
 const DASHBOARD = "/dashboard";

@@ -15,7 +15,7 @@ import {
 import { useTheme } from "@/src/context/ThemeContext";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
-
+import { AdminActions } from "@/src/components/ui/AdminActions";
 export default function DashboardLayout({
     children,
 }: {
@@ -54,35 +54,27 @@ export default function DashboardLayout({
                 <nav className="flex-1 px-2">
                     <ul
                         className="
-                            flex flex-row justify-between md:flex-col
-                            space-x-3 md:space-x-0 md:space-y-3
+                        flex flex-row justify-between md:flex-col
+                        space-x-3 md:space-x-0 md:space-y-3
                         "
                     >
+                        <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
+                        <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
+
                         {role === Role.COMMON && (
-                        <>
-                            <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                             <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
-                            <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                            <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
-                        </>
                         )}
 
                         {role === Role.ADMIN && (
-                        <>
-                            <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
-                            <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
-                            <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                            <SideBarItem icon={Calendar1} text="Horários" href="/dashboard/schedule" exact />
-                            <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
-                        </>
+                            <>
+                                <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
+                                <SideBarItem icon={Calendar1} text="Horários" href="/dashboard/schedule" exact />
+                                <AdminActions />
+                            </>
                         )}
-
                         {role === Role.ROOT && (
-                        <>
-                            <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
-                            <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                            <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
-                        </>
+                            <></>
                         )}
                     </ul>
                 </nav>
@@ -93,13 +85,13 @@ export default function DashboardLayout({
                             icon={darkMode ? Sun : MoonStar}
                             text={darkMode ? "Tema claro" : "Tema escuro"}
                             onClick={toggleTheme}
-                            className="text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                            className="text-gray-700 hover:bg-gray-100 dark:text-neutral-300 dark:hover:bg-neutral-800 w-full"
                         />
                         <SideBarItem
                             icon={LogOut}
                             text="Sair"
                             onClick={() => logout()}
-                            className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                            className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 w-full"
                         />
                     </ul>
                 </div>
@@ -112,6 +104,7 @@ export default function DashboardLayout({
                         mode={darkMode ? "dark" : "light"}
                     />
                 </div>
+
                 {children}
             </main>
         </div>
