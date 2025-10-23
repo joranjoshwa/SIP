@@ -64,6 +64,15 @@ export const scheduleTokenExpiryLogout = (
     }
 };
 
+export function getTokenFromCookie(): string | null {
+    if (typeof window !== "undefined") {
+        const match = document.cookie.match(/(^| )token=([^;]+)/);
+        return match ? match[2] : null;
+    }
+
+    return null;
+}
+
 export const extractRoleFromToken = (token: string): string | null => {
     try {
         const decoded = jwtDecode<JwtPayload>(token);
@@ -74,8 +83,8 @@ export const extractRoleFromToken = (token: string): string | null => {
     }
 };
 
-export const logout = () => {
+export function logout(): void {
     if (typeof window === "undefined") return;
-    localStorage.removeItem("token");
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     window.location.href = "/login";
-};
+}

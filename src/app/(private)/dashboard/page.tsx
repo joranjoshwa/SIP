@@ -8,6 +8,7 @@ import { CarouselItem, Item, UUID } from "../../../types/item";
 import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoints/item";
 import { useRouter } from "next/navigation";
 import { CategoryKey } from "@/src/constants/categories";
+import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
@@ -104,6 +105,8 @@ export default function DashboardPage() {
                     )}
                 </div>
             </section>
+
+            <AdminActionsMobile />
         </>
     );
 }

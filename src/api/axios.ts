@@ -1,16 +1,8 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "../types/jwt";
-import { isTokenExpired } from "../utils/token";
+import { isTokenExpired, getTokenFromCookie } from "../utils/token";
 
-export function getTokenFromCookie(): string | null {
-    if (typeof window !== "undefined") {
-        const match = document.cookie.match(/(^| )token=([^;]+)/);
-        return match ? match[2] : null;
-    }
-
-    return null;
-}
 
 export const extractEmailFromToken = (token: string): string | null => {
     try {
