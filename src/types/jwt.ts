@@ -5,5 +5,6 @@ export type JwtPayload = {
     type?: TokenType;
     exp?: number;
     iat?: number;
+    role: string;
     [key: string]: any;
 };

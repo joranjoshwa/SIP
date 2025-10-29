@@ -47,7 +47,10 @@ export interface ItemDTO {
     area: Area;
     dateReturned: string | null;
     code: string;
-    pictures: string[];
+    pictures: {
+        url: string | null,
+        id: UUID,
+    }[];
     owner: null | {
         id?: string;
         name?: string;
@@ -58,7 +61,7 @@ export type UUID = string;
 
 export type CarouselItem = {
     id?: UUID;
-    picture: string;
+    picture: string | null;
     description: string;
     time?: number;
 };
@@ -87,7 +90,8 @@ export type SearchRequest = {
 };
 
 export type ItemCard = {
-    picture: string;
+    id?: UUID;
+    picture: string | null;
     description: string;
     time?: number
 };

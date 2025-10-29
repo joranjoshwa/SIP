@@ -10,6 +10,7 @@ import {
     FileQuestion,
 } from "lucide-react";
 import { Category } from "../types/item";
+import { CategoryEnum } from "../enums/category";
 
 export const categories = [
     {
@@ -94,6 +95,18 @@ export const categories = [
         ring: "ring-[#EDEDED] dark:ring-[#4B0000]",
     },
 ] as const;
+
+export const CategoryLabels: Record<CategoryEnum, string> = {
+    [CategoryEnum.GARRAFA]: "Garrafa",
+    [CategoryEnum.ROUPA]: "Roupa",
+    [CategoryEnum.ELETRONICO]: "Eletrônico",
+    [CategoryEnum.ACESSORIO]: "Acessório",
+    [CategoryEnum.VASILHA]: "Vasilha",
+    [CategoryEnum.LIVRO]: "Livro",
+    [CategoryEnum.MATERIAL]: "Material escolar",
+    [CategoryEnum.DOCUMENTO]: "Documento",
+    [CategoryEnum.OUTROS]: "Outros",
+} as const;
 
 export type CategoryKey = (typeof categories)[number]["key"];
 

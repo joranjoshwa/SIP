@@ -1,4 +1,5 @@
 import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -11,7 +12,7 @@ const getCategoryEnum = (category?: string) => {
 const toCarouselItem = (item: ItemDTO): CarouselItem => ({
     id: item.id,
     description: item.description,
-    picture: item.pictures[0],
+    picture: item.pictures[0]?.url || null,
 });
 
 const fetchItems = async <T extends CarouselItem | ItemCard>(
@@ -27,6 +28,7 @@ const fetchItems = async <T extends CarouselItem | ItemCard>(
     });
 
     const { data }: ItemPage = await api.get(`/items?${search.toString()}`);
+    console.log(data);
     return data.content.map(mapper);
 };
 
@@ -83,7 +85,7 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     return data.content.map((item: ItemDTO) => ({
         id: item.id,
         description: item.description,
-        picture: item.pictures[0],
+        picture: item.pictures[0]?.url || null,
     })) as ItemCard[];
 };
 
@@ -106,3 +108,9 @@ export const uploadItemImage = async (itemId: string, file: File): Promise<void>
         },
     });
 };
+export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
+    const { data } = await api.get<ItemDTO>(`/items/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    return data;
+}

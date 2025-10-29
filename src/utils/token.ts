@@ -64,8 +64,27 @@ export const scheduleTokenExpiryLogout = (
     }
 };
 
-export const logout = () => {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+export function getTokenFromCookie(): string | null {
+    if (typeof window !== "undefined") {
+        const match = document.cookie.match(/(^| )token=([^;]+)/);
+        return match ? match[2] : null;
+    }
+
+    return null;
+}
+
+export const extractRoleFromToken = (token: string): string | null => {
+    try {
+        const decoded = jwtDecode<JwtPayload>(token);
+        return decoded.role || null;
+    } catch (err) {
+        console.error("Error extracting role from token: ", err);
+        return null;
+    }
 };
+
+export function logout(): void {
+    if (typeof window === "undefined") return;
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    window.location.href = "/login";
+}
