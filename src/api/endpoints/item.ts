@@ -94,3 +94,15 @@ export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
     });
     return data;
 }
+
+export const itemForDonation = async (category: string): Promise<CarouselItem[]> => {
+    return fetchItems(
+      {
+        page: 0,
+        size: 10,
+        status: "CHARITY",
+        category: getCategoryEnum(category),
+      },
+      toCarouselItem
+    );
+  };

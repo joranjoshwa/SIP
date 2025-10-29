@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
 import { CarouselItem, Item, UUID } from "@/src/types/item";
+import { itemForDonation } from "@/src/api/endpoints/item";
 
 export default function DonationItems() {
   const router = useRouter();
@@ -17,8 +18,10 @@ export default function DonationItems() {
   const fetchDonationItems = async (category?: string) => {
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800)); 
-      setItems([]); 
+      const data = await itemForDonation(category ?? "");
+      setItems(data);
+    } catch (error) {
+      console.error("Erro ao carregar itens de doação:", error);
     } finally {
       setLoading(false);
     }
@@ -34,7 +37,7 @@ export default function DonationItems() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100">
-      
+
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-white/70 px-5 py-4 backdrop-blur-sm dark:bg-neutral-900/70">
         <button
           onClick={() => router.back()}
@@ -45,12 +48,12 @@ export default function DonationItems() {
         <h1 className="text-lg font-semibold md:text-2xl">Itens para Doação</h1>
       </header>
 
-     
+
       <section className="p-5 pb-0">
         <CategoryItem handleCategorySelection={handleCategorySelection} />
       </section>
 
-      
+
       <section className="p-5 pt-3">
         {loading && (
           <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
