@@ -1,3 +1,5 @@
+import { CategoryKey } from "../constants/categories";
+
 export type PaginatedApiResponse<T> = {
     data: {
         content: T[];
@@ -95,3 +97,22 @@ export type ItemCard = {
 };
 
 export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays";
+
+export type CreateItemRequest = {
+    description: string;
+    finding_date: string; 
+    day_period: DayPeriod;
+    category: Category;
+    area: Area;
+};
+
+export type ItemResponse = {
+    itemId: string;
+    description: string;
+    finding_date: string;
+    day_period: DayPeriod;
+    category: Category;
+    area: Area;
+    createdAt: string;
+    updatedAt: string;
+};
