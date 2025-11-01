@@ -8,6 +8,8 @@ type Props = {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     className?: string;
+    required?: boolean;
+    autoComplete?: string;
 };
 
 export const PasswordField = ({
@@ -15,10 +17,16 @@ export const PasswordField = ({
     placeholder = "************",
     value,
     onChange,
-    className
+    className,
+    required = true,
+    autoComplete = "current-password",
 }: Props) => {
 
     const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     return (
         <InputField
@@ -29,14 +37,17 @@ export const PasswordField = ({
             onChange={onChange}
             icon={<Lock size={18} />}
             className={className}
+            required={required}
+            autoComplete={autoComplete}
         >
 
             <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={togglePasswordVisibility}
                 className="ml-2 text-gray-500"
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
             </button>
 
         </InputField>
