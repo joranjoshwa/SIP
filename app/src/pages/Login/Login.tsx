@@ -118,9 +118,13 @@ export const Login = () => {
     }
 
     return (
-        <>
+        <main role="main">
             <AuthCard
-                headerContent={<Logo className="mb-4" />}
+                headerContent={
+                    <header>
+                        <Logo className="mb-4" />
+                    </header>
+                }
             >
                 <InputField
                     label="Email institucional"
@@ -177,6 +181,6 @@ export const Login = () => {
             </AuthCard>
 
             <Loading isLoading={loading} />
-        </>
+        </main>
     );
 }
