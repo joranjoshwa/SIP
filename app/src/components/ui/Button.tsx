@@ -17,7 +17,7 @@ export const Button = ({
 
     const { theme } = useTheme();
 
-    const baseStyle = "w-full py-3 rounded-xl font-normal text-sm transition-colors";
+    const baseStyle = "w-full py-3 min-h-[48px] rounded-xl font-normal text-sm transition-colors";
 
     const variants = {
         primary: theme === "light" 
