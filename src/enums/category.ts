@@ -1,0 +1,11 @@
+export enum CategoryEnum {
+    GARRAFA = "BOTTLE",
+    ROUPA = "CLOTHING",
+    ELETRONICO = "ELECTRONIC",
+    ACESSORIO = "ACCESSORY",
+    VASILHA = "CONTAINER",
+    LIVRO = "BOOK",
+    MATERIAL = "SCHOOL_SUPPLY",
+    DOCUMENTO = "DOCUMENT",
+    OUTROS = "OTHER",
+}
