@@ -118,9 +118,13 @@ export const Login = () => {
     }
 
     return (
-        <>
+        <main role="main">
             <AuthCard
-                headerContent={<Logo className="mb-4" />}
+                headerContent={
+                    <header>
+                        <Logo className="mb-4" />
+                    </header>
+                }
             >
                 <InputField
                     label="Email institucional"
@@ -130,12 +134,14 @@ export const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required={true}
+                    autoComplete="username"
                 />
 
                 <PasswordField
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required={true}
+                    autoComplete="current-password"
                 />
 
                 {error && (
@@ -175,6 +181,6 @@ export const Login = () => {
             </AuthCard>
 
             <Loading isLoading={loading} />
-        </>
+        </main>
     );
 }

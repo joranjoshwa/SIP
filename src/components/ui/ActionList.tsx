@@ -51,6 +51,7 @@ export const ActionList = () => {
                     variant="primary"
                     onClick={onClick}
                     className="flex items-center justify-center gap-3 md:w-1/2 md:py-2 md:px-3"
+                    aria-label={label}
                 >
                     <Icon size={18} />
                     <span>{label}</span>

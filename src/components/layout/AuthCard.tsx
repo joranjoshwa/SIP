@@ -24,13 +24,8 @@ export const AuthCard = ({
 
                 {headerContent  && <div className="flex justify-center mb-4">{headerContent}</div>}
 
-<<<<<<< HEAD:app/src/components/layout/AuthCard.tsx
                 <h1 className="text-lg font-bold text-left text-gray-900">{title}</h1>
                 <p className="text-sm text-left text-gray-600 mt-1">{subtitle}</p>
-=======
-                <h2 className="text-lg font-bold text-left text-gray-900 dark:text-gray-100">{title}</h2>
-                <p className="text-sm text-left text-gray-600 mt-1 dark:text-gray-300">{subtitle}</p>
->>>>>>> origin/main:src/components/layout/AuthCard.tsx
 
                 <div className="mt-6 space-y-4">{children}</div>
             </div>

@@ -15,7 +15,7 @@ export const Button = ({
     className
 }: Props) => {
 
-    const baseStyle = "w-full py-3 rounded-xl font-medium text-sm transition-colors";
+    const baseStyle = "w-full py-3 min-h-[48px] rounded-xl font-medium text-sm transition-colors";
 
     const variants = {
         primary: "bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white",

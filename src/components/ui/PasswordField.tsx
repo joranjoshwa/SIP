@@ -9,10 +9,7 @@ type Props = {
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     required?: boolean;
-<<<<<<< HEAD:app/src/components/ui/PasswordField.tsx
     autoComplete?: string;
-=======
->>>>>>> origin/main:src/components/ui/PasswordField.tsx
 };
 
 export const PasswordField = ({
@@ -21,12 +18,8 @@ export const PasswordField = ({
     value,
     onChange,
     className,
-<<<<<<< HEAD:app/src/components/ui/PasswordField.tsx
     required = true,
     autoComplete = "current-password",
-=======
-    required = true
->>>>>>> origin/main:src/components/ui/PasswordField.tsx
 }: Props) => {
 
     const [showPassword, setShowPassword] = useState(false);
@@ -45,10 +38,7 @@ export const PasswordField = ({
             icon={<Lock size={18} />}
             className={className}
             required={required}
-<<<<<<< HEAD:app/src/components/ui/PasswordField.tsx
             autoComplete={autoComplete}
-=======
->>>>>>> origin/main:src/components/ui/PasswordField.tsx
         >
 
             <button
