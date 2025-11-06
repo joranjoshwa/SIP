@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Calendar, MapPin, Tag, ClipboardPen } from "lucide-react";
+import { Calendar, MapPin, Tag, ClipboardPen, ImageOff } from "lucide-react";
 import { Button } from "@/src/components/ui/Button";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { singleItem } from "@/src/api/endpoints/item";
@@ -14,7 +14,27 @@ import { extractRoleFromToken } from "@/src/utils/token";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { Role } from "@/src/enums/role";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
+import { ImageSlider } from "@/src/components/ui/ImageSlider";
+import { OpenScheduleButton } from "@/src/components/ui/OpenScheduleButton";
+import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
 
+type ActionState = { status: "idle" | "success" | "error"; message?: string };
+
+async function checkAvailability(_: ActionState, formData: FormData): Promise<ActionState> {
+    "use server";
+
+    const date = formData.get("date") as string | null;
+    const time = formData.get("time") as string | null;
+
+    if (!date || !time) return { status: "error", message: "Missing date/time." };
+
+    const minute = Number((time.split(":")[1] ?? "0"));
+    const ok = minute % 2 === 0;
+
+    return ok
+        ? { status: "success", message: "Request sent successfully!" }
+        : { status: "error", message: "No server available for that date/time." };
+}
 
 type Props = {
     params: { id: string };
@@ -64,13 +84,16 @@ export default async function ItemPage({ params }: Props) {
                 <div className="flex flex-col md:flex-row">
                     <div className="md:basis-3/5">
 
-                        <div className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden">
-                            <Image
-                                src={item.pictures?.[0]?.url || "/placeholder.jpg"}
-                                alt={item.description}
-                                fill
-                                className="object-cover object-left rounded-xl"
-                            />
+                        <div className="relative w-full h-64 md:h-[60vh] rounded-xl overflow-hidden">
+                            {item.pictures?.[0]?.url ? (
+                                <div className="flex items-center">
+                                    <ImageSlider item={item} />
+                                </div>
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
+                                    <ImageOff className="w-20 h-20" />
+                                </div>
+                            )}
                         </div>
 
                         <div className={`flex gap-2 mt-3 flex-wrap text-black`}>
@@ -92,13 +115,17 @@ export default async function ItemPage({ params }: Props) {
                             {item.description}
                         </h2>
 
-                        <Button variant="secondary" className={`mt-8 md:w-[100%] ${role !== Role.COMMON ? "hidden" : ""}`}>
+                        <OpenScheduleButton
+                            channel="item-claim"
+                            className={`mt-8 md:w-[100%]`}
+                            hidden={role !== Role.COMMON}
+                        >
                             Reivindicar item
-                        </Button>
+                        </OpenScheduleButton>
 
                         <Button
                             variant="primary"
-                            className={`mt-8 text-lg md:w-full ${role !== Role.ADMIN || requestsData.length !== 0 ? "hidden" : ""}`}
+                            className={`mt-8 text-lg md:w-full ${role === Role.ADMIN ? "" : "hidden"}`}
                         >
                             <div className="flex items-center justify-center gap-2 text-[16px]">
                                 <ClipboardPen className="w-5 h-5" />
@@ -111,6 +138,7 @@ export default async function ItemPage({ params }: Props) {
                     </div>
                 </div>
             </ScrollableArea>
+            <SchedulePickupModal action={checkAvailability} channel="item-claim" />
             <AdminActionsMobile />
         </div>
     );

@@ -13,6 +13,7 @@ import {
     Sun,
 } from "lucide-react";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useEffect, useState } from "react";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
@@ -23,7 +24,15 @@ export default function DashboardLayout({
 }) {
     const { theme, toggleTheme } = useTheme();
     const darkMode = theme === "dark";
-    const role = extractRoleFromToken(localStorage.getItem("token") as string);
+
+    const [role, setRole] = useState<Role | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setRole(extractRoleFromToken(token) as Role);
+        }
+    }, []);
 
     return (
         <div
