@@ -8,7 +8,7 @@ import { Area, DayPeriod } from "@/src/types/item";
 import { useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 
-export default function EditLostItem() {
+export default function EditItem() {
 
     const [name, setName] = useState("Marmita rosa com amarelo pequena");
     const [description, setDescription] = useState(
