@@ -10,31 +10,64 @@ import { CategoryEnum } from "@/src/enums/category";
 import { CategoryLabels } from "@/src/constants/categories";
 import { AreaLabels } from "@/src/constants/area";
 import { RequestsTab } from "@/src/components/ui/RequestsTab";
-import { extractRoleFromToken } from "@/src/utils/token";
+import { extractRoleFromToken, extractEmailFromToken } from "@/src/utils/token";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { Role } from "@/src/enums/role";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import { ImageSlider } from "@/src/components/ui/ImageSlider";
 import { OpenScheduleButton } from "@/src/components/ui/OpenScheduleButton";
 import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
+import { postWithdrawal } from "@/src/api/endpoints/withdrawal";
+import type { TimeString, UUID } from "@/src/types/withdrawal";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
-async function checkAvailability(_: ActionState, formData: FormData): Promise<ActionState> {
+async function checkAvailability(
+    _: ActionState,
+    formData: FormData
+): Promise<ActionState> {
     "use server";
 
     const date = formData.get("date") as string | null;
-    const time = formData.get("time") as string | null;
+    const time = formData.get("time") as TimeString | null;
+    const email = formData.get("userEmail") as string;
+    const itemId = formData.get("itemId") as UUID;
+    const token = formData.get("token") as string;
 
-    if (!date || !time) return { status: "error", message: "Missing date/time." };
+    if (!date || !time) {
+        return { status: "error", message: "Data e hora são obrigatórios." };
+    }
 
-    const minute = Number((time.split(":")[1] ?? "0"));
-    const ok = minute % 2 === 0;
+    const response = await postWithdrawal(
+        {
+            description: "item",
+            email,
+            itemId,
+            date: new Date(date),
+            time,
+        },
+        token
+    );
 
-    return ok
-        ? { status: "success", message: "Request sent successfully!" }
-        : { status: "error", message: "No server available for that date/time." };
+    if (response.success) {
+        return { status: "success", message: "Solicitação enviada com sucesso!" };
+    }
+
+    let errorMessage =
+        "Não há nenhum servidor disponível na data e horário selecionados!";
+
+    if (typeof response.error === "string") {
+        errorMessage = response.error;
+    } else if (
+        response.error &&
+        typeof (response.error as any).message === "string"
+    ) {
+        errorMessage = (response.error as any).message;
+    }
+
+    return { status: "error", message: errorMessage };
 }
+
 
 type Props = {
     params: { id: string };
@@ -48,6 +81,7 @@ export default async function ItemPage({ params }: Props) {
 
     const item: ItemDTO = data;
     const role = extractRoleFromToken(token as string);
+    const email = extractEmailFromToken(token as string);
 
     const baseClass = "flex items-center gap-1 text-xs px-3 py-1 rounded-2xl bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white dark:border-[#183E1F]";
     const requestsData: ItemRequest[] = [
@@ -138,7 +172,7 @@ export default async function ItemPage({ params }: Props) {
                     </div>
                 </div>
             </ScrollableArea>
-            <SchedulePickupModal action={checkAvailability} channel="item-claim" />
+            <SchedulePickupModal action={checkAvailability} channel="item-claim" itemId={id} userEmail={email as string} token={token as string} />
             <AdminActionsMobile />
         </div>
     );

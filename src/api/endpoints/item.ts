@@ -27,7 +27,6 @@ const fetchItems = async <T extends CarouselItem | ItemCard>(
     });
 
     const { data }: ItemPage = await api.get(`/items?${search.toString()}`);
-    console.log(data);
     return data.content.map(mapper);
 };
 

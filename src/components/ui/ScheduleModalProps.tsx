@@ -11,7 +11,10 @@ type Props = {
     action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
     confirmLabel?: string;
     channel?: string;
+    itemId: string;
+    userEmail: string;
     className?: string;
+    token: string;
 };
 
 const initialState: ActionState = { status: "idle" };
@@ -23,6 +26,9 @@ export function SchedulePickupModal({
     confirmLabel = "Confirmar solicitação",
     channel = "default",
     className = "",
+    itemId,
+    userEmail,
+    token,
 }: Props) {
     const [state, formAction] = useActionState(action, initialState);
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -101,6 +107,9 @@ export function SchedulePickupModal({
                         action={async (fd) => {
                             setSubmitting(true);
                             try {
+                                fd.append("itemId", itemId);
+                                fd.append("userEmail", userEmail);
+                                fd.append("token", token);
                                 await formAction(fd);
                             } finally {
                                 setSubmitting(false);
@@ -110,6 +119,9 @@ export function SchedulePickupModal({
                     >
                         <input type="hidden" name="date" value={dateStr} />
                         <input type="hidden" name="time" value={timeStr} />
+                        <input type="hidden" name="itemId" value={itemId} />
+                        <input type="hidden" name="userEmail" value={userEmail} />
+                        <input type="hidden" name="token" value={token} />
 
                         <div className="mt-4 grid grid-cols-2 gap-3">
                             <MaskedField
@@ -144,11 +156,12 @@ export function SchedulePickupModal({
                         </p>
 
                         <button
+                            type="submit"
                             disabled={!dateStr || !timeStr || submitting}
                             className="
                                 mt-5 h-12 w-full rounded-xl
                                 bg-[#D4EED9] text-black hover:bg-emerald-200/90 disabled:opacity-50
-                                dark:bg-[#183E1F] dark:text-white dark:hover:bg-emerald-300/90
+                                dark:bg-[#183E1F] dark:text-white dark:hover:bg-[#183e1f]
                             "
                         >
                             {confirmLabel}
@@ -173,10 +186,13 @@ export function SchedulePickupModal({
                                     dark:border-rose-800 dark:bg-rose-900/40 dark:text-rose-100
                                 "
                             >
-                                <strong>Não há nenhum servidor disponível na data e horário selecionados!</strong>{" "}
-                                Tente novamente.
+                                <strong>
+                                    {state.message ??
+                                        "Não há nenhum servidor disponível na data e horário selecionados! Tente novamente."}
+                                </strong>{" "}
                             </div>
                         )}
+
                     </form>
                 </div>
             </dialog>
