@@ -150,6 +150,23 @@ export function SchedulePickupModal({
                             />
                         </div>
 
+                        <label
+                            htmlFor="description"
+                            className="mb-1 mt-2 block text-sm font-medium text-zinc-700 dark:text-zinc-200"
+                            >
+                            Justificativa
+                        </label>
+                        <textarea id="description" name="description" rows={3}
+                                    className=" w-full rounded-xl
+                                            px-1 py-3
+                                            shadow-inner resize-none
+                                            focus:outline-none
+                                            bg-zinc-100 text-zinc-600 pl-4 text-sm transition-colors
+                                            hover:bg-zinc-200
+                                            dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
+                                    
+                        </textarea>
+
                         <p className="mt-4 text-sm leading-snug text-zinc-600 dark:text-zinc-400">
                             Esteja na sala da <strong>CAENS</strong> com pelo menos 5 minutos de antecedência e
                             aguarde até ser possível conversar com a responsável.

@@ -145,7 +145,6 @@ export function MaskedField({
           required={required}
         />
 
-        {/* Overlay chip (dark-mode aware) */}
         {showGhost && (
           <button
             type="button"

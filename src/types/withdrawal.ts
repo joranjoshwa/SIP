@@ -16,7 +16,7 @@ export type Withdrawal = {
     description: string,
     email: string,
     itemId: UUID,
-    date: Date,
+    date: string,
     time: TimeString,
 }
 

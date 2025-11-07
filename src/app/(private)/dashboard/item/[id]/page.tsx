@@ -33,6 +33,7 @@ async function checkAvailability(
     const email = formData.get("userEmail") as string;
     const itemId = formData.get("itemId") as UUID;
     const token = formData.get("token") as string;
+    const description = formData.get("description") as string;
 
     if (!date || !time) {
         return { status: "error", message: "Data e hora são obrigatórios." };
@@ -40,10 +41,10 @@ async function checkAvailability(
 
     const response = await postWithdrawal(
         {
-            description: "item",
+            description,
             email,
             itemId,
-            date: new Date(date),
+            date: date,
             time,
         },
         token
