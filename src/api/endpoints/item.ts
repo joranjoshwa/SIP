@@ -129,16 +129,10 @@ export const itemForDonation = async (category: string): Promise<CarouselItem[]>
 export const editItem = async (
     itemId: string,
     data: EditItemRequest,
-    token: string
 ): Promise<ItemResponse> => {
     const response = await api.put<ItemResponse>(
         `/items/admin/edit/${itemId}`,
-        data,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
+        data
     );
     return response.data;
 };

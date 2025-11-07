@@ -115,3 +115,9 @@ export const categoryKeyToCategory = (key: CategoryKey): Category => {
     if (!found) throw new Error(`Categoria inválida: ${key}`);
     return found.backend;
 };
+
+export const categoryToCategoryKey = (category: Category): CategoryKey => {
+    const found = categories.find((c) => c.backend === category);
+    if (!found) throw new Error(`Categoria inválida vinda do backend: ${category}`);
+    return found.key;
+};
