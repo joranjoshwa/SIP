@@ -4,27 +4,119 @@ import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey } from "@/src/constants/categories";
-import { Area, DayPeriod } from "@/src/types/item";
-import { useState } from "react";
+import { Area, Category, DayPeriod, ItemDTO } from "@/src/types/item";
+import { useEffect, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
+import { useParams, useRouter } from "next/navigation";
+import { getTokenFromCookie } from "@/src/utils/token";
+import { singleItem } from "@/src/api/endpoints/item";
+import { api } from "@/src/api/axios";
 
 export default function EditItem() {
 
-    const [name, setName] = useState("Marmita rosa com amarelo pequena");
-    const [description, setDescription] = useState(
-        "Essa marmita rosa com vários compartimentos foi encontrada pela tarde lá no RC. Estava com comida a qual foi retirada, pois estava fora da geladeira aparentemente há várias horas."
-    );
-    const [findingDate, setFindingDate] = useState("2025-06-20");
-    const [area, setArea] = useState<Area | null>("CANTINA" as Area);
-    const [dayPeriod, setDayPeriod] = useState<DayPeriod>("AFTERNOON");
-    const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>("VASILHA" as CategoryKey);
+    const params = useParams();
+    const router = useRouter();
+    const itemId = params?.id as string | undefined;
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const [name, setName] = useState<string>("");
+    const [description, setDescription] = useState<string>("");
+    const [findingDate, setFindingDate] = useState<string>("");
+    const [area, setArea] = useState<Area | null>(null);
+    const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+    const [imageName, setImageName] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
 
+    useEffect(() => {
+        if (!itemId) {
+            setError("ID do item não informado.");
+            return;
+        }
+
+        const fetchItem = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const token = getTokenFromCookie();
+                if (!token) {
+                    setError("Usuário não autenticado.");
+                    setLoading(false);
+                    return;
+                }
+
+                const data: ItemDTO = await singleItem(itemId, token);
+                setName(data.code ?? `Item ${data.id}`);
+                setDescription(data.description ?? "");
+                setFindingDate(data.findingAt ? new Date(data.findingAt).toISOString().slice(0, 10) : "");
+                setArea(data.area ?? null);
+                setDayPeriod(data.dayPeriod ?? "MORNING");
+                setSelectedCategory(data.category ?? null);
+                setImageName(data.pictures?.[0]?.url ?? null);
+
+            } catch (err) {
+                console.error("Erro ao carregar item:", err);
+                setError("Erro ao carregar o item.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItem();
+    }, [itemId]);
+
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setImageFile(e.target.files[0]);
+        const file = e.target.files?.[0];
+        if (file) setImageFile(file);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            if (area) formData.append("area", area);
+            formData.append("findingDate", findingDate);
+            formData.append("dayPeriod", dayPeriod);
+            if (selectedCategory) formData.append("categoryId", selectedCategory);
+            if (imageFile) formData.append("image", imageFile);
+
+            await api.put(`/items/${itemId}`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            alert("Item atualizado com sucesso!");
+            router.push("/items"); 
+        } catch (error) {
+            console.error("Erro ao atualizar item:", error);
+            alert("Falha ao atualizar o item. Tente novamente.");
         }
     };
+
+    if (!itemId) {
+        return <div className="p-4 text-red-500">ID do item não encontrado na URL.</div>;
+    }
+
+    if (loading) {
+        return <div className="p-4">Carregando item...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="p-4">
+                <p className="text-red-500 mb-2">{error}</p>
+                <button className="btn" onClick={() => router.back()}>
+                    Voltar
+                </button>
+            </div>
+        );
+    }
 
     return (
         <main className="w-full flex flex-col px-4 py-4 md:ml-3 md:pl-6 pb-[90px] md:pb-0">
@@ -32,8 +124,7 @@ export default function EditItem() {
                 Editar “{name}”
             </h1>
 
-            <form className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl">
-
+            <form className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl" onSubmit={handleSubmit}>
                 <InputField
                     label="Nome"
                     placeholder="Ex.: Marmita rosa com amarelo pequena"
@@ -92,16 +183,15 @@ export default function EditItem() {
                 </div>
 
                 <div className="flex flex-col gap-2">
-
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Categoria
                     </label>
-                    <CategoryItem handleCategorySelection={setSelectedCategory} />
-
+                    <CategoryItem
+                        handleCategorySelection={(category) => setSelectedCategory(category as Category | null)}
+                    />
                 </div>
 
                 <div className="flex flex-col gap-2">
-
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Imagem do item
                     </label>
@@ -114,18 +204,15 @@ export default function EditItem() {
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                         {imageFile ? imageFile.name : "IMG_2025_06_20_43874983.png"}
                     </span>
-
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
-
-                    <Button variant="secondary" className="md:w-40">
+                    <Button variant="secondary" className="md:w-40" onClick={() => router.back()}>
                         Cancelar
                     </Button>
                     <Button variant="primary" className="md:w-40">
                         Salvar alterações
                     </Button>
-                    
                 </div>
             </form>
         </main>

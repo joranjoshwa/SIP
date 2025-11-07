@@ -1,4 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse, UUID } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse, UUID, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -128,11 +128,7 @@ export const itemForDonation = async (category: string): Promise<CarouselItem[]>
 
 export const editItem = async (
     itemId: string,
-    data: {
-        description?: string;
-        category?: string;
-        area?: string;
-    },
+    data: EditItemRequest,
     token: string
 ): Promise<ItemResponse> => {
     const response = await api.put<ItemResponse>(
