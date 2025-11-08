@@ -117,10 +117,21 @@ export const Login = () => {
         }
     }
 
+    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) =>{
+        if(event.key == "Enter"){
+            handleLogin()
+        }
+    }
+
+
     return (
-        <>
+        <main role="main">
             <AuthCard
-                headerContent={<Logo className="mb-4" />}
+                headerContent={
+                    <header>
+                        <Logo className="mb-4" />
+                    </header>
+                }
             >
                 <InputField
                     label="Email institucional"
@@ -130,12 +141,16 @@ export const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required={true}
+                    autoComplete="username"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 <PasswordField
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required={true}
+                    autoComplete="current-password"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 {error && (
@@ -175,6 +190,6 @@ export const Login = () => {
             </AuthCard>
 
             <Loading isLoading={loading} />
-        </>
+        </main>
     );
 }

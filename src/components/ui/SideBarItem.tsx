@@ -46,7 +46,7 @@ export const SideBarItem = ({
         return (
             <li>
                 <Link href={href} className={combined}>
-                    <Icon className={`h-7 w-7 opacity-70 group-hover:opacity-100`} />
+                    <Icon className="h-7 w-7 opacity-70 group-hover:opacity-100" />
                     <span className="hidden md:block">{text}</span>
                 </Link>
             </li>

@@ -29,7 +29,7 @@ export function AdminActions() {
                 className={`mt-3 overflow-hidden space-y-3 transition-all duration-300
           ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
             >
-                <div>
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={Hand}
                         text="Analisar solicitações"
@@ -37,7 +37,7 @@ export function AdminActions() {
                         exact
                     />
                 </div>
-                <div>
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={CalendarX2}
                         text="Novo horário ocupado"
@@ -45,7 +45,7 @@ export function AdminActions() {
                         exact
                     />
                 </div>
-                <div>
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={PackagePlus}
                         text="Registrar novo item"
