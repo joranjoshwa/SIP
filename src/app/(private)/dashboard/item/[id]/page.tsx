@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Calendar, MapPin, Tag, ClipboardPen, ImageOff } from "lucide-react";
 import { Button } from "@/src/components/ui/Button";
 import { PageHeader } from "@/src/components/ui/PageHeader";
@@ -17,8 +16,9 @@ import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import { ImageSlider } from "@/src/components/ui/ImageSlider";
 import { OpenScheduleButton } from "@/src/components/ui/OpenScheduleButton";
 import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
-import { postWithdrawal } from "@/src/api/endpoints/withdrawal";
+import { postWithdrawal, getWithdrawalRequests } from "@/src/api/endpoints/withdrawal";
 import type { TimeString, UUID } from "@/src/types/withdrawal";
+import type { WithdrawalRequestItem } from "@/src/types/withdrawal";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -85,32 +85,7 @@ export default async function ItemPage({ params }: Props) {
     const email = extractEmailFromToken(token as string);
 
     const baseClass = "flex items-center gap-1 text-xs px-3 py-1 rounded-2xl bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white dark:border-[#183E1F]";
-    const requestsData: ItemRequest[] = [
-        {
-            id: "1",
-            user: { name: "Valentina Silveira", avatar: "/avatars/valentina.png" },
-            date: "25/06/25 às 09:30h",
-            status: "PENDING",
-        },
-        {
-            id: "2",
-            user: { name: "Emerson Guedes", avatar: "/avatars/emerson.png" },
-            date: "20/06/25 às 08:30h",
-            status: "REJECTED",
-        },
-        {
-            id: "4",
-            user: { name: "Emerson Guedes", avatar: "/avatars/emerson.png" },
-            date: "20/06/25 às 08:30h",
-            status: "REJECTED",
-        },
-        {
-            id: "5",
-            user: { name: "Emerson Guedes", avatar: "/avatars/emerson.png" },
-            date: "20/06/25 às 08:30h",
-            status: "REJECTED",
-        },
-    ];
+    const requestsData: WithdrawalRequestItem[] = await getWithdrawalRequests(params.id, token as string);
 
     return (
         <div className="flex flex-col h-full min-h-0 p-4">

@@ -95,7 +95,7 @@ export function SchedulePickupModal({
                         transition-opacity duration-200
                     "
                 >
-                    <div className="px-6 pt-3">
+                    <div className="md:hidden px-6 pt-3">
                         <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700" />
                     </div>
 

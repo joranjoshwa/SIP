@@ -1,3 +1,6 @@
+import { ItemDTO } from "./item";
+import { UserDTO } from "./user";
+
 export type UUID = string;
 type Hour = '00' | '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' |
     '10' | '11' | '12' | '13' | '14' | '15' | '16' | '17' | '18' | '19' |
@@ -11,6 +14,7 @@ type Minute = '00' | '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09
     '50' | '51' | '52' | '53' | '54' | '55' | '56' | '57' | '58' | '59';
 
 export type TimeString = `${Hour}:${Minute}`;
+export type StatusRecovery = "APPROVED" | "REFUSED" | "PENDING";
 
 export type Withdrawal = {
     description: string,
@@ -23,3 +27,27 @@ export type Withdrawal = {
 export type PostWithdrawalResponse =
     | { success: true; data: unknown }
     | { success: false; status?: number; error?: string };
+
+export interface ItemRecoveryResponse {
+    item: ItemDTO;
+    recovery: Recovery[];
+}
+
+export interface Recovery {
+    id: string;
+    description: string;
+    status: string;
+    user: UserDTO;
+    requestDate: string;
+}
+
+export type WithdrawalRequestItem = {
+    id: string;
+    user: {
+        name: string;
+        avatar: string;
+    };
+    description: string,
+    date: string;
+    status: StatusRecovery | string;
+};
