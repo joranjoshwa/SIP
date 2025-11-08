@@ -117,6 +117,13 @@ export const Login = () => {
         }
     }
 
+    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) =>{
+        if(event.key == "Enter"){
+            handleLogin()
+        }
+    }
+
+
     return (
         <main role="main">
             <AuthCard
@@ -135,6 +142,7 @@ export const Login = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required={true}
                     autoComplete="username"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 <PasswordField
@@ -142,6 +150,7 @@ export const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required={true}
                     autoComplete="current-password"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 {error && (

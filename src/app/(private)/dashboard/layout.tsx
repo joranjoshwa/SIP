@@ -13,6 +13,7 @@ import {
     Sun,
 } from "lucide-react";
 import { useTheme } from "@/src/context/ThemeContext";
+import { useEffect, useState } from "react";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
@@ -23,7 +24,15 @@ export default function DashboardLayout({
 }) {
     const { theme, toggleTheme } = useTheme();
     const darkMode = theme === "dark";
-    const role = extractRoleFromToken(localStorage.getItem("token") as string);
+
+    const [role, setRole] = useState<Role | null>(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            setRole(extractRoleFromToken(token) as Role);
+        }
+    }, []);
 
     return (
         <div
@@ -36,14 +45,19 @@ export default function DashboardLayout({
         >
             <aside
                 className="
-          hidden md:flex md:flex-col
-          w-[368px] h-screen
-          bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
-          px-4 py-4 md:pt-16 md:pl-16
-        "
+                    sticky md:top-0
+                    flex md:flex-col
+                    w-full md:w-[368px]
+                    h-auto md:h-screen
+                    bg-white/80 backdrop-blur-sm dark:bg-neutral-900/80
+                    px-4 py-4 md:pt-16 md:pl-16
+                "
             >
-                <div className="flex items-center gap-2 px-4 py-4 mb-8">
-                    <Logo imageClassName="w-[87px] h-8" mode={darkMode ? "dark" : "light"} />
+                <div className="hidden md:flex items-center gap-2 px-4 py-4 mb-8">
+                    <Logo
+                        imageClassName="w-[87px] h-8"
+                        mode={darkMode ? "dark" : "light"}
+                    />
                 </div>
 
                 <nav className="flex-1 px-2">
@@ -74,7 +88,7 @@ export default function DashboardLayout({
                     </ul>
                 </nav>
 
-                <div className="px-2 pb-4 pt-2">
+                <div className="px-2 pb-4 pt-2 hidden md:block">
                     <ul className="space-y-3">
                         <SideBarItem
                             icon={darkMode ? Sun : MoonStar}
@@ -102,15 +116,6 @@ export default function DashboardLayout({
 
                 {children}
             </main>
-
-            <div className="fixed bottom-0 left-0 w-full md:hidden bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700 z-50">
-                <nav className="flex justify-around py-2">
-                    <SideBarItem icon={House} text="" href="/dashboard" isMobile exact />
-                    <SideBarItem icon={HandHeart} text="" href="/dashboard/donation" isMobile exact />
-                    <SideBarItem icon={CircleUserRound} text="" href="/dashboard/profile" isMobile exact />
-                    <SideBarItem icon={Search} text="" href="/dashboard/search" isMobile exact />
-                </nav>
-            </div>
         </div>
     );
 }
