@@ -11,6 +11,7 @@ type Props = {
     className?: string;
     required?: boolean;
     autoComplete?: string;
+    onPressEnter?: (e:  React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const InputField = ({
@@ -24,6 +25,7 @@ export const InputField = ({
     className,
     required = false,
     autoComplete,
+    onPressEnter
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
@@ -64,6 +66,7 @@ export const InputField = ({
             dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input"
                     required={required}
                     autoComplete={autoComplete}
+                    onKeyDown={onPressEnter}
                 />
 
                 {children}
