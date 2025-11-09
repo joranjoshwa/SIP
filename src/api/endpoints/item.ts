@@ -1,5 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse } from "../../types/item";
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -67,8 +66,8 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
         sort: filters.sort,
         size: filters.size,
         aboutToBeDonated: filters.donation,
-        dateStart: filters.dateStart?.toISOString(),
-        dateEnd: filters.dateEnd?.toISOString(),
+        startPeriod: filters.dateStart?.toISOString().split('T')[0],
+        endPeriod: filters.dateEnd?.toISOString().split('T')[0],
         lastDays: filters.lastDays ?? undefined,
     };
 

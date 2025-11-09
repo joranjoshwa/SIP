@@ -9,13 +9,11 @@ import {
 } from "./DateRangeSelector";
 import { Button } from "@/src/components/ui/Button";
 import { SquareToggle, SquareToggleRef } from "@/src/components/ui/SquareToggle";
-import { NumberInputField, NumberInputFieldRef } from "@/src/components/ui/NumberInputField ";
 
 type Props = {
     handleCategorySelection: (categories: string[]) => void;
     handleDateSelection: (start: Date | null, end: Date | null) => void;
     handleToggleChange: (enabled: boolean) => void;
-    handleNumberChange: (value: number | null) => void;
     handleSubmit: () => void;
     handleCleanFilters: () => void;
 };
@@ -24,20 +22,17 @@ export const SearchFilter = ({
     handleCategorySelection,
     handleDateSelection,
     handleToggleChange,
-    handleNumberChange,
     handleSubmit,
     handleCleanFilters,
 }: Props) => {
     const categoryRef = useRef<SearchCategorySelectRef>(null);
     const dateRef = useRef<DateRangeSelectorRef>(null);
     const toggleRef = useRef<SquareToggleRef>(null);
-    const numberRef = useRef<NumberInputFieldRef>(null);
 
     const cleanFilters = () => {
         categoryRef.current?.reset();
         dateRef.current?.reset();
         toggleRef.current?.reset();
-        numberRef.current?.reset();
         handleCleanFilters();
     };
 

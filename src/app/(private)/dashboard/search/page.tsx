@@ -7,7 +7,7 @@ import { itemPaginated } from "@/src/api/endpoints/item";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { SearchRequest, FilterType, Item } from "@/src/types/item";
+import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 
 export default function SearchPage() {
@@ -68,9 +68,6 @@ export default function SearchPage() {
     const handleToggleChange = () =>
         updateFilters({ donation: !filters.donation });
 
-    const handleNumberChange = (lastDays: number | null) =>
-        updateFilters({ lastDays });
-
     const handleCleanFilters = () => {
         setFilters({
             page: 0,
@@ -91,14 +88,18 @@ export default function SearchPage() {
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
+            const target = event.target as HTMLElement;
+            if (
+                filterRef.current &&
+                !filterRef.current.contains(target) &&
+                !target.closest('input') &&
+                !target.closest('button[aria-hidden="true"]')
+            ) {
                 setShowFilters(false);
             }
         };
         if (showFilters) {
             document.addEventListener("mousedown", handleClickOutside);
-        } else {
-            document.removeEventListener("mousedown", handleClickOutside);
         }
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -153,15 +154,14 @@ export default function SearchPage() {
                     className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 sm:bg-transparent sm:dark:bg-transparent lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
                         ? "opacity-100 scale-100 translate-y-0"
                         : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-                    }`}
+                        }`}
                 >
                     <div className="filter-scroll overscroll-y-contain touch-pan-y rounded-xl bg-white dark:bg-neutral-900">
                         <SearchFilter
                             handleCategorySelection={handleCategorySelection}
                             handleDateSelection={handleDateChange}
-                            handleNumberChange={handleNumberChange}
                             handleToggleChange={handleToggleChange}
-                            handleSubmit={() => { 
+                            handleSubmit={() => {
                                 fetchItems(true);
                                 setShowFilters(false);
                             }}
