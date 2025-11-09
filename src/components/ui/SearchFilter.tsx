@@ -71,13 +71,6 @@ export const SearchFilter = ({
                     onChange={handleToggleChange} />
             </div>
 
-            <div className="mt-5">
-                <NumberInputField
-                    ref={numberRef}
-                    label="Perdido a quantos dias:"
-                    onChange={handleNumberChange} />
-            </div>
-
             {/* Buttons */}
             <div className="mt-10">
                 <Button variant="secondary" onClick={cleanFilters}>

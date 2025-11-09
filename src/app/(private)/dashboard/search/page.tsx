@@ -150,7 +150,7 @@ export default function SearchPage() {
                 <div
                     id="filterForm"
                     ref={filterRef}
-                    className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 md:bg-transparent lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
+                    className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 sm:bg-transparent sm:dark:bg-transparent lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
                         ? "opacity-100 scale-100 translate-y-0"
                         : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                     }`}
@@ -161,7 +161,10 @@ export default function SearchPage() {
                             handleDateSelection={handleDateChange}
                             handleNumberChange={handleNumberChange}
                             handleToggleChange={handleToggleChange}
-                            handleSubmit={() => fetchItems(true)}
+                            handleSubmit={() => { 
+                                fetchItems(true);
+                                setShowFilters(false);
+                            }}
                             handleCleanFilters={handleCleanFilters}
                         />
                     </div>
