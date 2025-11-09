@@ -14,7 +14,7 @@ export default function SearchPage() {
     const [filters, setFilters] = useState<SearchRequest>({
         page: 0,
         sort: "findingAt,desc",
-        size: 40,
+        size: 25,
         category: [],
         dateStart: null,
         dateEnd: null,
@@ -75,7 +75,7 @@ export default function SearchPage() {
         setFilters({
             page: 0,
             sort: "findingAt,desc",
-            size: 40,
+            size: 25,
             category: [],
             dateStart: null,
             dateEnd: null,

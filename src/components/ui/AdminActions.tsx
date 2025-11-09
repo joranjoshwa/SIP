@@ -29,36 +29,30 @@ export function AdminActions() {
                 className={`mt-3 overflow-hidden space-y-3 transition-all duration-300
           ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0 pointer-events-none"}`}
             >
-                <li
-                onClick={() => setOpen((s) => !s)}
-                >
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={Hand}
                         text="Analisar solicitações"
                         href="/dashboard/requests"
                         exact
                     />
-                </li>
-                <li
-                onClick={() => setOpen((s) => !s)}
-                >
+                </div>
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={CalendarX2}
                         text="Novo horário ocupado"
                         href="/dashboard/schedule/new-block"
                         exact
                     />
-                </li>
-                <li
-                onClick={() => setOpen((s) => !s)}
-                >
+                </div>
+                <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={PackagePlus}
                         text="Registrar novo item"
                         href="/dashboard/items/new"
                         exact
                     />
-                </li>
+                </div>
             </ul>
         </li>
     );
