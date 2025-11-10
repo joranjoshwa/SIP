@@ -134,13 +134,18 @@ export function MaskedField({
           autoComplete="off"
           placeholder={placeholder}
           value={value}
-          onFocus={() => (showGhost ? undefined : setFocused(true))}
+          onFocus={(e) => {
+            e.stopPropagation();
+            if (!showGhost) setFocused(true);
+          }}
           onBlur={() => setFocused(false)}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
           className="w-full h-12 rounded-xl border border-zinc-200 bg-white pl-10 pr-8 text-sm text-zinc-800
-                     outline-none ring-0 focus:border-zinc-300
-                     dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-600"
+             outline-none ring-0 focus:border-zinc-300
+             dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-600"
           aria-label={label}
           required={required}
         />
@@ -151,9 +156,11 @@ export function MaskedField({
             aria-hidden="true"
             onMouseDown={(e) => {
               e.preventDefault();
+              e.stopPropagation();
               setFocused(true);
               inputRef.current?.focus();
             }}
+            onClick={(e) => e.stopPropagation()}
             className="absolute inset-0 flex items-center gap-2 rounded-xl
                        bg-zinc-100 text-zinc-600 px-3 pl-10 text-sm transition-colors
                        hover:bg-zinc-200

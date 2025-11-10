@@ -33,13 +33,13 @@ export const SquareToggle = forwardRef<SquareToggleRef, Props>(
                 <button
                     type="button"
                     onClick={toggle}
-                    className={`w-12 h-6 flex items-center rounded-sm transition ${enabled
+                    className={`w-12 h-6 flex items-center rounded-2xl transition ${enabled
                             ? "bg-[#D4EED9] dark:bg-[#183E1F]"
                             : "bg-[#ECECEC] dark:bg-[#292929]"
                         }`}
                 >
                     <div
-                        className={`w-5 h-5 bg-white dark:bg-neutral-900 shadow-sm transform transition ${enabled ? "translate-x-6" : "translate-x-1"
+                        className={`w-5 h-5 bg-white dark:bg-neutral-900 rounded-2xl shadow-sm transform transition ${enabled ? "translate-x-6" : "translate-x-1"
                             }`}
                     />
                 </button>

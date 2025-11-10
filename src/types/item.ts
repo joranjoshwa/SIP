@@ -86,6 +86,7 @@ export type SearchRequest = {
     dateStart: Date | null;
     dateEnd: Date | null;
     donation: boolean;
+    itemName: string | null;
     lastDays: number | null;
 };
 

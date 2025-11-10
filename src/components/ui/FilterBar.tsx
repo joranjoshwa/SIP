@@ -15,7 +15,6 @@ export const FilterBar = ({ active, onSelect }: Props) => {
         { key: "categoria", label: "Categoria", icon: <Filter className="w-4 h-4" /> },
         { key: "data", label: "Data", icon: <CalendarDays className="w-4 h-4" /> },
         { key: "donation", label: "Doação", icon: <HandHeart className="w-4 h-4" /> },
-        { key: "lastDays", label: "Últimos Dias", icon: <Clock className="w-4 h-4" /> },
     ];
 
     return (
