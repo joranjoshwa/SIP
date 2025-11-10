@@ -18,12 +18,15 @@ import { Loading } from "../../components/ui/Loading";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { LoginResponse } from "@/src/types/auth";
+import { useTheme } from "../../context/ThemeContext";
 
 export const Login = () => {
 
     const { login, loginWithGoogle } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const { theme } = useTheme();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -224,6 +227,7 @@ export const Login = () => {
                     onSuccess={handleGoogleLogin}
                     onError={() => setError("Erro ao fazer login com Google.")}
                     useOneTap
+                    theme={theme === "dark" ? "filled_black" : "outline"}
                 />
 
 
