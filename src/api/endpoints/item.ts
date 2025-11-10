@@ -1,5 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse } from "../../types/item";
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse, UUID, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -116,12 +115,23 @@ export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
 
 export const itemForDonation = async (category: string): Promise<CarouselItem[]> => {
     return fetchItems(
-      {
-        page: 0,
-        size: 10,
-        status: "CHARITY",
-        category: getCategoryEnum(category),
-      },
-      toCarouselItem
+        {
+            page: 0,
+            size: 10,
+            status: "CHARITY",
+            category: getCategoryEnum(category),
+        },
+        toCarouselItem
     );
-  };
+};
+
+export const editItem = async (
+    itemId: string,
+    data: EditItemRequest,
+): Promise<ItemResponse> => {
+    const response = await api.put<ItemResponse>(
+        `/items/admin/edit/${itemId}`,
+        data
+    );
+    return response.data;
+};
