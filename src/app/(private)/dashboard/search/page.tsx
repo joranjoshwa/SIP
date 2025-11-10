@@ -18,6 +18,7 @@ export default function SearchPage() {
         category: [],
         dateStart: null,
         dateEnd: null,
+        itemName: null,
         donation: false,
         lastDays: null,
     });
@@ -52,7 +53,7 @@ export default function SearchPage() {
             setHasMore(data.length === filters.size);
             setLoading(false);
         },
-        [filters, loading]
+        [filters]
     );
 
     const updateFilters = (patch: Partial<SearchRequest>) => {
@@ -65,6 +66,9 @@ export default function SearchPage() {
     const handleDateChange = (start: Date | null, end: Date | null) =>
         updateFilters({ dateStart: start, dateEnd: end });
 
+    const handleItemNameSearch = (itemName: string) => {
+        setFilters((prev) => ({ ...prev, itemName, page: 0 }));
+    };
     const handleToggleChange = () =>
         updateFilters({ donation: !filters.donation });
 
@@ -77,6 +81,7 @@ export default function SearchPage() {
             dateStart: null,
             dateEnd: null,
             donation: false,
+            itemName: null,
             lastDays: null,
         });
         setActiveFilters([]);
@@ -85,6 +90,12 @@ export default function SearchPage() {
     useEffect(() => {
         fetchItems(true);
     }, []);
+
+    useEffect(() => {
+        if (filters.itemName !== null) {
+            fetchItems(true);
+        }
+    }, [filters.itemName]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -137,7 +148,7 @@ export default function SearchPage() {
 
     return (
         <section className="flex flex-col flex-1 min-h-0 p-5 pb-0">
-            <SearchBar />
+            <SearchBar handleSearch={handleItemNameSearch} />
 
             <div className="relative mt-2 flex flex-col flex-1 min-h-0">
                 <div
