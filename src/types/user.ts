@@ -15,3 +15,14 @@ export interface ChangePasswordRequest {
     password: string;
     newPassword: string; 
   }
+
+export interface UserDTO {
+    name: string;
+    cpf: string;
+    email: string;
+    role: string;             
+    statusMember: string;     
+    phone: string;
+    profileImageUrl: string;
+    registrationDate: string; 
+}

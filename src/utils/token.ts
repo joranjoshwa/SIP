@@ -67,13 +67,20 @@ export const scheduleTokenExpiryLogout = (
 export function getTokenFromCookie(): string | null {
     if (typeof window !== "undefined") {
         const match = document.cookie.match(/(^| )token=([^;]+)/);
-        return match ? match[2] : null;
+        if (match) {
+            return match[2];
+        } else {
+            console.warn("Token not found in cookies.");
+        }
     }
-
     return null;
 }
 
-export const extractRoleFromToken = (token: string): string | null => {
+export const extractRoleFromToken = (token?: string): string | null => {
+    if (!token || typeof token !== "string" || token.trim() === "") {
+        token = getTokenFromCookie() as string;
+    }
+
     try {
         const decoded = jwtDecode<JwtPayload>(token);
         return decoded.role || null;
