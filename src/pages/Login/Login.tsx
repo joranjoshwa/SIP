@@ -15,10 +15,13 @@ import { ApiResponse } from "../../types/user";
 import { AxiosError } from "axios";
 import { requestReactivation } from "../../api/endpoints/user";
 import { Loading } from "../../components/ui/Loading";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { LoginResponse } from "@/src/types/auth";
 
 export const Login = () => {
 
-    const { login } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -94,6 +97,45 @@ export const Login = () => {
         }
     }
 
+    const handleGoogleLogin = async (credentialResponse: any) => {
+       
+            if (credentialResponse.credential) {
+                try {
+                    setLoading(true);
+                    setError("");
+
+                    const response = await axios.post(
+                        `${process.env.NEXT_PUBLIC_API_URL}/authentication/google`,
+                        { token: credentialResponse.credential }
+                    );
+
+                    const loginResponse: LoginResponse = response.data;
+
+                    loginWithGoogle(loginResponse);
+                    router.push("/");
+                } catch (error) {
+                    const err = error as AxiosError<ApiResponse>;
+
+                    if (err.response?.data) {
+                        const errors =
+                            err.response.data.message ??
+                            Object.values(err.response.data).join(" | ");
+        
+                        setError(errors);
+        
+                        if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
+                            setBlocked(true);
+                        }
+                    } else {
+                        setError("Erro inesperado");
+                    }
+                } finally {
+                    setLoading(false);
+                }
+            }
+       
+    }
+
     const handleSignUp = () => {
         router.push("/signup")
     }
@@ -117,6 +159,13 @@ export const Login = () => {
         }
     }
 
+    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) =>{
+        if(event.key == "Enter"){
+            handleLogin()
+        }
+    }
+
+
     return (
         <main role="main">
             <AuthCard
@@ -135,6 +184,7 @@ export const Login = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required={true}
                     autoComplete="username"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 <PasswordField
@@ -142,6 +192,7 @@ export const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required={true}
                     autoComplete="current-password"
+                    onPressEnter={(e) => handleOnPressEnter(e)}
                 />
 
                 {error && (
@@ -162,6 +213,18 @@ export const Login = () => {
                     variant="primary"
                     onClick={handleLogin}
                 > {loading ? "Entrando..." : "Entrar na conta"} </Button>
+
+                <div className="flex items-center justify-center my-4">
+                <div className="border-t border-gray-300 w-1/3" />
+                <span className="mx-2 text-gray-500 text-sm">ou</span>
+                <div className="border-t border-gray-300 w-1/3" />
+                </div>
+
+                <GoogleLogin
+                    onSuccess={handleGoogleLogin}
+                    onError={() => setError("Erro ao fazer login com Google.")}
+                    useOneTap
+                />
 
 
                 <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>

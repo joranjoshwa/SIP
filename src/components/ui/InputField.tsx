@@ -12,6 +12,7 @@ type Props = {
     required?: boolean;
     autoComplete?: string;
     disabled?: boolean;
+    onPressEnter?: (e:  React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const InputField = ({
@@ -26,6 +27,7 @@ export const InputField = ({
     required = false,
     autoComplete,
     disabled,
+    onPressEnter
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
@@ -68,6 +70,7 @@ export const InputField = ({
                     required={required}
                     autoComplete={autoComplete}
                     disabled={disabled}
+                    onKeyDown={onPressEnter}
                 />
 
                 {children}

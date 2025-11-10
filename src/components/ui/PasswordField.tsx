@@ -10,6 +10,7 @@ type Props = {
     className?: string;
     required?: boolean;
     autoComplete?: string;
+    onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const PasswordField = ({
@@ -20,6 +21,7 @@ export const PasswordField = ({
     className,
     required = true,
     autoComplete = "current-password",
+    onPressEnter
 }: Props) => {
 
     const [showPassword, setShowPassword] = useState(false);
@@ -27,6 +29,12 @@ export const PasswordField = ({
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
+
+    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) =>{
+        if (onPressEnter) {
+            onPressEnter(event);
+        }
+    }
 
     return (
         <InputField
@@ -39,6 +47,7 @@ export const PasswordField = ({
             className={className}
             required={required}
             autoComplete={autoComplete}
+            onPressEnter={(e) => handleOnPressEnter(e)}
         >
 
             <button
