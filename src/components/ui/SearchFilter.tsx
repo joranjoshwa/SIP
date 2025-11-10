@@ -41,7 +41,7 @@ export const SearchFilter = ({
             <h2 className="text-lg md:text-md font-bold">Filtros</h2>
 
             {/* Category */}
-            <div className="mt-7">
+            <div className="mt-[1.5rem]">
                 <span className="text-sm">Categoria</span>
                 <SearchCategorySelect
                     setCategory={handleCategorySelection}
