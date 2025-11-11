@@ -113,7 +113,11 @@ export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
     return data;
 }
 
-export const itemForDonation = async (category: string): Promise<CarouselItem[]> => {
+export const itemForDonation = async (
+    category: string,
+    page = 0,
+    size = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
         {
             page: 0,

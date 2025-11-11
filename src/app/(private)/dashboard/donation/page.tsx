@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
@@ -13,23 +13,63 @@ export default function DonationItems() {
 
   const [items, setItems] = useState<CarouselItem[]>([]);
   const [chosenCategory, setChosenCategory] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const fetchDonationItems = async (category?: string) => {
-    setLoading(true);
-    try {
-      const data = await itemForDonation(category ?? "");
-      setItems(data);
-    } catch (error) {
-      console.error("Erro ao carregar itens de doação:", error);
-    } finally {
-      setLoading(false);
-    }
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const fetchDonationItems = useCallback(
+    async (reset = false) => {
+      if (loading) return;
+      setLoading(true);
+
+      try {
+        const data = await itemForDonation(chosenCategory ?? "", page, 10);
+
+        setItems((prev) => {
+          const combined = reset ? data : [...prev, ...data];
+          const unique = Array.from(new Map(combined.map((i) => [i.id, i])).values());
+
+          return unique;
+
+        });
+
+        setHasMore(data.length === 10);
+
+      } catch (error) {
+        console.error("Erro ao carregar itens para doação: ", error);
+
+      } finally {
+        setLoading(false);
+      }
+
+    },
+    [chosenCategory, page, loading]);
   };
 
   useEffect(() => {
-    fetchDonationItems(chosenCategory ?? "");
-  }, [chosenCategory]);
+    setPage(0);
+    fetchDonationItems(true);
+  }, [page]);
+
+  useEffect(() => {
+    if (page > 0) fetchDonationItems(false)
+  }, [page]);
+
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      if (loading || !hasMore) return;
+      const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
+      
+      if (nearBottom) setPage((prev) => prev + 1);
+    };
+
+    el.addEventListener("scroll", handleScroll);
+  })
 
   const handleCategorySelection = (category: string | null) => {
     setChosenCategory(category);
