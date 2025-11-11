@@ -7,6 +7,7 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
 import { CarouselItem, Item, UUID } from "@/src/types/item";
 import { itemForDonation } from "@/src/api/endpoints/item";
+import ItemCard from "@/src/components/ui/ItemCard";
 
 export default function DonationItems() {
   const router = useRouter();
@@ -45,13 +46,13 @@ export default function DonationItems() {
       }
 
     },
-    [chosenCategory, page, loading]);
-  };
+    [chosenCategory, page, loading]
+  );
 
   useEffect(() => {
     setPage(0);
     fetchDonationItems(true);
-  }, [page]);
+  }, [chosenCategory]);
 
   useEffect(() => {
     if (page > 0) fetchDonationItems(false)
@@ -64,12 +65,13 @@ export default function DonationItems() {
     const handleScroll = () => {
       if (loading || !hasMore) return;
       const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
-      
+
       if (nearBottom) setPage((prev) => prev + 1);
     };
 
     el.addEventListener("scroll", handleScroll);
-  })
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore]);
 
   const handleCategorySelection = (category: string | null) => {
     setChosenCategory(category);
@@ -89,12 +91,44 @@ export default function DonationItems() {
       </header>
 
 
-      <section className="p-5 pb-0">
+      <section className="p-5 pb-0 flex-shrink-0">
         <CategoryItem handleCategorySelection={handleCategorySelection} />
       </section>
 
+      <div
+        ref={scrollAreaRef}
+        className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth"
+      >
+        {/* 🔹 Mudei pra um layout de grid igual ao da SearchPage */}
+        {items.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
+            {items.map((item) => (
+              <ItemCard
+                key={item.id}
+                id={item.id}
+                picture={item.picture}
+                description={item.description}
+                time={item.time}
+              />
+            ))}
+          </div>
+        ) : (
+          !loading && (
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2 text-center">
+              Nenhum item disponível para doação no momento.
+            </p>
+          )
+        )}
 
-      <section className="p-5 pt-3">
+        {loading && (
+          <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
+            Carregando itens…
+          </p>
+        )}
+      </div>
+
+
+      {/* <section className="p-5 pt-3">
         {loading && (
           <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
             Carregando itens…
@@ -110,7 +144,7 @@ export default function DonationItems() {
         {!loading && items.length > 0 && (
           <ItemCarousel title="" items={items} />
         )}
-      </section>
+      </section> */}
     </div>
   );
 }

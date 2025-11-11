@@ -120,10 +120,10 @@ export const itemForDonation = async (
 ): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page: 0,
-            size: 10,
+            page,
+            size,
             status: "CHARITY",
-            category: getCategoryEnum(category),
+            category: category ? getCategoryEnum(category) : undefined,
         },
         toCarouselItem
     );
