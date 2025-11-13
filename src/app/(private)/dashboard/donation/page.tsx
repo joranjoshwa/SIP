@@ -29,6 +29,10 @@ export default function DonationItems() {
         const data = await itemForDonation(chosenCategory ?? "", page, 10);
 
         setItems((prev) => {
+          if (reset) return data;
+
+          if (data.length === 0  && page === 0) return [];
+
           const combined = reset ? data : [...prev, ...data];
           const unique = Array.from(new Map(combined.map((i) => [i.id, i])).values());
 
@@ -99,7 +103,7 @@ export default function DonationItems() {
         ref={scrollAreaRef}
         className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth"
       >
-        {/* 🔹 Mudei pra um layout de grid igual ao da SearchPage */}
+
         {items.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
             {items.map((item) => (
@@ -127,24 +131,6 @@ export default function DonationItems() {
         )}
       </div>
 
-
-      {/* <section className="p-5 pt-3">
-        {loading && (
-          <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-            Carregando itens…
-          </p>
-        )}
-
-        {!loading && items.length === 0 && (
-          <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-            Nenhum item disponível para doação no momento.
-          </p>
-        )}
-
-        {!loading && items.length > 0 && (
-          <ItemCarousel title="" items={items} />
-        )}
-      </section> */}
     </div>
   );
 }
