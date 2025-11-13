@@ -1,35 +1,81 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
 import { CarouselItem, Item, UUID } from "@/src/types/item";
 import { itemForDonation } from "@/src/api/endpoints/item";
+import ItemCard from "@/src/components/ui/ItemCard";
 
 export default function DonationItems() {
   const router = useRouter();
 
   const [items, setItems] = useState<CarouselItem[]>([]);
   const [chosenCategory, setChosenCategory] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const fetchDonationItems = async (category?: string) => {
-    setLoading(true);
-    try {
-      const data = await itemForDonation(category ?? "");
-      setItems(data);
-    } catch (error) {
-      console.error("Erro ao carregar itens de doação:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const fetchDonationItems = useCallback(
+    async (reset = false) => {
+      if (loading) return;
+      setLoading(true);
+
+      try {
+        const data = await itemForDonation(chosenCategory ?? "", page, 10);
+
+        setItems((prev) => {
+          if (reset) return data;
+
+          if (data.length === 0  && page === 0) return [];
+
+          const combined = reset ? data : [...prev, ...data];
+          const unique = Array.from(new Map(combined.map((i) => [i.id, i])).values());
+
+          return unique;
+
+        });
+
+        setHasMore(data.length === 10);
+
+      } catch (error) {
+        console.error("Erro ao carregar itens para doação: ", error);
+
+      } finally {
+        setLoading(false);
+      }
+
+    },
+    [chosenCategory, page, loading]
+  );
 
   useEffect(() => {
-    fetchDonationItems(chosenCategory ?? "");
+    setPage(0);
+    fetchDonationItems(true);
   }, [chosenCategory]);
+
+  useEffect(() => {
+    if (page > 0) fetchDonationItems(false)
+  }, [page]);
+
+  useEffect(() => {
+    const el = scrollAreaRef.current;
+    if (!el) return;
+
+    const handleScroll = () => {
+      if (loading || !hasMore) return;
+      const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 50;
+
+      if (nearBottom) setPage((prev) => prev + 1);
+    };
+
+    el.addEventListener("scroll", handleScroll);
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, [loading, hasMore]);
 
   const handleCategorySelection = (category: string | null) => {
     setChosenCategory(category);
@@ -49,28 +95,42 @@ export default function DonationItems() {
       </header>
 
 
-      <section className="p-5 pb-0">
+      <section className="p-5 pb-0 flex-shrink-0">
         <CategoryItem handleCategorySelection={handleCategorySelection} />
       </section>
 
+      <div
+        ref={scrollAreaRef}
+        className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth"
+      >
 
-      <section className="p-5 pt-3">
+        {items.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
+            {items.map((item) => (
+              <ItemCard
+                key={item.id}
+                id={item.id}
+                picture={item.picture}
+                description={item.description}
+                time={item.time}
+              />
+            ))}
+          </div>
+        ) : (
+          !loading && (
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2 text-center">
+              Nenhum item disponível para doação no momento.
+            </p>
+          )
+        )}
+
         {loading && (
-          <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+          <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
             Carregando itens…
           </p>
         )}
+      </div>
 
-        {!loading && items.length === 0 && (
-          <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
-            Nenhum item disponível para doação no momento.
-          </p>
-        )}
-
-        {!loading && items.length > 0 && (
-          <ItemCarousel title="" items={items} />
-        )}
-      </section>
     </div>
   );
 }
