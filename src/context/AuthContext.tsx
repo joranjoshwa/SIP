@@ -24,6 +24,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const loginWithGoogle = (response: LoginResponse) => {
+        try {
+            setUser(response);
+            localStorage.setItem("token", response.token);
+            document.cookie = `token=${response.token}; path=/; max-age=86400; secure; samesite=lax`;
+        } catch (error) {
+            console.log("Erro no login: ", error);
+            throw error;
+        }
+    };
+
     const register = async (payload: RegisterPayload) => {
         try {
             const response = await registerResponse(payload);
@@ -43,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout }}>
+        <AuthContext.Provider value={{ user, login, register, loginWithGoogle,  logout }}>
             {children}
         </AuthContext.Provider>
     );

@@ -5,4 +5,5 @@ export type AuthContextType = {
     login: (payload: LoginPayload) => Promise<void>;
     logout: (redirectUrl?: string) => void;
     register: (payload: RegisterPayload) => Promise<RegisterResponse>;
+    loginWithGoogle: (response: LoginResponse) => void;
 }

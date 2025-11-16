@@ -117,3 +117,9 @@ export type ItemResponse = {
     createdAt: string;
     updatedAt: string;
 };
+
+export type EditItemRequest = {
+    description: string;
+    category: Category;
+    area: Area;
+};

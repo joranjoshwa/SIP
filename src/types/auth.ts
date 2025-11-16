@@ -21,3 +21,4 @@ export type RegisterResponse = {
     message: string;
     description: string;
 }
+

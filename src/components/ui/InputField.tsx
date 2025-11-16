@@ -11,6 +11,7 @@ type Props = {
     className?: string;
     required?: boolean;
     autoComplete?: string;
+    disabled?: boolean;
     onPressEnter?: (e:  React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
@@ -25,6 +26,7 @@ export const InputField = ({
     className,
     required = false,
     autoComplete,
+    disabled,
     onPressEnter
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
@@ -63,9 +65,11 @@ export const InputField = ({
                     value={value}
                     onChange={onChange}
                     className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
-            dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input"
+                                dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input
+                                disabled:opacity-60 disabled:cursor-not-allowed"
                     required={required}
                     autoComplete={autoComplete}
+                    disabled={disabled}
                     onKeyDown={onPressEnter}
                 />
 

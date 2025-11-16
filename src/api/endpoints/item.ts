@@ -115,14 +115,29 @@ export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
     return data;
 }
 
-export const itemForDonation = async (category: string): Promise<CarouselItem[]> => {
+export const itemForDonation = async (
+    category: string,
+    page = 0,
+    size = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
-      {
-        page: 0,
-        size: 10,
-        status: "CHARITY",
-        category: getCategoryEnum(category),
-      },
-      toCarouselItem
+        {
+            page,
+            size,
+            status: "CHARITY",
+            category: category ? getCategoryEnum(category) : undefined,
+        },
+        toCarouselItem
     );
-  };
+};
+
+export const editItem = async (
+    itemId: string,
+    data: EditItemRequest,
+): Promise<ItemResponse> => {
+    const response = await api.put<ItemResponse>(
+        `/items/admin/edit/${itemId}`,
+        data
+    );
+    return response.data;
+};
