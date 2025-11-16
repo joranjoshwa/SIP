@@ -31,7 +31,8 @@ export default function RootLayout({
     return (
         <html lang="pt-br" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground bg-white text-gray-900
+                dark:bg-neutral-900 dark:text-neutral-100`}
             >
                 {/* 🔐 Provider do Google OAuth */}
                 <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>

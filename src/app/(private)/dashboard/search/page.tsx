@@ -184,7 +184,7 @@ export default function SearchPage() {
                 <h2 className="mt-4 text-lg font-bold">Resultados da busca</h2>
                 <ScrollableArea ref={scrollAreaRef} className="pt-4 mt-4">
                     {results.length > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center">
+                        <div className="grid grid-cols-2 md:grid-cols-[repeat(auto-fit,minmax(160px,.12fr))] gap-3 place-items-center">
                             {results.map((item) => (
                                 <ItemCard
                                     key={item.id}

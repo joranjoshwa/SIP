@@ -8,6 +8,8 @@ import { CategoryKey, categoryKeyToCategory } from "@/src/constants/categories";
 import { Area, CreateItemRequest, DayPeriod } from "@/src/types/item";
 import { useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
+import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
+import { PageHeader } from "@/src/components/ui/PageHeader";
 
 export default function RegisterLostItem() {
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
@@ -53,7 +55,7 @@ export default function RegisterLostItem() {
             }
 
             alert("Item registrado com sucesso!");
-            
+
             setDescription("");
             setFindingDate("");
             setDayPeriod("MORNING");
@@ -68,94 +70,94 @@ export default function RegisterLostItem() {
     };
 
     return (
-        <main className="w-full flex flex-col px-4 py-4 md:ml-3 md:pl-6 pb-[90px] md:pb-0">
-            <h1 className="text-lg md:text-xl font-semibold mb-4">
-                Registrar novo item perdido
-            </h1>
+        <main className="w-full flex flex-col px-4 py-0 md:ml-3 md:pl-6 md:pb-0 min-h-0">
+            <PageHeader title={"Registrar novo item perdido"} />
 
-            <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
-            >
+            <ScrollableArea>
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
+                >
 
-                <InputField
-                    label="Descrição"
-                    placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
-                    required
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                />
-
-                <div className="flex flex-col w-full">
-                    <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
-                        Local onde foi encontrado
-                    </label>
-                    <select
-                        className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                    <InputField
+                        label="Descrição"
+                        placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
                         required
-                        value={area ?? ""}
-                        onChange={(e) => setArea(e.target.value as Area)}
-                    >
-                        <option value="">Selecione uma das opções</option>
-                        {Object.entries(areaLabels).map(([key, label]) => (
-                            <option key={key} value={key}>
-                                {label}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <InputField
-                    label="Dia que encontraram"
-                    type="date"
-                    required
-                    value={findingDate}
-                    onChange={(e) => setFindingDate(e.target.value)}
-                />
-
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Período do dia
-                    </label>
-                    <select
-                        value={dayPeriod}
-                        onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
-                        className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                    >
-                        <option value="MORNING">Manhã</option>
-                        <option value="AFTERNOON">Tarde</option>
-                        <option value="NIGHT">Noite</option>
-                    </select>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Categoria
-                    </label>
-                    <CategoryItem handleCategorySelection={setSelectedCategory} />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Imagem do item
-                    </label>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
-                        onChange={handleImageChange}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                     />
-                </div>
 
-                <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
-                    <Button variant="primary" className="md:w-40">
-                        Registrar item
-                    </Button>
-                    <Button variant="secondary" className="md:w-40">
-                        Cancelar
-                    </Button>
-                </div>
-            </form>
+                    <div className="flex flex-col w-full">
+                        <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            Local onde foi encontrado
+                        </label>
+                        <select
+                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            required
+                            value={area ?? ""}
+                            onChange={(e) => setArea(e.target.value as Area)}
+                        >
+                            <option value="">Selecione uma das opções</option>
+                            {Object.entries(areaLabels).map(([key, label]) => (
+                                <option key={key} value={key}>
+                                    {label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <InputField
+                        label="Dia que encontraram"
+                        type="date"
+                        required
+                        value={findingDate}
+                        onChange={(e) => setFindingDate(e.target.value)}
+                    />
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Período do dia
+                        </label>
+                        <select
+                            value={dayPeriod}
+                            onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
+                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                        >
+                            <option value="MORNING">Manhã</option>
+                            <option value="AFTERNOON">Tarde</option>
+                            <option value="NIGHT">Noite</option>
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Categoria
+                        </label>
+                        <CategoryItem handleCategorySelection={setSelectedCategory} />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Imagem do item
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
+                            onChange={handleImageChange}
+                        />
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
+                        <Button variant="primary" className="md:w-40">
+                            Registrar item
+                        </Button>
+                        <Button variant="secondary" className="md:w-40">
+                            Cancelar
+                        </Button>
+                    </div>
+                </form>
+            </ScrollableArea>
         </main>
     );
 }

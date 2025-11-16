@@ -7,6 +7,7 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
 import { CarouselItem, Item, UUID } from "@/src/types/item";
 import { itemForDonation } from "@/src/api/endpoints/item";
+import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
 
 export default function DonationItems() {
@@ -31,7 +32,7 @@ export default function DonationItems() {
         setItems((prev) => {
           if (reset) return data;
 
-          if (data.length === 0  && page === 0) return [];
+          if (data.length === 0 && page === 0) return [];
 
           const combined = reset ? data : [...prev, ...data];
           const unique = Array.from(new Map(combined.map((i) => [i.id, i])).values());
@@ -82,54 +83,49 @@ export default function DonationItems() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100">
+    <div className="flex flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100 min-h-0">
 
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-white/70 px-5 py-4 backdrop-blur-sm dark:bg-neutral-900/70">
-        <button
-          onClick={() => router.back()}
-          className="p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <h1 className="text-lg font-semibold md:text-2xl">Itens para Doação</h1>
+      <header className="sticky top-0 z-10 flex items-center gap-3 bg-white/70 px-5 pt-3 backdrop-blur-sm dark:bg-neutral-900/70">
+        <h1 className="text-lg font-semibold md:text-2xl">Itens para doação hoje</h1>
       </header>
 
-
-      <section className="p-5 pb-0 flex-shrink-0">
+      <section className="p-5 pb-0 pt-2 flex-shrink-0">
         <CategoryItem handleCategorySelection={handleCategorySelection} />
       </section>
 
-      <div
-        ref={scrollAreaRef}
-        className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth"
-      >
+      <ScrollableArea>
+        <div
+          ref={scrollAreaRef}
+          className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth"
+        >
 
-        {items.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
-            {items.map((item) => (
-              <ItemCard
-                key={item.id}
-                id={item.id}
-                picture={item.picture}
-                description={item.description}
-                time={item.time}
-              />
-            ))}
-          </div>
-        ) : (
-          !loading && (
-            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2 text-center">
-              Nenhum item disponível para doação no momento.
+          {items.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
+              {items.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  id={item.id}
+                  picture={item.picture}
+                  description={item.description}
+                  time={item.time}
+                />
+              ))}
+            </div>
+          ) : (
+            !loading && (
+              <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2 text-center">
+                Nenhum item disponível para doação no momento.
+              </p>
+            )
+          )}
+
+          {loading && (
+            <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
+              Carregando itens…
             </p>
-          )
-        )}
-
-        {loading && (
-          <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
-            Carregando itens…
-          </p>
-        )}
-      </div>
+          )}
+        </div>
+      </ScrollableArea>
 
     </div>
   );

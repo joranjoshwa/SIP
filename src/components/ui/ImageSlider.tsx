@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, ImageOff } from "lucide-react";
+import { ChevronRight, ChevronLeft, ImageOff } from "lucide-react";
 import { ItemDTO } from "@/src/types/item";
 
 interface ImageSliderProps {
@@ -22,6 +22,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
         );
     };
 
+
     return (
         <div className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden">
             {item.pictures.length > 0 ? (
@@ -39,20 +40,25 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
 
             <button
                 onClick={prevImage}
-                className="absolute top-1/2 left-2 transform -translate-y-1/2 text-white bg-black/50 p-2 rounded-full"
+                className="absolute left-0 top-0 bottom-0
+                            flex items-center justify-center
+                            w-10 rounded-full"
             >
-                <ArrowLeft className="h-6 w-6" />
-            </button>
-            <button
-                onClick={nextImage}
-                className="absolute top-1/2 right-2 transform -translate-y-1/2 text-white bg-black/50 p-2 rounded-full"
-            >
-                <ArrowRight className="h-6 w-6" />
+                <ChevronLeft
+                    className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
+                />
             </button>
 
-            <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-white">
-                {currentIndex + 1} / {item.pictures.length}
-            </div>
+            <button
+                onClick={nextImage}
+                className="absolute right-0 top-0 bottom-0
+                            flex items-center justify-center
+                            w-10 rounded-full"
+            >
+                <ChevronRight
+                    className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
+                />
+            </button>
         </div>
     );
 };

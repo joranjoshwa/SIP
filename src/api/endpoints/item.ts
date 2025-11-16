@@ -1,4 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
