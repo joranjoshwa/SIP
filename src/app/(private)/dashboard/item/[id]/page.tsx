@@ -19,6 +19,7 @@ import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
 import { postWithdrawal, getWithdrawalRequests } from "@/src/api/endpoints/withdrawal";
 import type { TimeString, UUID } from "@/src/types/withdrawal";
 import type { WithdrawalRequestItem } from "@/src/types/withdrawal";
+import Link from "next/link";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -133,15 +134,17 @@ export default async function ItemPage({ params }: Props) {
                             Reivindicar item
                         </OpenScheduleButton>
 
-                        <Button
-                            variant="primary"
-                            className={`mt-8 text-lg md:w-full ${role === Role.ADMIN ? "" : "hidden"}`}
+                        <Link
+                            href={`/dashboard/items/edit/${id}`}
+                            className={`block w-full py-3 min-h-[48px] rounded-xl font-medium text-sm transition-colors
+                                bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white 
+                                mt-8 text-lg md:w-full ${role === Role.ADMIN ? "" : "hidden"}`}
                         >
                             <div className="flex items-center justify-center gap-2 text-[16px]">
                                 <ClipboardPen className="w-5 h-5" />
                                 <span>Editar item</span>
                             </div>
-                        </Button>
+                        </Link>
                     </div>
                     <div className={`md:basis-2/5 ${role !== Role.ADMIN ? "hidden" : ""}`}>
                         <RequestsTab requestsItemArr={requestsData} itemStatus={item.status} />

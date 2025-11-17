@@ -25,7 +25,6 @@ function formatDays(days?: number) {
 
 export default function ItemCard({ id, picture, description, time }: ItemCard) {
     const bg = getTimeBgColor(time);
-    console.log(picture);
     const validPhoto = picture && picture.trim() !== "";
 
     return (

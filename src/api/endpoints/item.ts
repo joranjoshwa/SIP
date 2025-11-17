@@ -1,4 +1,4 @@
-import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, CreateItemRequest, ItemResponse, UUID, EditItemRequest } from "../../types/item";
+import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
 
@@ -66,8 +66,9 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
         sort: filters.sort,
         size: filters.size,
         aboutToBeDonated: filters.donation,
-        dateStart: filters.dateStart?.toISOString(),
-        dateEnd: filters.dateEnd?.toISOString(),
+        itemName: filters.itemName ?? undefined,
+        startPeriod: filters.dateStart?.toISOString().split('T')[0],
+        endPeriod: filters.dateEnd?.toISOString().split('T')[0],
         lastDays: filters.lastDays ?? undefined,
     };
 
@@ -79,6 +80,7 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
         search.append("category", getCategoryEnum(cat)!)
     );
 
+    console.log(`/items?${search.toString()}`);
     const { data } = await api.get(`/items?${search.toString()}`);
     return data.content.map((item: ItemDTO) => ({
         id: item.id,
