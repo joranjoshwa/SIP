@@ -7,7 +7,7 @@ type Props = {
 
 export default function DateNav({ dates, current }: Props) {
   return (
-    <div className="flex gap-6 md:gap-10 overflow-x-auto pb-4 mb-6 border-b">
+    <div className="w-full flex justify-between md:max-w-[95%] overflow-x-auto pb-4 mb-6">
       {dates.map((d, i) => (
         <button
           key={i}
@@ -15,7 +15,7 @@ export default function DateNav({ dates, current }: Props) {
         >
           <span
             className={`w-8 h-8 flex items-center justify-center rounded-full
-                    ${d === current ? "bg-green-100 text-green-700 font-semibold" : "bg-gray-100 text-gray-500"}
+                    ${d === current ? "bg-green-100 text-green-700 font-semibold" : "bg-transparent text-gray-500"}
             `}
           >
             {d}

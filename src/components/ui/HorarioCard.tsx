@@ -19,8 +19,12 @@ export default function HorarioCard({
   showActions
 }: Props) {
   return (
-    <div className="flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm border">
-      
+    <div
+      className="
+        flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm
+        hover:border hover:shadow-md transition-all
+      "
+    >
       <Image
         src={image}
         width={50}

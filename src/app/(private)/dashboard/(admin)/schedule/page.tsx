@@ -9,61 +9,63 @@ export default function Schedule() {
     label: string;
     items: HorarioItem[];
   }[] = [
-    {
-      label: "20 jun · Hoje · Sexta",
-      items: [
-        {
-          id: 1,
-          title: "Vasilha tupperware estampada com tampa laranja",
-          user: "Mathias Figueiredo",
-          time: "09:30h",
-          image: "/tupper.jpg",
-        },
-        {
-          id: 2,
-          title: "Tênis feminino da nike tamanho 34",
-          user: "Letícia Martins",
-          time: "09:40h",
-          image: "/tenis.jpg",
-        },
-      ],
-    },
-    {
-      label: "24 jun · Terça",
-      items: [
-        {
-          id: 3,
-          title: "Calça jeans 44 com lavagem clara",
-          user: "Guilherme Silva",
-          time: "08:15h",
-          image: "/calca.jpg",
-        },
-      ],
-    },
-    {
-      label: "25 jun · Quarta",
-      items: [
-        {
-          id: 4,
-          title: "Relógio bege",
-          user: "Luiza Garcia",
-          time: "08:15h",
-          image: "/relogio.jpg",
-        },
-        {
-          id: 5,
-          title: "Caneta stylus branca",
-          user: "Ana Silva Santos",
-          time: "08:55h",
-          image: "/caneta.jpg",
-          showActions: true,
-        },
-      ],
-    },
-  ];
+      {
+        label: "20 jun · Hoje · Sexta",
+        items: [
+          {
+            id: 1,
+            title: "Vasilha tupperware estampada com tampa laranja",
+            user: "Mathias Figueiredo",
+            time: "09:30h",
+            image: "/tupper.jpg",
+          },
+          {
+            id: 2,
+            title: "Tênis feminino da nike tamanho 34",
+            user: "Letícia Martins",
+            time: "09:40h",
+            image: "/tenis.jpg",
+          },
+        ],
+      },
+      {
+        label: "24 jun · Terça",
+        items: [
+          {
+            id: 3,
+            title: "Calça jeans 44 com lavagem clara",
+            user: "Guilherme Silva",
+            time: "08:15h",
+            image: "/calca.jpg",
+          },
+        ],
+      },
+      {
+        label: "25 jun · Quarta",
+        items: [
+          {
+            id: 4,
+            title: "Relógio bege",
+            user: "Luiza Garcia",
+            time: "08:15h",
+            image: "/relogio.jpg",
+          },
+          {
+            id: 5,
+            title: "Caneta stylus branca",
+            user: "Ana Silva Santos",
+            time: "08:55h",
+            image: "/caneta.jpg",
+            showActions: true,
+          },
+        ],
+      },
+    ];
 
   return (
     <section className="p-5">
+
+      <h1 className="text-2xl font-bold mb-4">Horários</h1>
 
       <AdminActionsMobile />
 
