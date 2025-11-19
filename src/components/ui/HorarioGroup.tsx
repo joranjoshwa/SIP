@@ -19,7 +19,7 @@ type Props = {
 export default function HorarioGroup({ label, items }: Props) {
   return (
     <div className="mb-8">
-      <p className="text-gray-700 font-medium mb-3">{label}</p>
+      <p className="text-gray-700 dark:text-gray-200 font-medium mb-3">{label}</p>
 
       <div className="space-y-4">
         {items.map(item => (

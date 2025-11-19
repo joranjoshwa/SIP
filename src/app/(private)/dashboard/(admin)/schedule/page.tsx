@@ -63,9 +63,9 @@ export default function Schedule() {
     ];
 
   return (
-    <section className="p-5">
+    <section className="p-5 transition-colors">
 
-      <h1 className="text-2xl font-bold mb-4">Horários</h1>
+      <h1 className="text-2xl font-bold mb-4 dark:text-gray-100">Horários</h1>
 
       <AdminActionsMobile />
 
