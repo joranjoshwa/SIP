@@ -1,7 +1,8 @@
 "use client"
 
-import { Check, X, Clock } from "lucide-react";
+import { Check, X, Clock, ImageOff } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 type Props = {
   title: string;
@@ -18,6 +19,10 @@ export default function HorarioCard({
   image,
   showActions
 }: Props) {
+
+  const [hasError, setHasError] = useState(false);
+  const validPhoto = image && image.trim() !== "" && !hasError;
+
   return (
     <div
       className="
@@ -27,13 +32,17 @@ export default function HorarioCard({
         hover:border-gray-200 dark:hover:border-neutral-600
       "
     >
-      <Image
-        src={image}
-        width={50}
-        height={50}
-        alt={title}
-        className="rounded-lg w-14 h-14 object-cover"
-      />
+      {validPhoto ? (
+        <Image
+          src={image}
+          alt={title}
+          fill
+          className="object-cover rounded-lg"
+          onError={() => setHasError(true)}
+        />
+      ) : (
+        <ImageOff className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+      )}
 
       <div className="flex-1">
         <p className="font-medium text-gray-800 text-sm dark:text-gray-100">{title}</p>
