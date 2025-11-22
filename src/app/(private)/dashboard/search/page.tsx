@@ -9,6 +9,7 @@ import ItemCard from "@/src/components/ui/ItemCard";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
+import { PageHeader } from "@/src/components/ui/PageHeader";
 
 export default function SearchPage() {
     const [filters, setFilters] = useState<SearchRequest>({
@@ -148,6 +149,7 @@ export default function SearchPage() {
 
     return (
         <section className="flex flex-col flex-1 min-h-0 p-5 pb-0">
+            <PageHeader title={"Busca"} goBack={false} />
             <SearchBar handleSearch={handleItemNameSearch} />
 
             <div className="relative mt-2 flex flex-col flex-1 min-h-0">

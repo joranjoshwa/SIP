@@ -9,6 +9,8 @@ import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoint
 import { useRouter } from "next/navigation";
 import { CategoryKey } from "@/src/constants/categories";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
+import { PageHeader } from "@/src/components/ui/PageHeader";
+import Link from "next/link";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
@@ -71,12 +73,7 @@ export default function DashboardPage() {
 
     return (
         <>
-            <header className="sticky top-0 z-10 flex items-center justify-between bg-white/70 px-5 py-0 backdrop-blur-sm dark:bg-neutral-900/70">
-                <h1 className="text-[18px] font-semibold md:text-2xl">Itens perdidos</h1>
-                <button className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800">
-                    <BellRing className="h-6 w-6 md:h-7 md:w-7" />
-                </button>
-            </header>
+            <PageHeader title={"Itens perdidos"} goBack={false} className="px-5 text-[18px]" showBell={true} />
 
             <section className="p-5 pt-0 md:pt-5">
                 <CategoryItem handleCategorySelection={handleCategorySelection} />
