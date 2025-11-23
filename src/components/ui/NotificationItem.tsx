@@ -1,13 +1,16 @@
+import Link from "next/link";
+
 type Props = {
+    id: string,
     title: string;
     message: string;
     time?: string;
     isNew?: boolean;
 }
 
-export const NotificationItem = ({ title, message, time, isNew = false }: Props) => {
+export const NotificationItem = ({ id, title, message, time, isNew = false }: Props) => {
     return (
-        <div className="border-b border-gray-200 dark:border-neutral-700 py-3 px-2">
+        <Link href={`/dashboard/item/${id}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2">
             <div className="flex items-start gap-2">
                 {isNew && (
                     <span className="mt-2 h-2 w-2 rounded-full bg-green-500 flex-shrink-0"></span>
@@ -26,7 +29,7 @@ export const NotificationItem = ({ title, message, time, isNew = false }: Props)
                     )}
                 </div>
             </div>
-        </div>
+        </Link>
     );
 }
 

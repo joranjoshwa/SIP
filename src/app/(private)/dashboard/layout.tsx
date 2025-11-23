@@ -17,6 +17,9 @@ import { useEffect, useState } from "react";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
+import { WebSocketProvider } from "@/src/context/WebsocketContext";
+
+type Channel = "admin" | "common";
 export default function DashboardLayout({
     children,
 }: {
@@ -69,7 +72,7 @@ export default function DashboardLayout({
                     >
                         <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                         <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/items" exact />
 
                         {role === Role.COMMON && (
                             <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
@@ -114,7 +117,11 @@ export default function DashboardLayout({
                     />
                 </div>
 
-                {children}
+                <WebSocketProvider
+                    autoReconnect={true}
+                    reconnectInterval={5000}>
+                        {children}
+                </WebSocketProvider>
             </main>
         </div>
     );

@@ -128,6 +128,7 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
                         {notifications.map((n) => (
                             <NotificationItem
                                 key={n.id}
+                                id={n.id.toString()}
                                 title={n.title}
                                 message={n.message}
                                 time={n.time}

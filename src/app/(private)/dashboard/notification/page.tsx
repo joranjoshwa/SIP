@@ -1,51 +1,96 @@
 "use client";
 
-import { ArrowLeft, Bell } from "lucide-react";
-import { NotificationItem } from "../../../../components/ui/NotificationItem";
+import { useEffect, useState } from "react";
+import { NotificationItem } from "@/src/components/ui/NotificationItem";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { useWebSocket, WebSocketProvider } from "@/src/context/WebsocketContext";
+import { extractRoleFromToken } from "@/src/utils/token";
+
+type Role = "admin" | "common";
+type Props = {
+    setUnread: (unread: number) => void;
+}
 
 export default function Notification() {
-    const notifications = [
-        {
-            id: 1,
-            title: "Solicitação de reivindicação recebida!",
-            message:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 5 min",
-            isNew: true,
-        },
-        {
-            id: 2,
-            title: "Solicitação de reivindicação recebida!",
-            message:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 20 min",
-        },
-        {
-            id: 3,
-            title: "Solicitação de reivindicação recebida!",
-            message:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 1 hora",
-        },
-    ];
+    const [token, setToken] = useState<string | null>(null);
+    const [role, setRole] = useState<Role | null>(null);
+    const [unread, setUnread] = useState<number>(0);
+
+    useEffect(() => {
+        // This only runs in the browser
+        if (typeof window !== "undefined") {
+            const storedToken = window.localStorage.getItem("token");
+            setToken(storedToken);
+
+            if (storedToken) {
+                // If your extractRoleFromToken expects the token, pass it here
+                const extractedRole = extractRoleFromToken(storedToken)?.toLowerCase() as Role;
+                setRole(extractedRole);
+                console.log(role);
+            }
+        }
+    }, []);
+
+    // You can show a loading state while we don't have token/role
+    if (!token || !role) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-white dark:bg-neutral-900">
+                <p>Carregando notificações...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-screen bg-white dark:bg-neutral-900 px-3">
-            <PageHeader title={`Notificações (${notifications.length})`}  />
+            <PageHeader title={`Notificações (${unread})`} />
 
             <main className="flex-1 overflow-y-auto">
-                {notifications.map((n) => (
-                    <NotificationItem
-                        key={n.id}
-                        title={n.title}
-                        message={n.message}
-                        time={n.time}
-                        isNew={n.isNew}
-                    />
-                ))}
+                <NotificationList setUnread={setUnread} />
             </main>
-
         </div>
     );
 }
+
+const NotificationList = ({ setUnread }: Props) => {
+    const { isConnected, messages, error, clearMessages } = useWebSocket();
+
+    useEffect(() => {
+        setUnread(messages.filter((msg) => msg.content?.isNew).length);
+    }, [messages, setUnread]);
+
+    return (
+        <div className="space-y-4 p-4">
+
+            {/* Lista de notificações */}
+            <div className="space-y-2">
+                {messages.length === 0 ? (
+                    <div className="flex items-center justify-center h-[60vh] text-center">
+                        {isConnected ? (
+                            <div>
+                                <img src="/mail.gif" alt="gif para notificações" />
+                                <p>
+
+                                    Pronto para receber notificações?
+                                </p>
+                            </div>
+                        ) : (
+                            <p className="bg-[#F9D0D0] dark:bg-[#570000] p-2 rounded-lg">Você não parece estar conectado! Hmmmm...</p>
+                        )}
+                    </div>
+                ) : (
+                    messages.map((msg, index) => (
+                        <NotificationItem
+                            key={msg.content.id}
+                            id={msg.content.id}
+                            title={msg.content.title}
+                            message={msg.content.message}
+                            time={msg.content.time}
+                            isNew={msg.content.isNew}
+                        />
+                    ))
+                )}
+            </div>
+
+        </div>
+    );
+};
