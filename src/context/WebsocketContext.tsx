@@ -157,7 +157,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                     };
 
                     setMessages((prev) => normalizeMessages([incoming, ...prev]));
-                    console.log(incoming);
                 } catch (e) {
                     console.error("Error parsing message:", e);
                 }

@@ -13,6 +13,8 @@ export const NotificationList = ({ setUnread }: Props) => {
         setUnread(messages.filter((msg) => msg.content?.isNew).length);
     }, [messages, setUnread]);
 
+    console.log(messages);
+
     return (
         <div className="space-y-4 p-4">
 
@@ -39,7 +41,7 @@ export const NotificationList = ({ setUnread }: Props) => {
                             itemName={msg.content.itemName}
                             claimer={msg.content.claimer}
                             claimScheduledTime={msg.content.claimScheduledTime}
-                            createdAt={msg.createdAt}
+                            receivedAt={msg.receivedAt}
                             isNew={msg.content.isNew}
                             onClick={() => markAsRead(msg.content.id, msg.email as string)}
                         />

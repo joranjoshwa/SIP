@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { NotificationContent, NotificationType } from "@/src/types/notification";
+import { create } from "domain";
 
 type Props = NotificationContent & {
     onClick?: () => void;
-    createdAt: string;
+    receivedAt: number;
 }
 
 type NotificationTemplateVars = {
@@ -85,10 +86,11 @@ const notificationTemplates: Record<
 };
 
 
-export const NotificationItem = ({ id, type, itemName, createdAt, isNew = false, onClick, claimer, claimScheduledTime }: Props) => {
+export const NotificationItem = ({ id, type, itemName, receivedAt, isNew = false, onClick, claimer, claimScheduledTime }: Props) => {
     const refused = type === "refused";
-    const formattedTime = createdAt ? formatRelativeTime(createdAt) : "";
+    const formattedTime = receivedAt ? formatRelativeTime(new Date(receivedAt).toISOString()) : "";
     const { date, time } = getClaimTimeParts(claimScheduledTime as string);
+    console.log(receivedAt);
 
     return (
         <Link href={`/dashboard/item/${id}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>
@@ -111,7 +113,7 @@ export const NotificationItem = ({ id, type, itemName, createdAt, isNew = false,
                         pickupTime: time || "00:00"
                     }).message}
                 </p>
-                {formattedTime && (
+                {receivedAt && (
                     <span className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                         {formattedTime}
                     </span>
