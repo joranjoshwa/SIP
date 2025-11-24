@@ -23,7 +23,7 @@ export type NotificationContent = {
     itemName: string;
     claimer?: string,
     claimScheduledTime?: string;
-    isNew: boolean;
+    isNew?: boolean;
 };
 
 export type NotificationMessage = {
