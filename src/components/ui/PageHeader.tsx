@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { NotificationItem } from "./NotificationItem";
 import { NotificationType } from "@/src/types/notification";
+import { NotificationList } from "./NotificationList";
 
 type Props = {
     title: string;
@@ -18,52 +19,8 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement | null>(null);
+    const [unread, setUnread] = useState<number>(0);
 
-    const notifications = [
-        {
-            id: 1,
-            type: "new",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 5 min",
-            isNew: true,
-        },
-        {
-            id: 2,
-            type: "new",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 20 min",
-        },
-        {
-            id: 3,
-            type: "new",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 1 hora",
-        },
-        {
-            id: 4,
-            type: "refused",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 1 hora",
-        },
-        {
-            id: 5,
-            type: "refused",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 1 hora",
-        },
-        {
-            id: 6,
-            type: "refused",
-            itemName:
-                'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            createdAt: "há 1 hora",
-        },
-    ];
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -121,20 +78,11 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
                     role="dialog"
                     aria-modal="true"
                     aria-label="Notifications"
-                    className="absolute top-full right-0 mt-2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-xl p-5 z-10
+                    className="absolute top-full right-0 mt-2 w-full max-w-md bg-white dark:bg-neutral-900 rounded-xl py-2 z-10
                                 md:border md:border-gray-300 md:dark:border-gray-600"
                 >
-                    <div className="rounded-lg py-2 bg-white dark:bg-neutral-900 min-h-0 max-h-[60vh] overflow-auto scrollbar-hide">
-                        {notifications.map((n) => (
-                            <NotificationItem
-                                key={n.id}
-                                id={n.id.toString()}
-                                type={n.type as NotificationType}
-                                itemName={n.itemName}
-                                createdAt={n.createdAt}
-                                isNew={n.isNew as boolean}
-                            />
-                        ))}
+                    <div className="rounded-lg bg-white dark:bg-neutral-900 min-h-0 max-h-[60vh] overflow-auto scrollbar-hide">
+                        <NotificationList setUnread={setUnread} />
                     </div>
                 </div>
             )}
