@@ -2,29 +2,8 @@
 
 import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { extractRoleFromToken } from '../utils/token';
-
-type Channel = "admin" | "common";
-// Tipos TypeScript para melhor type safety
-interface Notification {
-    id: string;
-    content: {
-        id: string,
-        title: string,
-        message: string,
-        time: string,
-        isNew: boolean
-    };
-    channel: 'Admin' | 'User';
-    timestamp: string;
-}
-
-interface WebSocketContextValue {
-    isConnected: boolean;
-    messages: Notification[];
-    error: string;
-    clearMessages: () => void;
-    reconnect: () => void;
-}
+import { Channel, WebSocketContextValue, NotificationMessage } from '../types/notification';
+import { IncomingMessage } from 'http';
 
 interface WebSocketProviderProps {
     children: React.ReactNode;
@@ -33,6 +12,34 @@ interface WebSocketProviderProps {
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
+const STORAGE_KEY = "sip_notifications";
+const MESSAGE_TTL_MS = 2 * 3600 * 1000; //duas horas
+
+const filterValidMessages = (messages: NotificationMessage[]): NotificationMessage[] => {
+    const now = Date.now();
+    return messages.filter((m) => now - m.receivedAt < MESSAGE_TTL_MS);
+};
+
+const normalizeMessages = (messages: NotificationMessage[]): NotificationMessage[] => {
+    const valid = filterValidMessages(messages);
+
+    const byId = new Map<string, NotificationMessage>();
+
+    for (const msg of valid) {
+        const key = `${msg.content.id}-${msg.email}`;
+        const existing = byId.get(key);
+
+        if (!existing || msg.receivedAt > existing.receivedAt) {
+            byId.set(key, msg);
+        }
+    }
+
+    console.log(byId);
+
+    return Array.from(byId.values()).sort(
+        (a, b) => b.receivedAt - a.receivedAt
+    );
+};
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     children,
@@ -41,7 +48,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 }) => {
     const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
     const [isConnected, setIsConnected] = useState(false);
-    const [messages, setMessages] = useState<Notification[]>([]);
+    const [messages, setMessages] = useState<NotificationMessage[]>([]);
     const [error, setError] = useState('');
     const [token, setToken] = useState<string>("");
     const [channel, setChannel] = useState<Channel | null>(null);
@@ -51,19 +58,61 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     const shouldReconnectRef = useRef(true);
     const mountedRef = useRef(true);
 
-    // Função para limpar mensagens
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+
+        try {
+            const parsed: NotificationMessage[] = JSON.parse(raw);
+            setMessages(normalizeMessages(parsed));
+        } catch (e) {
+            console.error("Failed to parse notifications from localStorage", e);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const valid = filterValidMessages(messages);
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(valid));
+    }, [messages]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setMessages((prev) => filterValidMessages(prev));
+        }, 30_000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const markAsRead = useCallback((id: string, email: string) => {
+        setMessages((prev) =>
+            prev.map((msg) =>
+                msg.content.id === id && msg.email === email
+                    ? {
+                        ...msg,
+                        content: {
+                            ...msg.content,
+                            isNew: false,
+                        },
+                    }
+                    : msg
+            )
+        );
+    }, []);
+
     const clearMessages = useCallback(() => {
         setMessages([]);
     }, []);
 
     useEffect(() => {
-        // This only runs in the browser
         if (typeof window !== "undefined") {
             const storedToken = window.localStorage.getItem("token");
             setToken(storedToken as string);
 
             if (storedToken) {
-                // If your extractRoleFromToken expects the token, pass it here
                 const extractedRole = extractRoleFromToken(storedToken)?.toLowerCase() as Channel;
                 setChannel(extractedRole);
                 console.log(channel);
@@ -71,15 +120,12 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
         }
     }, []);
 
-    // Função para criar conexão
     const connect = useCallback(() => {
-        // Limpar conexão anterior se existir
         if (wsRef.current) {
             wsRef.current.close();
             wsRef.current = null;
         }
 
-        // Limpar timeout de reconexão anterior
         if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
@@ -101,27 +147,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             };
 
             ws.onmessage = (event) => {
-                if (!mountedRef.current) return;
-
                 try {
                     const data = JSON.parse(event.data);
-                    const content = JSON.parse(data.content);
-                    const notification: Notification = {
-                        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                        content: content,
-                        channel: data.isAdmin ? 'Admin' : 'User',
-                        timestamp: new Date().toISOString(),
+                    const { content, ...notificationData } = data;
+                    const incoming: NotificationMessage = {
+                        content: JSON.parse(content),
+                        ...notificationData,
+                        receivedAt: Date.now(),
                     };
-                    setMessages((prevMessages) => [notification, ...prevMessages]);
+
+                    setMessages((prev) => normalizeMessages([incoming, ...prev]));
+                    console.log(incoming);
                 } catch (e) {
-                    console.error('Error parsing message:', e);
-                    const notification: Notification = {
-                        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                        content: event.data,
-                        channel: channel === 'admin' ? 'Admin' : 'User',
-                        timestamp: new Date().toISOString(),
-                    };
-                    setMessages((prevMessages) => [notification, ...prevMessages]);
+                    console.error("Error parsing message:", e);
                 }
             };
 
@@ -140,7 +178,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 setIsConnected(false);
                 wsRef.current = null;
 
-                // Mensagens de erro específicas por código
                 if (event.code === 1006) {
                     setError('Connection closed unexpectedly. Attempting to reconnect...');
                 } else if (event.code === 1002) {
@@ -151,7 +188,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                     setError('Connection lost. Attempting to reconnect...');
                 }
 
-                // Reconexão automática
                 if (autoReconnect && shouldReconnectRef.current && event.code !== 1008) {
                     reconnectTimeoutRef.current = setTimeout(() => {
                         if (mountedRef.current && shouldReconnectRef.current) {
@@ -170,7 +206,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             setError('Failed to connect: ' + errorMessage);
             setIsConnected(false);
 
-            // Tentar reconectar em caso de erro
             if (autoReconnect && shouldReconnectRef.current) {
                 reconnectTimeoutRef.current = setTimeout(() => {
                     if (mountedRef.current) {
@@ -181,13 +216,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
         }
     }, [wsUrl, token, channel, autoReconnect, reconnectInterval]);
 
-    // Função de reconexão manual
     const reconnect = useCallback(() => {
         shouldReconnectRef.current = true;
         connect();
     }, [connect]);
 
-    // Conectar quando o componente monta ou quando dependências mudam
     useEffect(() => {
         mountedRef.current = true;
         shouldReconnectRef.current = true;
@@ -215,7 +248,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 messages,
                 error,
                 clearMessages,
-                reconnect
+                reconnect,
+                markAsRead
             }}
         >
             {children}
@@ -223,7 +257,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     );
 };
 
-// Hook customizado para usar o WebSocket context
 export const useWebSocket = (): WebSocketContextValue => {
     const context = useContext(WebSocketContext);
     if (!context) {

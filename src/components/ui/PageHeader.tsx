@@ -5,7 +5,7 @@ import { ArrowLeft, BellRing, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { NotificationItem } from "./NotificationItem";
-import { ScrollableArea } from "./ScrollableArea";
+import { NotificationType } from "@/src/types/notification";
 
 type Props = {
     title: string;
@@ -17,51 +17,51 @@ type Props = {
 export function PageHeader({ title, showBell = false, goBack = true, className }: Props) {
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState(false);
-    const modalRef = useRef<HTMLDivElement | null>(null); // Reference to modal container
+    const modalRef = useRef<HTMLDivElement | null>(null);
 
     const notifications = [
         {
             id: 1,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "new",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 5 min",
+            createdAt: "há 5 min",
             isNew: true,
         },
         {
             id: 2,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "new",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 20 min",
+            createdAt: "há 20 min",
         },
         {
             id: 3,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "new",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 1 hora",
+            createdAt: "há 1 hora",
         },
         {
             id: 4,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "refused",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 1 hora",
+            createdAt: "há 1 hora",
         },
         {
             id: 5,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "refused",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 1 hora",
+            createdAt: "há 1 hora",
         },
         {
             id: 6,
-            title: "Solicitação de reivindicação recebida!",
-            message:
+            type: "refused",
+            itemName:
                 'Ana Castelo enviou um pedido de recuperar o item "Garrafa de água preta e transparente...". Analise a solicitação!',
-            time: "há 1 hora",
+            createdAt: "há 1 hora",
         },
     ];
 
@@ -117,7 +117,7 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
 
             {modalOpen && (
                 <div
-                    ref={modalRef} // Attach the ref to the modal
+                    ref={modalRef}
                     role="dialog"
                     aria-modal="true"
                     aria-label="Notifications"
@@ -129,10 +129,10 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
                             <NotificationItem
                                 key={n.id}
                                 id={n.id.toString()}
-                                title={n.title}
-                                message={n.message}
-                                time={n.time}
-                                isNew={n.isNew}
+                                type={n.type as NotificationType}
+                                itemName={n.itemName}
+                                createdAt={n.createdAt}
+                                isNew={n.isNew as boolean}
                             />
                         ))}
                     </div>

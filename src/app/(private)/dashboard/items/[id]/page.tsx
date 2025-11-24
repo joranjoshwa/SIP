@@ -79,8 +79,6 @@ export default async function ItemPage({ params }: Props) {
     const { id } = params;
 
     if (!token) {
-        // Choose what makes sense for your app:
-        // redirect("/login");
         redirect("/dashboard/items");
     }
 
@@ -176,7 +174,6 @@ export default async function ItemPage({ params }: Props) {
             </div>
         );
     } catch (e) {
-        // If the item doesn't exist or the API failed
         redirect("/dashboard");
     }
 }

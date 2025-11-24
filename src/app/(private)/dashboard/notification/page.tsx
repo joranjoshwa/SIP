@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { NotificationItem } from "@/src/components/ui/NotificationItem";
 import { PageHeader } from "@/src/components/ui/PageHeader";
-import { useWebSocket, WebSocketProvider } from "@/src/context/WebsocketContext";
+import { useWebSocket } from "@/src/context/WebsocketContext";
 import { extractRoleFromToken } from "@/src/utils/token";
 
 type Role = "admin" | "common";
@@ -17,13 +17,11 @@ export default function Notification() {
     const [unread, setUnread] = useState<number>(0);
 
     useEffect(() => {
-        // This only runs in the browser
         if (typeof window !== "undefined") {
             const storedToken = window.localStorage.getItem("token");
             setToken(storedToken);
 
             if (storedToken) {
-                // If your extractRoleFromToken expects the token, pass it here
                 const extractedRole = extractRoleFromToken(storedToken)?.toLowerCase() as Role;
                 setRole(extractedRole);
                 console.log(role);
@@ -31,7 +29,6 @@ export default function Notification() {
         }
     }, []);
 
-    // You can show a loading state while we don't have token/role
     if (!token || !role) {
         return (
             <div className="flex items-center justify-center h-screen bg-white dark:bg-neutral-900">
@@ -42,7 +39,7 @@ export default function Notification() {
 
     return (
         <div className="flex flex-col h-screen bg-white dark:bg-neutral-900 px-3">
-            <PageHeader title={`Notificações (${unread})`} />
+            <PageHeader title={`Notificações (${unread})`} showBell={true} />
 
             <main className="flex-1 overflow-y-auto">
                 <NotificationList setUnread={setUnread} />
@@ -52,7 +49,7 @@ export default function Notification() {
 }
 
 const NotificationList = ({ setUnread }: Props) => {
-    const { isConnected, messages, error, clearMessages } = useWebSocket();
+    const { isConnected, messages, error, clearMessages, markAsRead } = useWebSocket();
 
     useEffect(() => {
         setUnread(messages.filter((msg) => msg.content?.isNew).length);
@@ -61,7 +58,6 @@ const NotificationList = ({ setUnread }: Props) => {
     return (
         <div className="space-y-4 p-4">
 
-            {/* Lista de notificações */}
             <div className="space-y-2">
                 {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-[60vh] text-center">
@@ -69,7 +65,6 @@ const NotificationList = ({ setUnread }: Props) => {
                             <div>
                                 <img src="/mail.gif" alt="gif para notificações" />
                                 <p>
-
                                     Pronto para receber notificações?
                                 </p>
                             </div>
@@ -80,12 +75,15 @@ const NotificationList = ({ setUnread }: Props) => {
                 ) : (
                     messages.map((msg, index) => (
                         <NotificationItem
-                            key={msg.content.id}
+                            key={`${index}-${msg.content.id}-${new Date().getMilliseconds()}`}
                             id={msg.content.id}
-                            title={msg.content.title}
-                            message={msg.content.message}
-                            time={msg.content.time}
+                            type={msg.content.type}
+                            itemName={msg.content.itemName}
+                            claimer={msg.content.claimer}
+                            claimScheduledTime={msg.content.claimScheduledTime}
+                            createdAt={msg.createdAt}
                             isNew={msg.content.isNew}
+                            onClick={() => markAsRead(msg.content.id, msg.email as string)}
                         />
                     ))
                 )}
