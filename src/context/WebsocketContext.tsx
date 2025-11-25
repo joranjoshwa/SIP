@@ -34,8 +34,6 @@ const normalizeMessages = (messages: NotificationMessage[]): NotificationMessage
         }
     }
 
-    console.log(byId);
-
     return Array.from(byId.values()).sort(
         (a, b) => b.receivedAt - a.receivedAt
     );
@@ -68,7 +66,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             const parsed: NotificationMessage[] = JSON.parse(raw);
             setMessages(normalizeMessages(parsed));
         } catch (e) {
-            console.error("Failed to parse notifications from localStorage", e);
+            setError("Failed to parse notifications from localStorage " + e);
         }
     }, []);
 
@@ -115,7 +113,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             if (storedToken) {
                 const extractedRole = extractRoleFromToken(storedToken)?.toLowerCase() as Channel;
                 setChannel(extractedRole);
-                console.log(channel);
             }
         }
     }, []);
@@ -141,7 +138,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
             ws.onopen = () => {
                 if (!mountedRef.current) return;
-                console.log('WebSocket connected');
                 setIsConnected(true);
                 setError('');
             };
@@ -159,19 +155,17 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 
                     setMessages((prev) => normalizeMessages([incoming, ...prev]));
                 } catch (e) {
-                    console.error("Error parsing message:", e);
+                    setError("Error parsing message: " + e);
                 }
             };
 
             ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
                 if (mountedRef.current) {
                     setError('Connection error occurred');
                 }
             };
 
             ws.onclose = (event) => {
-                console.log('WebSocket closed:', event.code, event.reason);
 
                 if (!mountedRef.current) return;
 
@@ -191,7 +185,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 if (autoReconnect && shouldReconnectRef.current && event.code !== 1008) {
                     reconnectTimeoutRef.current = setTimeout(() => {
                         if (mountedRef.current && shouldReconnectRef.current) {
-                            console.log('Attempting to reconnect...');
                             connect();
                         }
                     }, reconnectInterval);
@@ -201,7 +194,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             wsRef.current = ws;
 
         } catch (err) {
-            console.error('Failed to connect:', err);
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';
             setError('Failed to connect: ' + errorMessage);
             setIsConnected(false);

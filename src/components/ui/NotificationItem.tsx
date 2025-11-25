@@ -77,12 +77,11 @@ export const NotificationItem = ({ id, type, itemName, receivedAt, isNew = false
     const refused = type === "refused";
     const formattedTime = receivedAt ? formatRelativeTime(new Date(receivedAt).toISOString()) : "";
     const { date, time } = getClaimTimeParts(claimScheduledTime as string);
-    console.log(isNew);
 
     return (
         <Link href={`/dashboard/item/${id}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>
 
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-2">
                 <div className="flex items-start gap-2">
                     {isNew && (
                         <span className={`mt-2 h-2 w-2 rounded-full flex-shrink-0 ${refused ? "bg-red-500" : "bg-green-500"}`}></span>

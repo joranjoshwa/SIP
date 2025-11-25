@@ -5,6 +5,7 @@ import { PageHeader } from "@/src/components/ui/PageHeader";
 import { extractRoleFromToken } from "@/src/utils/token";
 import { NotificationList } from "@/src/components/ui/NotificationList";
 import { Role } from "@/src/types/notification";
+import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 
 
 export default function Notification() {
@@ -20,7 +21,6 @@ export default function Notification() {
             if (storedToken) {
                 const extractedRole = extractRoleFromToken(storedToken)?.toLowerCase() as Role;
                 setRole(extractedRole);
-                console.log(role);
             }
         }
     }, []);
@@ -34,11 +34,13 @@ export default function Notification() {
     }
 
     return (
-        <div className="flex flex-col h-screen bg-white dark:bg-neutral-900 px-3">
-            <PageHeader title={`Notificações (${unread})`} showBell={true} />
+        <div className="flex flex-col h-screen bg-white dark:bg-neutral-900 min-h-0">
+            <PageHeader title={`Notificações (${unread})`} showBell={true} className="px-5 mb-0" />
 
-            <main className="flex-1 overflow-y-auto">
-                <NotificationList setUnread={setUnread} />
+            <main className="flex-1 min-h-0">
+                <ScrollableArea>
+                    <NotificationList setUnread={setUnread} />
+                </ScrollableArea>
             </main>
         </div>
     );

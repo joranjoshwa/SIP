@@ -3,22 +3,21 @@ import { useEffect } from "react";
 import { NotificationItem } from "./NotificationItem";
 
 type Props = {
-    setUnread: (unread: number) => void;
+    setUnread?: (unread: number) => void;
 }
 
 export const NotificationList = ({ setUnread }: Props) => {
     const { isConnected, messages, error, clearMessages, markAsRead } = useWebSocket();
 
     useEffect(() => {
+        if (!setUnread) return;
         setUnread(messages.filter((msg) => msg.content?.isNew).length);
     }, [messages, setUnread]);
 
-    console.log(messages);
-
     return (
-        <div className="space-y-4 p-4">
+        <div className="px-4">
 
-            <div className="space-y-2">
+            <div className="space-y-2 pb-2">
                 {messages.length === 0 ? (
                     <div className="flex items-center justify-center h-[60vh] text-center">
                         {isConnected ? (

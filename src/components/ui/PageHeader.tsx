@@ -2,9 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft, BellRing, X } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { NotificationList } from "./NotificationList";
+import { useWebSocket } from "@/src/context/WebsocketContext";
 
 type Props = {
     title: string;
@@ -17,7 +18,6 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement | null>(null);
-    const [unread, setUnread] = useState<number>(0);
 
 
     useEffect(() => {
@@ -32,6 +32,13 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    const { messages } = useWebSocket();
+
+    const unread = useMemo(
+        () => messages.filter((msg) => msg.content?.isNew).length,
+        [messages]
+    );
 
     return (
         <div className={`flex relative items-center justify-between gap-2 mb-4 ${className}`}>
@@ -62,9 +69,12 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
 
                     <button
                         onClick={() => setModalOpen(true)}
-                        className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 hidden md:block"
+                        className="rounded-xl relative p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 hidden md:block"
                         aria-label="Open notifications"
                     >
+                        {unread > 0 && (
+                            <div className="absolute bg-red-500 w-5 h-5 rounded-full text-sm top-[0px] right-1">{unread}</div>
+                        )}
                         <BellRing className="h-6 w-6 md:h-7 md:w-7" />
                     </button>
                 </>
@@ -80,7 +90,7 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
                                 md:border md:border-gray-300 md:dark:border-gray-600"
                 >
                     <div className="rounded-lg bg-white dark:bg-neutral-900 min-h-0 max-h-[60vh] overflow-auto scrollbar-hide">
-                        <NotificationList setUnread={setUnread} />
+                        <NotificationList />
                     </div>
                 </div>
             )}
