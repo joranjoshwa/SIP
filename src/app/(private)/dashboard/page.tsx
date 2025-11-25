@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { CategoryKey } from "@/src/constants/categories";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import { PageHeader } from "@/src/components/ui/PageHeader";
-import Link from "next/link";
 
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({

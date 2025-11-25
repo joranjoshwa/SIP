@@ -1,5 +1,6 @@
 export type Channel = "admin" | "common";
 export type NotificationType = "new" | "refused" | "received" | "approved";
+export type Role = "admin" | "common";
 
 export interface Notification {
     id: string;
@@ -33,4 +34,16 @@ export type NotificationMessage = {
     email?: string;
     receivedAt: number;
     createdAt: string;
+};
+
+export type ClaimTime = {
+    date: string;
+    time: string;
+};
+
+export type NotificationTemplateVars = {
+    itemDescription: string;
+    pickupDate?: string;
+    pickupTime?: string;
+    claimerName?: string;
 };

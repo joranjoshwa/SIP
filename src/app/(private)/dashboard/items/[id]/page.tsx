@@ -18,7 +18,7 @@ import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
 import { postWithdrawal, getWithdrawalRequests } from "@/src/api/endpoints/withdrawal";
 import type { TimeString, UUID, WithdrawalRequestItem } from "@/src/types/withdrawal";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 

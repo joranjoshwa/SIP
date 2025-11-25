@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { NotificationItem } from "@/src/components/ui/NotificationItem";
 import { PageHeader } from "@/src/components/ui/PageHeader";
-import { useWebSocket } from "@/src/context/WebsocketContext";
 import { extractRoleFromToken } from "@/src/utils/token";
 import { NotificationList } from "@/src/components/ui/NotificationList";
+import { Role } from "@/src/types/notification";
 
-type Role = "admin" | "common";
 
 export default function Notification() {
     const [token, setToken] = useState<string | null>(null);

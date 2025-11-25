@@ -1,18 +1,10 @@
 import Link from "next/link";
-import { NotificationContent, NotificationType } from "@/src/types/notification";
-import { create } from "domain";
+import { NotificationType, NotificationTemplateVars, NotificationContent, ClaimTime } from "@/src/types/notification";
 
-type Props = NotificationContent & {
+export type Props = NotificationContent & {
     onClick?: () => void;
     receivedAt: number;
 }
-
-type NotificationTemplateVars = {
-    itemDescription: string;
-    pickupDate?: string;
-    pickupTime?: string;
-    claimerName?: string;
-};
 
 export function formatRelativeTime(isoString: string): string {
     const date = new Date(isoString);
@@ -32,11 +24,6 @@ export function formatRelativeTime(isoString: string): string {
     if (diffDays === 1) return "há 1 dia";
     return `há ${diffDays} dias`;
 }
-
-export type ClaimTime = {
-    date: string;
-    time: string;
-};
 
 export function getClaimTimeParts(claimScheduledTime: string): ClaimTime {
     const d = new Date(claimScheduledTime);
@@ -90,7 +77,7 @@ export const NotificationItem = ({ id, type, itemName, receivedAt, isNew = false
     const refused = type === "refused";
     const formattedTime = receivedAt ? formatRelativeTime(new Date(receivedAt).toISOString()) : "";
     const { date, time } = getClaimTimeParts(claimScheduledTime as string);
-    console.log(receivedAt);
+    console.log(isNew);
 
     return (
         <Link href={`/dashboard/item/${id}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>

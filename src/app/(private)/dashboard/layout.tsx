@@ -19,7 +19,6 @@ import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
 import { WebSocketProvider } from "@/src/context/WebsocketContext";
 
-type Channel = "admin" | "common";
 export default function DashboardLayout({
     children,
 }: {

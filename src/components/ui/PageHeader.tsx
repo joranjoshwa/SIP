@@ -4,8 +4,6 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, BellRing, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { NotificationItem } from "./NotificationItem";
-import { NotificationType } from "@/src/types/notification";
 import { NotificationList } from "./NotificationList";
 
 type Props = {

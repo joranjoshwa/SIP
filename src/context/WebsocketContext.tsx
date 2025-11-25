@@ -150,11 +150,11 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 try {
                     const data = JSON.parse(event.data);
                     const { content, ...notificationData } = data;
+                    const contentParsed = JSON.parse(content);
                     const incoming: NotificationMessage = {
-                        content: JSON.parse(content),
+                        content: { ...contentParsed, isNew: true },
                         ...notificationData,
                         receivedAt: Date.now(),
-                        isNew: true,
                     };
 
                     setMessages((prev) => normalizeMessages([incoming, ...prev]));
