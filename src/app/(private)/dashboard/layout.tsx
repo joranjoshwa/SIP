@@ -17,6 +17,8 @@ import { useEffect, useState } from "react";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
+import { WebSocketProvider } from "@/src/context/WebsocketContext";
+
 export default function DashboardLayout({
     children,
 }: {
@@ -69,7 +71,7 @@ export default function DashboardLayout({
                     >
                         <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                         <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/search" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/items" exact />
 
                         {role === Role.COMMON && (
                             <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />
@@ -107,14 +109,18 @@ export default function DashboardLayout({
             </aside>
 
             <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
-                <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-4 pt-8 mb-0">
+                <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-4 pt-8 mb-[1.5rem]">
                     <Logo
                         imageClassName="h-6 md:w-[87px] md:h-8"
                         mode={darkMode ? "dark" : "light"}
                     />
                 </div>
 
-                {children}
+                <WebSocketProvider
+                    autoReconnect={true}
+                    reconnectInterval={5000}>
+                        {children}
+                </WebSocketProvider>
             </main>
         </div>
     );

@@ -80,7 +80,6 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
         search.append("category", getCategoryEnum(cat)!)
     );
 
-    console.log(`/items?${search.toString()}`);
     const { data } = await api.get(`/items?${search.toString()}`);
     return data.content.map((item: ItemDTO) => ({
         id: item.id,

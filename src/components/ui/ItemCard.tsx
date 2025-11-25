@@ -29,7 +29,7 @@ export default function ItemCard({ id, picture, description, time }: ItemCard) {
 
     return (
         <Link
-            href={`/dashboard/item/${id}`}
+            href={`/dashboard/items/${id}`}
             className="w-full flex-shrink-0 rounded-2xl overflow-hidden bg-white dark:bg-neutral-900 block"
         >
             <div className="relative w-full h-[140px] md:h-[170px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
