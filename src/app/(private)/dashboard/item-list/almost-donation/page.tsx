@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { CarouselItem } from "@/src/types/item";
-import { itemFromLast48Hours } from "@/src/api/endpoints/item";
+import { itemAboutToBeDonated } from "@/src/api/endpoints/item";
 import ItemListLayout from "@/src/components/ui/ItemListLayout";
 
-export default function LostItems48h() {
+export default function AboutToBeDonatedItems() {
   const [items, setItems] = useState<CarouselItem[]>([]);
   const [chosenCategory, setChosenCategory] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -16,10 +16,10 @@ export default function LostItems48h() {
     setLoading(true);
 
     try {
-      const data = await itemFromLast48Hours(chosenCategory ?? "");
+      const data = await itemAboutToBeDonated(chosenCategory ?? "");
       setItems(data);
     } catch (error) {
-      console.error("Erro ao carregar itens perdidos:", error);
+      console.error("Erro ao carregar itens quase indo para doação:", error);
     } finally {
       setLoading(false);
     }
@@ -31,10 +31,10 @@ export default function LostItems48h() {
 
   return (
     <ItemListLayout
-      title="Itens perdidos nas últimas 48h"
+      title="Itens prestes a serem doados"
       items={items}
       loading={loading}
-      emptyMessage="Nenhum item perdido nas últimas 48h."
+      emptyMessage="Nenhum item próximo de doação no momento."
       scrollAreaRef={scrollAreaRef}
       onCategorySelect={setChosenCategory}
       backHref="/dashboard"

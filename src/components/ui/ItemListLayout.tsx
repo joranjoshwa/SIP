@@ -5,6 +5,8 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import ItemCard from "@/src/components/ui/ItemCard";
 import { CarouselItem } from "@/src/types/item";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 type ItemListLayoutProps = {
   title: string;
@@ -13,6 +15,7 @@ type ItemListLayoutProps = {
   emptyMessage: string;
   scrollAreaRef: RefObject<HTMLDivElement | null>;
   onCategorySelect: (category: string | null) => void;
+  backHref?: string;
 };
 
 export default function ItemListLayout({
@@ -22,11 +25,29 @@ export default function ItemListLayout({
   emptyMessage,
   scrollAreaRef,
   onCategorySelect,
+  backHref,
 }: ItemListLayoutProps) {
   return (
     <div className="flex flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100 min-h-0">
       
       <header className="sticky top-0 z-10 flex items-center gap-3 bg-white/70 px-5 pt-3 backdrop-blur-sm dark:bg-neutral-900/70">
+
+      {backHref && (
+        <Link
+        href={backHref}
+        aria-label="Voltar"
+        className="
+            p-2 -ml-2
+            rounded-full
+            text-gray-700 dark:text-neutral-200
+            hover:bg-gray-100 dark:hover:bg-neutral-800
+            transition
+        "
+        >
+            <ArrowLeft className="w-5 h-5" />
+        </Link>
+  )}
+
         <h1 className="text-lg font-semibold md:text-2xl">
           {title}
         </h1>
