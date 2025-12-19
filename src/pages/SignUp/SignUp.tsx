@@ -1,6 +1,6 @@
 "use client"
 
-import { Mail, User, Phone, IdCard } from "lucide-react";
+import { Mail, User, Phone, IdCard, Upload } from "lucide-react";
 import { AuthCard } from "../../components/layout/AuthCard";
 import { InputField } from "../../components/ui/InputField";
 import { Logo } from "../../components/ui/Logo";
@@ -15,12 +15,14 @@ import { ApiResponse } from "../../types/user";
 import InputMask from "react-input-mask"
 import { formatCPF, formatPhone } from "../../utils/masks";
 import { Loading } from "../../components/ui/Loading";
+import { useAvatarUpload } from "@/src/utils/useAvatarUpload";
 
 export const SignUp = () => {
 
     const { register } = useAuth();
     const router = useRouter();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const { uploadAvatar } = useAvatarUpload();
 
     const [name, setName] = useState("");
     const [cpf, setCpf] = useState("");
@@ -29,6 +31,7 @@ export const SignUp = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [profileImage, setProfileImage] = useState<File | null>(null);
 
     const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCpf(formatCPF(e.target.value));
@@ -44,6 +47,11 @@ export const SignUp = () => {
 
         try {
             await register({ name, cpf, email, phone, password });
+
+            if (profileImage) {
+                await uploadAvatar(profileImage);
+            }
+
             router.push("/login?success=register")
 
         } catch (error: any) {
@@ -113,6 +121,21 @@ export const SignUp = () => {
                     onChange={(e) => setPhone(e.target.value)}
                     required
                 />
+
+                <InputField
+                    label="Foto de perfil"
+                    type="file"
+                    placeholder="Insira uma foto com o seu rosto aqui"
+                    icon={<Upload size={18} />}
+                    onChange={(e) => setProfileImage(e.target.files ? e.target.files[0] : null)}
+                    required
+                >
+                    <span className="text-sm text-gray-500 cursor-pointer">
+                        {profileImage
+                            ? profileImage.name
+                            : "Insira uma foto com o seu rosto aqui"}
+                    </span>
+                </InputField>
 
                 <PasswordField
                     label="Senha"
