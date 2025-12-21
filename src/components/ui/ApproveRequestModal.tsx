@@ -4,6 +4,7 @@ import { Modal } from "./Modal";
 type ApproveRequestModalProps = {
   open: boolean;
   onClose: () => void;
+  requestId: string | null;
 };
 
 export function ApproveRequestModal({

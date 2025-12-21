@@ -4,6 +4,7 @@ import { Modal } from "./Modal";
 type Props = {
   open: boolean;
   onClose: () => void;
+  requestId: string | null;
 };
 
 export function RejectRequestModal({
