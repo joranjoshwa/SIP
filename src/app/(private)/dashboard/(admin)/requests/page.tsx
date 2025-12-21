@@ -1,31 +1,45 @@
+"use client";
+
+import { ApproveRequestModal } from "@/src/components/ui/ApproveRequestModal";
+import { RejectRequestModal } from "@/src/components/ui/RejectRequestModal";
 import { RequestCard } from "@/src/components/ui/RequestCard";
+import { useState } from "react";
 
 export default function SolicitacoesPage() {
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+
   return (
     <main className="flex-1 px-4 py-6 md:px-8">
 
-      <header className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <header className="mb-6 flex flex-col gap-3">
+
         <div className="flex items-center gap-3">
           <button className="text-xl">←</button>
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+
+          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
             Solicitações
           </h1>
         </div>
 
         <div className="flex gap-2">
-          <button className="
-            rounded-full bg-green-100 px-4 py-2
-            text-sm font-medium text-green-700
-            dark:bg-green-900 dark:text-green-300
-          ">
+          <button
+            className="
+              rounded-full bg-green-100 px-4 py-2
+              text-sm font-medium text-green-700
+              dark:bg-green-900 dark:text-green-300
+            "
+          >
             Data de solicitação
           </button>
 
-          <button className="
-            rounded-full border border-zinc-300 px-4 py-2
-            text-sm text-zinc-700
-            dark:border-zinc-700 dark:text-zinc-300
-          ">
+          <button
+            className="
+              rounded-full border border-zinc-300 px-4 py-2
+              text-sm text-zinc-700
+              dark:border-zinc-700 dark:text-zinc-300
+            "
+          >
             Data de busca
           </button>
         </div>
@@ -37,6 +51,8 @@ export default function SolicitacoesPage() {
           title="Marmita rosa com detalhes brancos"
           user="Valentina Silveira"
           date="25/06/25 às 09:30h"
+          onApprove={() => setApproveOpen(true)}
+          onReject={() => setRejectOpen(true)}
         />
 
         <RequestCard
@@ -44,6 +60,8 @@ export default function SolicitacoesPage() {
           title="Caneta stylus branca"
           user="Ana Silva Santos"
           date="25/06/25 às 09:30h"
+          onApprove={() => setApproveOpen(true)}
+          onReject={() => setRejectOpen(true)}
         />
 
         <RequestCard
@@ -51,8 +69,20 @@ export default function SolicitacoesPage() {
           title="Bolsa preta"
           user="Bárbara S."
           date="25/06/25 às 09:30h"
+          onApprove={() => setApproveOpen(true)}
+          onReject={() => setRejectOpen(true)}
         />
       </section>
+
+      <ApproveRequestModal
+        open={approveOpen}
+        onClose={() => setApproveOpen(false)}
+      />
+
+      <RejectRequestModal
+        open={rejectOpen}
+        onClose={() => setRejectOpen(false)}
+      />
     </main>
   );
 }

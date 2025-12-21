@@ -3,13 +3,15 @@ type Props = {
     title: string;
     user: string;
     date: string;
+    onApprove: () => void;
+    onReject: () => void;
 };
 
-export function RequestCard({ image, title, user, date }: Props) {
+export function RequestCard({ image, title, user, date, onApprove, onReject }: Props) {
     return (
         <div className="
         flex items-center gap-4
-        rounded-xl border border-zinc-200 dark:border-zinc-800
+        rounded-xl
         bg-white dark:bg-zinc-900
         p-4
       ">
@@ -34,9 +36,10 @@ export function RequestCard({ image, title, user, date }: Props) {
 
             <div className="flex gap-3">
                 <button
+                    onClick={onReject}
                     className="
               flex h-9 w-9 items-center justify-center
-              rounded-full border border-red-200 dark:border-red-800
+              rounded-full 
               text-red-500 hover:bg-red-50 dark:hover:bg-red-950
             "
                 >
@@ -44,9 +47,10 @@ export function RequestCard({ image, title, user, date }: Props) {
                 </button>
 
                 <button
+                    onClick={onApprove}
                     className="
               flex h-9 w-9 items-center justify-center
-              rounded-full border border-green-200 dark:border-green-800
+              rounded-full 
               text-green-500 hover:bg-green-50 dark:hover:bg-green-950
             "
                 >
