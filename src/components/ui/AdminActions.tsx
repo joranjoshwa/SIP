@@ -40,8 +40,8 @@ export function AdminActions() {
                 <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={CalendarX2}
-                        text="Novo horário ocupado"
-                        href="/dashboard/schedule/new-block"
+                        text="Editar"
+                        href="/dashboard/schedule/edit"
                         exact
                     />
                 </div>
