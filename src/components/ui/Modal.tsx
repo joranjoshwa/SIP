@@ -10,7 +10,7 @@ export function Modal({ open, onClose, children }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
 
       <div
         onClick={onClose}
@@ -19,11 +19,12 @@ export function Modal({ open, onClose, children }: Props) {
 
       <div
         className="
-          relative z-10 w-full max-w-md
-          rounded-2xl
+          relative z-10 w-full md:max-w-md
           bg-white dark:bg-zinc-900
           p-6
+          rounded-t-2xl md:rounded-2xl
           shadow-xl
+          animate-slide-up md:animate-fade-in
         "
       >
         {children}
