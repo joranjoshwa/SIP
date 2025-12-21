@@ -1,3 +1,4 @@
+import { reviewRecoveryRequest } from "@/src/api/endpoints/recoveryService";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
 
@@ -5,12 +6,33 @@ type ApproveRequestModalProps = {
   open: boolean;
   onClose: () => void;
   requestId: string | null;
+  onSuccess: () => void;
 };
 
 export function ApproveRequestModal({
   open,
   onClose,
+  requestId,
+  onSuccess,
 }: ApproveRequestModalProps) {
+
+  async function handleApprove() {
+    if (!requestId) return;
+
+    try {
+      await reviewRecoveryRequest({
+        idRecovery: requestId,
+        statusRecovery: "APPROVED",
+      });
+
+      alert("Solicitação aprovada com sucesso!");
+      onClose();
+      onSuccess();
+    } catch (error) {
+      alert("Erro ao aprovar solicitação.");
+    }
+  }
+
   return (
     <Modal open={open} onClose={onClose}>
       <h2 className="mb-2 text-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
@@ -21,29 +43,13 @@ export function ApproveRequestModal({
         Tem certeza que deseja aprovar esse pedido de reivindicação?
       </p>
 
-      <div className="mb-6 flex items-center gap-3">
-        <img
-          src="/img/avatar.png"
-          alt="Usuário"
-          className="h-10 w-10 rounded-full object-cover"
-        />
-
-        <div>
-          <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-            Valentina Silveira
-          </p>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            25/06/25 às 09:30h
-          </p>
-        </div>
-      </div>
-
       <div className="flex flex-col gap-3">
         <Button variant="secondary" onClick={onClose}>
           Cancelar
         </Button>
 
         <Button
+          onClick={handleApprove}
           className="
             bg-green-200 text-green-800
             hover:bg-green-300

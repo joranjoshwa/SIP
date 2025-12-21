@@ -16,21 +16,21 @@ export default function SolicitacoesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchRequests() {
-      try {
-        setLoading(true);
-        setError(null);
+  async function fetchRequests() {
+    try {
+      setLoading(true);
+      setError(null);
 
-        const response = await getRecoveryRequests(0, 10);
-        setRequests(response.content);
-      } catch (err) {
-        setError("Erro ao carregar solicitações");
-      } finally {
-        setLoading(false);
-      }
+      const response = await getRecoveryRequests(0, 10);
+      setRequests(response.content);
+    } catch {
+      setError("Erro ao carregar solicitações");
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchRequests();
   }, []);
 
@@ -141,6 +141,7 @@ export default function SolicitacoesPage() {
           setSelectedRequestId(null);
         }}
         requestId={selectedRequestId}
+        onSuccess={fetchRequests}
       />
 
       <RejectRequestModal
@@ -150,6 +151,7 @@ export default function SolicitacoesPage() {
           setSelectedRequestId(null);
         }}
         requestId={selectedRequestId}
+        onSuccess={fetchRequests}
       />
     </main>
   );
