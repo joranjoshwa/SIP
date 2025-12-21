@@ -3,6 +3,7 @@
 import { ApproveRequestModal } from "@/src/components/ui/ApproveRequestModal";
 import { RejectRequestModal } from "@/src/components/ui/RejectRequestModal";
 import { RequestCard } from "@/src/components/ui/RequestCard";
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 
 export default function SolicitacoesPage() {
@@ -15,7 +16,16 @@ export default function SolicitacoesPage() {
       <header className="mb-6 flex flex-col gap-3">
 
         <div className="flex items-center gap-3">
-          <button className="text-xl">←</button>
+          <button
+            className="
+              flex items-center justify-center
+              rounded-lg p-1
+            text-zinc-700 hover:bg-zinc-100
+            dark:text-zinc-300 dark:hover:bg-zinc-800
+            "
+          >
+            <ArrowLeft size={22} />
+          </button>
 
           <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
             Solicitações
