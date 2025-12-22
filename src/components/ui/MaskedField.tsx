@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Calendar, Clock, ChevronDown } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 type Mode = "date" | "time";
 
@@ -17,6 +17,8 @@ type Props = {
   ghostText?: string;
   placeholder?: string;
   showRightChevron?: boolean;
+  /** what to do when invalid on blur */
+  invalidBehavior?: "revert" | "clear";
 };
 
 export function MaskedField({
@@ -31,10 +33,14 @@ export function MaskedField({
   ghostText = mode === "date" ? "Data da busca" : "Horário",
   placeholder = mode === "date" ? "DD/MM/AAAA" : "HH:MM",
   showRightChevron = mode === "time",
+  invalidBehavior = "revert",
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
   const showGhost = !focused && !value;
+
+  // Keep the last valid *masked string* (ex: "23:45" or "12/09/2025")
+  const lastValidMaskedRef = useRef<string>("");
 
   const maskDate = useCallback((raw: string) => {
     const d = raw.replace(/\D/g, "").slice(0, 8);
@@ -59,10 +65,16 @@ export function MaskedField({
     const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(text);
     if (!m) return null;
     const [, dd, mm, yyyy] = m;
-    const d = Number(dd), mth = Number(mm) - 1, y = Number(yyyy);
+    const d = Number(dd),
+      mth = Number(mm) - 1,
+      y = Number(yyyy);
+
     if (y < 1900 || mth < 0 || mth > 11) return null;
+
     const dt = new Date(y, mth, d);
+    // blocks 32/12/2025, 31/02/2025, etc.
     if (dt.getFullYear() !== y || dt.getMonth() !== mth || dt.getDate() !== d) return null;
+
     return dt;
   }, []);
 
@@ -71,17 +83,29 @@ export function MaskedField({
     if (!m) return null;
     const hh = Number(m[1]);
     const mm = Number(m[2]);
-    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null;
-    return hh * 60 + mm;
+    if (hh < 0 || hh > 23 || mm < 0 || mm > 59) return null; // blocks 25:00, 23:99, etc.
+    return hh * 60 + mm; // minutes since 00:00
   }, []);
+
+  const parseCurrent = useCallback(
+    (masked: string) => (mode === "date" ? parseDate(masked) : parseTime(masked)),
+    [mode, parseDate, parseTime]
+  );
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const masked = maskify(e.target.value);
       onChange(masked);
-      onValidChange?.(mode === "date" ? parseDate(masked) : parseTime(masked));
+
+      const parsed = parseCurrent(masked);
+      onValidChange?.(parsed);
+
+      // update last valid ONLY when fully valid
+      if (parsed !== null) {
+        lastValidMaskedRef.current = masked;
+      }
     },
-    [maskify, onChange, onValidChange, parseDate, parseTime, mode]
+    [maskify, onChange, onValidChange, parseCurrent]
   );
 
   const handleKeyDown = useCallback(
@@ -90,12 +114,14 @@ export function MaskedField({
       const el = e.currentTarget;
       const pos = el.selectionStart ?? 0;
       const sep = mode === "date" ? "/" : ":";
+
       if (pos > 0 && (el.value[pos - 1] === sep || el.value[pos] === sep)) {
         e.preventDefault();
         const left = el.value.slice(0, pos).replace(/\D/g, "").slice(0, -1);
         const right = el.value.slice(pos).replace(/\D/g, "");
         const newMasked = maskify(left + right);
         onChange(newMasked);
+
         requestAnimationFrame(() => {
           const seps = (newMasked.match(new RegExp(`\\${sep}`, "g")) || []).length;
           const newPos = Math.max(0, seps + left.length);
@@ -105,6 +131,29 @@ export function MaskedField({
     },
     [maskify, onChange, mode]
   );
+
+  const handleBlur = useCallback(() => {
+    setFocused(false);
+
+    if (!value) {
+      onValidChange?.(null);
+      lastValidMaskedRef.current = "";
+      return;
+    }
+
+    const parsed = parseCurrent(value);
+
+    if (parsed === null) {
+      const next =
+        invalidBehavior === "clear" ? "" : lastValidMaskedRef.current || "";
+
+      onChange(next);
+      onValidChange?.(next ? parseCurrent(next) : null);
+    } else {
+      // ensure last valid is synced even if value came from outside
+      lastValidMaskedRef.current = value;
+    }
+  }, [value, parseCurrent, onChange, onValidChange, invalidBehavior]);
 
   const LeftIcon = mode === "date" ? Calendar : Clock;
 
@@ -122,7 +171,7 @@ export function MaskedField({
       <div className="relative">
         <LeftIcon
           className={`pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5
-                      text-zinc-500 dark:text-zinc-400 transition-opacity ${showGhost ? "opacity-0" : "opacity-100"
+          text-zinc-500 dark:text-zinc-400 transition-opacity ${showGhost ? "opacity-0" : "opacity-100"
             }`}
         />
 
@@ -138,14 +187,14 @@ export function MaskedField({
             e.stopPropagation();
             if (!showGhost) setFocused(true);
           }}
-          onBlur={() => setFocused(false)}
+          onBlur={handleBlur}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="w-full h-12 rounded-xl border border-zinc-200 bg-white pl-10 pr-8 text-sm text-zinc-800
-             outline-none ring-0 focus:border-zinc-300
-             dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-600"
+            outline-none ring-0 focus:border-zinc-300
+            dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-zinc-600"
           aria-label={label}
           required={required}
         />
@@ -162,9 +211,9 @@ export function MaskedField({
             }}
             onClick={(e) => e.stopPropagation()}
             className="absolute inset-0 flex items-center gap-2 rounded-xl
-                       bg-zinc-100 text-zinc-600 px-3 pl-10 text-sm transition-colors
-                       hover:bg-zinc-200
-                       dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+              bg-zinc-100 text-zinc-600 px-3 pl-10 text-sm transition-colors
+              hover:bg-zinc-200
+              dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
           >
             <LeftIcon className="h-5 w-5 absolute left-3 text-zinc-500 dark:text-zinc-400" />
             <span className="truncate">{ghostText}</span>
