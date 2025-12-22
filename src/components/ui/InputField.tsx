@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useId, useState } from "react";
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
 
 type Props = {
     label?: string;
@@ -12,7 +12,7 @@ type Props = {
     required?: boolean;
     autoComplete?: string;
     disabled?: boolean;
-    onPressEnter?: (e:  React.KeyboardEvent<HTMLInputElement>) => void;
+    onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const InputField = ({
@@ -31,6 +31,7 @@ export const InputField = ({
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const isFirefox = /firefox/i.test(navigator.userAgent);
@@ -50,23 +51,31 @@ export const InputField = ({
             )}
 
             <div
-                className="flex items-center rounded-xl px-3 py-3 bg-[#ECECEC]
+                className={`flex items-center rounded-xl px-3 py-3 bg-[#ECECEC]
           focus-within:ring-2 focus-within:ring-blue-500
-          dark:bg-[#292929] dark:border-gray-700"
+          dark:bg-[#292929] dark:border-gray-700
+          ${type === "file" ? "cursor-pointer" : ""}`}
+                onClick={() => {
+                    if (type === "file" && !disabled) {
+                        inputRef.current?.click();
+                    }
+                }}
             >
                 {!(isMozilla && type === "date") && icon && (
                     <span className="mr-2 text-gray-500 dark:text-gray-400">{icon}</span>
                 )}
 
                 <input
+                    ref={inputRef}
                     id={id}
                     type={type}
                     placeholder={placeholder}
-                    value={value}
+                    {...(type !== "file" && { value })}
                     onChange={onChange}
-                    className="flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
+                    className={`flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
                                 dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input
-                                disabled:opacity-60 disabled:cursor-not-allowed"
+                                ${type === "file" ? "hidden" : ""}
+                                disabled:opacity-60 disabled:cursor-not-allowed`}
                     required={required}
                     autoComplete={autoComplete}
                     disabled={disabled}
