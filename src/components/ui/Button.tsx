@@ -6,13 +6,15 @@ type Props = {
     variant?: "primary" | "secondary";
     onClick?: () => void;
     className?: string;
+    disabled?: Boolean;
 };
 
 export const Button = ({
     children,
     variant = "primary",
     onClick,
-    className
+    className,
+    disabled = false
 }: Props) => {
 
     const baseStyle = "w-full py-3 min-h-[48px] rounded-xl font-medium text-sm transition-colors";
@@ -25,6 +27,7 @@ export const Button = ({
     return (
         <button
             onClick={onClick}
+            disabled={disabled as boolean}
             className={`${baseStyle} ${variants[variant]} ${className}`}
         >
             {children}

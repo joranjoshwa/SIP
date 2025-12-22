@@ -40,7 +40,7 @@ export function AdminActions() {
                 <div onClick={() => setOpen((s) => !s)}>
                     <SideBarItem
                         icon={CalendarX2}
-                        text="Editar"
+                        text="Editar disponibilidade"
                         href="/dashboard/schedule/edit"
                         exact
                     />
