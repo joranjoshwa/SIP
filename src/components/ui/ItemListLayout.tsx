@@ -7,6 +7,7 @@ import ItemCard from "@/src/components/ui/ItemCard";
 import { CarouselItem } from "@/src/types/item";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { PageHeader } from "./PageHeader";
 
 type ItemListLayoutProps = {
   title: string;
@@ -30,28 +31,7 @@ export default function ItemListLayout({
   return (
     <div className="flex flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100 min-h-0">
       
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-white/70 px-5 pt-3 backdrop-blur-sm dark:bg-neutral-900/70">
-
-      {backHref && (
-        <Link
-        href={backHref}
-        aria-label="Voltar"
-        className="
-            p-2 -ml-2
-            rounded-full
-            text-gray-700 dark:text-neutral-200
-            hover:bg-gray-100 dark:hover:bg-neutral-800
-            transition
-        "
-        >
-            <ArrowLeft className="w-5 h-5" />
-        </Link>
-  )}
-
-        <h1 className="text-lg font-semibold md:text-2xl">
-          {title}
-        </h1>
-      </header>
+      <PageHeader title={title} />
 
       <section className="p-5 pb-0 pt-2 flex-shrink-0">
         <CategoryItem handleCategorySelection={onCategorySelect} />
