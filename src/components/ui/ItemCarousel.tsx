@@ -9,9 +9,10 @@ import type { CarouselItem } from "../../types/item";
 export type Props = {
     title: string;
     items: CarouselItem[];
+    seeAllHref?: string;
 };
 
-export function ItemCarousel({ title = "", items = [] }: Props) {
+export function ItemCarousel({ title = "", items = [], seeAllHref }: Props) {
     const trackRef = useRef<HTMLDivElement | null>(null);
 
     const [isDown, setIsDown] = useState(false);
@@ -39,9 +40,15 @@ export function ItemCarousel({ title = "", items = [] }: Props) {
                     {title}
                 </h2>
                 <div className="flex gap-2">
-                    <Link aria-label="Next" href="/" className="p-2 text-gray-700 dark:text-gray-200" >
-                        <ArrowRight className="w-5 h-5" />
-                    </Link>
+                    {seeAllHref && (
+                        <Link
+                            aria-label="Ver todos"
+                            href={seeAllHref}
+                            className="p-2 text-gray-700 dark:text-gray-200"
+                        >
+                            <ArrowRight className="w-5 h-5" />
+                        </Link>
+                    )}
                 </div>
             </div>
 

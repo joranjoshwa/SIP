@@ -78,7 +78,7 @@ export default function DashboardPage() {
                 <CategoryItem handleCategorySelection={handleCategorySelection} />
 
                 <div className="py-1 pt-4">
-                    <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} />
+                    <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} seeAllHref="/dashboard/item-list/almost-donation"/>
                     {loading && (
                         <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
                     )}
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="py-1">
-                    <ItemCarousel title="Perdidos nas últimas 48 horas" items={itemsLast48Hours} />
+                    <ItemCarousel title="Perdidos nas últimas 48 horas" items={itemsLast48Hours} seeAllHref="/dashboard/item-list/lost-48h"/>
                     {loading && (
                         <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
                     )}
