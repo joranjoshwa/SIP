@@ -2,8 +2,8 @@
 
 import React, { createContext, useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { extractRoleFromToken } from '../utils/token';
-import { Channel, WebSocketContextValue, NotificationMessage } from '../types/notification';
-import { IncomingMessage } from 'http';
+import { Channel, WebSocketContextValue, NotificationContent, NotificationDTO } from '../types/notification';
+import { getNotificationOfUser } from '../api/endpoints/notification';
 
 interface WebSocketProviderProps {
     children: React.ReactNode;
@@ -12,32 +12,37 @@ interface WebSocketProviderProps {
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
-const STORAGE_KEY = "sip_notifications";
 const MESSAGE_TTL_MS = 2 * 3600 * 1000; //duas horas
 
-const filterValidMessages = (messages: NotificationMessage[]): NotificationMessage[] => {
+const filterValidMessages = (messages: NotificationContent[]): NotificationContent[] => {
     const now = Date.now();
-    return messages.filter((m) => now - m.receivedAt < MESSAGE_TTL_MS);
+    return messages.filter((m) => now - m.createdAt < MESSAGE_TTL_MS);
 };
 
-const normalizeMessages = (messages: NotificationMessage[]): NotificationMessage[] => {
-    const valid = filterValidMessages(messages);
+export function dtoToNotificationContent(
+    dto: NotificationDTO,
+): NotificationContent {
+    const content: NotificationContent = {
+        notificationId: dto.notificationId,
+        itemId: dto.itemId,
+        type: dto.type,
+        itemName: dto.itemName,
+        status: dto.status,
+        createdAt: new Date(dto.createdAt).getTime(),
+    };
 
-    const byId = new Map<string, NotificationMessage>();
+    if (dto.claimer) content.claimer = dto.claimer;
+    if (dto.claimScheduledTime) content.claimScheduledTime = dto.claimScheduledTime;
 
-    for (const msg of valid) {
-        const key = `${msg.content.id}-${msg.email}`;
-        const existing = byId.get(key);
+    return content;
+}
 
-        if (!existing || msg.receivedAt > existing.receivedAt) {
-            byId.set(key, msg);
-        }
-    }
-
-    return Array.from(byId.values()).sort(
-        (a, b) => b.receivedAt - a.receivedAt
-    );
-};
+export function dtosToNotificationContent(
+    dtos: NotificationDTO[],
+    receivedAt: number = Date.now()
+): NotificationContent[] {
+    return dtos.map((d) => dtoToNotificationContent(d));
+}
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     children,
@@ -46,7 +51,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
 }) => {
     const wsUrl = process.env.NEXT_PUBLIC_WS_URL;
     const [isConnected, setIsConnected] = useState(false);
-    const [messages, setMessages] = useState<NotificationMessage[]>([]);
+    const [messages, setMessages] = useState<NotificationContent[]>([]);
     const [error, setError] = useState('');
     const [token, setToken] = useState<string>("");
     const [channel, setChannel] = useState<Channel | null>(null);
@@ -57,27 +62,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     const mountedRef = useRef(true);
 
     useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const raw = window.localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-
-        try {
-            const parsed: NotificationMessage[] = JSON.parse(raw);
-            setMessages(normalizeMessages(parsed));
-        } catch (e) {
-            setError("Failed to parse notifications from localStorage " + e);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const valid = filterValidMessages(messages);
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(valid));
-    }, [messages]);
-
-    useEffect(() => {
         const interval = setInterval(() => {
             setMessages((prev) => filterValidMessages(prev));
         }, 30_000);
@@ -85,24 +69,17 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
         return () => clearInterval(interval);
     }, []);
 
-    const markAsRead = useCallback((id: string, email: string) => {
-        setMessages((prev) =>
-            prev.map((msg) =>
-                msg.content.id === id && msg.email === email
-                    ? {
-                        ...msg,
-                        content: {
-                            ...msg.content,
-                            isNew: false,
-                        },
-                    }
-                    : msg
-            )
-        );
-    }, []);
-
     const clearMessages = useCallback(() => {
         setMessages([]);
+    }, []);
+
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            const messages = await getNotificationOfUser();
+            setMessages(dtosToNotificationContent(messages));
+        };
+
+        fetchNotifications();
     }, []);
 
     useEffect(() => {
@@ -145,15 +122,19 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
             ws.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
-                    const { content, ...notificationData } = data;
-                    const contentParsed = JSON.parse(content);
-                    const incoming: NotificationMessage = {
-                        content: { ...contentParsed, isNew: true },
-                        ...notificationData,
-                        receivedAt: Date.now(),
+                    const { createdAt, ...rest } = data;
+                    const incoming: NotificationContent = {
+                        ...rest,
+                        createdAt: new Date(createdAt).getTime(),
                     };
 
-                    setMessages((prev) => normalizeMessages([incoming, ...prev]));
+                    setMessages((prev) => {
+                        if (!Array.isArray(prev)) console.warn("messages state corrompido:", prev);
+                        const safePrev = Array.isArray(prev) ? prev : [];
+                        return [incoming, ...safePrev];
+                    });
+
+                    console.log(incoming);
                 } catch (e) {
                     setError("Error parsing message: " + e);
                 }
@@ -241,7 +222,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                 error,
                 clearMessages,
                 reconnect,
-                markAsRead
+                setMessages,
             }}
         >
             {children}

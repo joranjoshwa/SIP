@@ -5,8 +5,10 @@ import { ApproveRequestModal } from "@/src/components/ui/ApproveRequestModal";
 import { RejectRequestModal } from "@/src/components/ui/RejectRequestModal";
 import { RequestCard } from "@/src/components/ui/RequestCard";
 import { RecoveryRequest } from "@/src/types/recovery";
-import { ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
+import { PageHeader } from "@/src/components/ui/PageHeader";
+import { FilterBar } from "@/src/components/ui/FilterBar";
+import { FilterType } from "@/src/types/item";
 
 export default function SolicitacoesPage() {
   const [approveOpen, setApproveOpen] = useState(false);
@@ -16,12 +18,12 @@ export default function SolicitacoesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function fetchRequests() {
+  async function fetchRequests(sort: string[] = ["requestDate,desc"]) {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await getRecoveryRequests(0, 10);
+      const response = await getRecoveryRequests(0, 10, sort);
       setRequests(response.content);
     } catch {
       setError("Erro ao carregar solicitações");
@@ -53,57 +55,21 @@ export default function SolicitacoesPage() {
   return (
     <main className="flex-1 px-4 py-6 md:px-8">
 
-      <header className="mb-6 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <button
-            className="
-              flex items-center justify-center
-              rounded-lg p-1
-              text-zinc-700 hover:bg-zinc-100
-              dark:text-zinc-300 dark:hover:bg-zinc-800
-            "
-          >
-            <ArrowLeft size={22} />
-          </button>
-
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            Solicitações
-          </h1>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            className="
-              rounded-full bg-green-100 px-4 py-2
-              text-sm font-medium text-green-700
-              dark:bg-green-900 dark:text-green-300
-            "
-          >
-            Data de solicitação
-          </button>
-
-          <button
-            className="
-              rounded-full border border-zinc-300 px-4 py-2
-              text-sm text-zinc-700
-              dark:border-zinc-700 dark:text-zinc-300
-            "
-          >
-            Data de busca
-          </button>
-        </div>
-      </header>
+      <PageHeader title={"Solicitações"} />
+      <FilterBar page="requests" active={[]} onSelect={function (value: FilterType): void {
+        fetchRequests(["requestDate,asc"]);
+      } } />
 
       <section className="flex flex-col gap-4">
         {requests.length === 0 ? (
           <div
             className="
-        flex flex-col items-center justify-center
-        rounded-xl p-10
-        text-center
-        text-zinc-500
-        dark:border-zinc-700 dark:text-zinc-400
-      "
+              flex flex-col items-center justify-center
+              rounded-xl p-10
+              text-center
+              text-zinc-500
+              dark:border-zinc-700 dark:text-zinc-400
+            "
           >
             <p className="text-sm font-medium">
               Nenhuma solicitação pendente no momento

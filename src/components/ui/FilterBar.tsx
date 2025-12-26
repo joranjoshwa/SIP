@@ -1,37 +1,71 @@
-import { Filter, CalendarDays, Clock, HandHeart } from "lucide-react";
+"use client";
+
+import {
+    Filter,
+    CalendarDays,
+    HandHeart,
+    ArrowUpNarrowWide,
+} from "lucide-react";
 import { FilterType } from "@/src/types/item";
 import { JSX } from "react/jsx-runtime";
+import { useMemo } from "react";
 
 type Props = {
     active: FilterType[];
     onSelect: (value: FilterType) => void;
+    page?: "search" | "requests";
 };
 
-export const FilterBar = ({ active, onSelect }: Props) => {
+type FilterOption = {
+    key: FilterType;
+    label: string;
+    icon?: JSX.Element;
+};
+
+export const FilterBar = ({ active, onSelect, page = "search" }: Props) => {
     const baseClass =
         "flex items-center gap-2 px-3 py-2 rounded-full text-[12px] md:text-sm font-medium cursor-pointer transition-colors border shrink-0";
 
-    const filters: { key: FilterType; label: string; icon: JSX.Element }[] = [
-        { key: "categoria", label: "Categoria", icon: <Filter className="w-4 h-4" /> },
-        { key: "data", label: "Data", icon: <CalendarDays className="w-4 h-4" /> },
-        { key: "donation", label: "Doação", icon: <HandHeart className="w-4 h-4" /> },
-    ];
+    const dictFilters: Record<"search" | "requests", FilterOption[]> = {
+        search: [
+            { key: "categoria", label: "Categoria", icon: <Filter className="w-4 h-4" /> },
+            { key: "data", label: "Data", icon: <CalendarDays className="w-4 h-4" /> },
+            { key: "donation", label: "Doação", icon: <HandHeart className="w-4 h-4" /> },
+        ],
+        requests: [
+            {
+                key: "dataSolicitacao",
+                label: "Data de solicitação",
+                icon: <ArrowUpNarrowWide className="w-4 h-4" />,
+            },
+            { key: "dataBusca", label: "Data de busca" },
+        ],
+    };
+
+    const filters = useMemo(() => dictFilters[page], [page]);
 
     return (
-        <div className="flex gap-3 overflow-x-auto flex-nowrap md:flex-wrap md:overflow-visible scrollbar-hide">
-            {filters.map(({ key, label, icon }) => (
-                <button
-                    key={key}
-                    onClick={() => onSelect(key)}
-                    className={`${baseClass} ${active.includes(key)
-                            ? "bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white dark:border-[#183E1F]"
-                            : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-transparent dark:text-white dark:border-gray-600"
-                        }`}
-                >
-                    {icon}
-                    {label}
-                </button>
-            ))}
+        <div className="flex gap-2 overflow-x-auto pb-2">
+            {filters.map((f) => {
+                const isActive = active.includes(f.key);
+
+                return (
+                    <button
+                        key={f.key}
+                        type="button"
+                        onClick={() => onSelect(f.key)}
+                        className={[
+                            baseClass,
+                            isActive
+                                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white"
+                                : "bg-transparent text-zinc-900 border-zinc-200 hover:bg-zinc-100 dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800",
+                        ].join(" ")}
+                    >
+                        {f.icon}
+                        <span>{f.label}</span>
+                    </button>
+                );
+            })}
         </div>
     );
 };

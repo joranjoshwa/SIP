@@ -4,7 +4,7 @@ import { RecoveryResponse, ReviewRecoveryPayload } from "@/src/types/recovery";
 export async function getRecoveryRequests(
     page = 0,
     size = 10,
-    sort: string[] = ["requestDate,desc"]
+    sort: string[]
 ): Promise<RecoveryResponse> {
     const response = await api.get<RecoveryResponse>(
         "/items/admin/recovery",
