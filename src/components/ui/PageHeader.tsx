@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { NotificationList } from "./NotificationList";
 import { useWebSocket } from "@/src/context/WebsocketContext";
+import { markAsRead } from "@/src/api/endpoints/notification";
 
 type Props = {
     title: string;
@@ -18,7 +19,6 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
     const router = useRouter();
     const [modalOpen, setModalOpen] = useState(false);
     const modalRef = useRef<HTMLDivElement | null>(null);
-
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -33,10 +33,10 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
         };
     }, []);
 
-    const { messages } = useWebSocket();
+    const { messages, setMessages } = useWebSocket();
 
     const unread = useMemo(
-        () => messages.filter((msg) => msg.content?.isNew).length,
+        () => messages.filter((msg) => msg?.status === "PENDING").length,
         [messages]
     );
 
@@ -61,14 +61,33 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
                 <>
                     <Link
                         href="/dashboard/notification"
-                        className="rounded-xl p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 block md:hidden"
+                        className="rounded-xl p-2 relative hover:bg-gray-100 dark:hover:bg-neutral-800 block md:hidden"
                         aria-label="Notifications"
                     >
+                        {unread > 0 && (
+                            <div className="absolute bg-red-500 w-4 h-4 rounded-full text-[11px] top-[2px] right-1 text-center">{unread}</div>
+                        )}
                         <BellRing className="h-6 w-6 md:h-7 md:w-7" />
                     </Link>
 
                     <button
-                        onClick={() => setModalOpen(true)}
+                        onClick={async () => {
+                            setModalOpen(true);
+
+                            const ids = messages.map((m) => m.notificationId!).filter(Boolean);
+
+                            await markAsRead(ids);
+
+                            const idSet = new Set(ids);
+
+                            setMessages((prev) =>
+                                prev.map((item) =>
+                                    item.notificationId && idSet.has(item.notificationId)
+                                        ? { ...item, status: "READ" as const }
+                                        : item
+                                )
+                            );
+                        }}
                         className="rounded-xl relative p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 hidden md:block"
                         aria-label="Open notifications"
                     >

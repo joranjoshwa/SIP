@@ -60,3 +60,8 @@ export type RecoveryResponse = {
     last: boolean;
     empty: boolean;
 };
+
+export type ReviewRecoveryPayload = {
+    idRecovery: string;
+    statusRecovery: "APPROVED" | "REFUSED";
+};

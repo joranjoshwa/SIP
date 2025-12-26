@@ -1,5 +1,14 @@
 export type Channel = "admin" | "common";
-export type NotificationType = "new" | "refused" | "received" | "approved";
+export type NotificationType = "NEW_REQUEST" |
+    "REQUEST_REFUSED" |
+    "RECEIVED" |
+    "REQUEST_APPROVED" |
+    "REQUEST_REFUSED_ANOTHER_USER" |
+    "NEW_ITEM_ON_CHARITY" |
+    "NEW_ITEM_CREATED";
+
+export type NotificationStatus = "PENDING" | "READ";
+
 export type Role = "admin" | "common";
 
 export interface Notification {
@@ -11,29 +20,22 @@ export interface Notification {
 
 export interface WebSocketContextValue {
     isConnected: boolean;
-    messages: NotificationMessage[];
+    messages: NotificationContent[];
     error: string;
     clearMessages: () => void;
     reconnect: () => void;
-    markAsRead: (id: string, email: string) => void;
+    setMessages: React.Dispatch<React.SetStateAction<NotificationContent[]>>;
 }
 
 export type NotificationContent = {
-    id: string;
+    notificationId?: string,
+    itemId: string;
     type: NotificationType;
     itemName: string;
     claimer?: string,
     claimScheduledTime?: string;
-    isNew?: boolean;
-};
-
-export type NotificationMessage = {
-    content: NotificationContent;
-    isAdmin?: boolean;
-    channel: 'Admin' | 'User';
-    email?: string;
-    receivedAt: number;
-    createdAt: string;
+    status?: NotificationStatus;
+    createdAt: number;
 };
 
 export type ClaimTime = {
@@ -47,3 +49,16 @@ export type NotificationTemplateVars = {
     pickupTime?: string;
     claimerName?: string;
 };
+
+export type NotificationDTO = {
+    notificationId: string;
+    itemId: string;
+    type: NotificationType;
+    claimScheduledTime: string | null;
+    claimer: string | null;
+    itemName: string;
+    status: NotificationStatus;
+    createdAt: string,
+};
+
+export type NotificationListDTO = NotificationDTO[];

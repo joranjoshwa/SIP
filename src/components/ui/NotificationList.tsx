@@ -7,12 +7,7 @@ type Props = {
 }
 
 export const NotificationList = ({ setUnread }: Props) => {
-    const { isConnected, messages, error, clearMessages, markAsRead } = useWebSocket();
-
-    useEffect(() => {
-        if (!setUnread) return;
-        setUnread(messages.filter((msg) => msg.content?.isNew).length);
-    }, [messages, setUnread]);
+    const { isConnected, messages } = useWebSocket();
 
     return (
         <div className="px-4">
@@ -34,15 +29,14 @@ export const NotificationList = ({ setUnread }: Props) => {
                 ) : (
                     messages.map((msg, index) => (
                         <NotificationItem
-                            key={`${index}-${msg.content.id}-${new Date().getMilliseconds()}`}
-                            id={msg.content.id}
-                            type={msg.content.type}
-                            itemName={msg.content.itemName}
-                            claimer={msg.content.claimer}
-                            claimScheduledTime={msg.content.claimScheduledTime}
-                            receivedAt={msg.receivedAt}
-                            isNew={msg.content.isNew}
-                            onClick={() => markAsRead(msg.content.id, msg.email as string)}
+                            key={msg.notificationId ?? `${msg.itemId}-${msg.createdAt}-${msg.type}`}
+                            itemId={msg.itemId}
+                            type={msg.type}
+                            itemName={msg.itemName}
+                            claimer={msg.claimer}
+                            claimScheduledTime={msg.claimScheduledTime}
+                            createdAt={msg.createdAt}
+                            status={msg.status}
                         />
                     ))
                 )}

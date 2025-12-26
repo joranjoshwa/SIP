@@ -3,7 +3,6 @@ import { NotificationType, NotificationTemplateVars, NotificationContent, ClaimT
 
 export type Props = NotificationContent & {
     onClick?: () => void;
-    receivedAt: number;
 }
 
 export function formatRelativeTime(isoString: string): string {
@@ -51,41 +50,54 @@ const notificationTemplates: Record<
     NotificationType,
     (vars: NotificationTemplateVars) => { title: string; message: string }
 > = {
-    new: ({ itemDescription, claimerName }) => ({
+    NEW_REQUEST: ({ itemDescription, claimerName }) => ({
         title: "Nova solicitação de reivindicação criada!",
         message: `${claimerName} enviou um pedido de recuperar o item "${itemDescription}". Análise a solicitação!`
     }),
 
-    received: ({ itemDescription }) => ({
+    RECEIVED: ({ itemDescription }) => ({
         title: "Solicitação de reivindicação recebida!",
         message: `A CAENS recebeu o seu pedido de recuperar o item "${itemDescription}". Aguarde retorno!`
     }),
 
-    approved: ({ itemDescription, pickupDate, pickupTime }) => ({
+    REQUEST_APPROVED: ({ itemDescription, pickupDate, pickupTime }) => ({
         title: "Solicitação de reivindicação aprovada!",
         message: `Vá às ${pickupTime} do dia ${pickupDate} para buscar o item "${itemDescription}" na CAENS Não se atrase!`
     }),
 
-    refused: ({ itemDescription }) => ({
+    REQUEST_REFUSED: ({ itemDescription }) => ({
         title: "Solicitação de reivindicação recusada!",
         message: `Sua solicitação de reivindicar "${itemDescription}" foi recusada. Entre em contato com a CAENS para receber mais informações ou contestar essa decisão.`
-    })
+    }),
+
+    REQUEST_REFUSED_ANOTHER_USER: ({ itemDescription }) => ({
+        title: "Solicitação de reivindicação recusada!",
+        message: `Sua solicitação de reivindicar "${itemDescription}" foi recusada. Entre em contato com a CAENS para receber mais informações ou contestar essa decisão.`
+    }),
+
+    NEW_ITEM_ON_CHARITY: ({ itemDescription }) => ({
+        title: "Novo item para caridade!",
+        message: `Novo item para caridade: "${itemDescription}". Se este item te pertence, entre em contato com a CAENS.`
+    }),
+
+    NEW_ITEM_CREATED: ({ itemDescription }) => ({
+        title: "Novo item criado!",
+        message: `Novo item criado: "${itemDescription}". Confira se este item te pertence.`
+    }),
 };
 
 
-export const NotificationItem = ({ id, type, itemName, receivedAt, isNew = false, onClick, claimer, claimScheduledTime }: Props) => {
-    const refused = type === "refused";
-    const formattedTime = receivedAt ? formatRelativeTime(new Date(receivedAt).toISOString()) : "";
+export const NotificationItem = ({ itemId, type, itemName, createdAt, status, onClick, claimer, claimScheduledTime }: Props) => {
+    const refused = type === "REQUEST_REFUSED_ANOTHER_USER" || type === "REQUEST_REFUSED";
+    const formattedTime = createdAt ? formatRelativeTime(new Date(createdAt).toISOString()) : "";
     const { date, time } = getClaimTimeParts(claimScheduledTime as string);
 
     return (
-        <Link href={`/dashboard/item/${id}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>
+        <Link href={`/dashboard/items/${itemId}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>
 
             <div className="flex flex-col gap-2">
                 <div className="flex items-start gap-2">
-                    {isNew && (
-                        <span className={`mt-2 h-2 w-2 rounded-full flex-shrink-0 ${refused ? "bg-red-500" : "bg-green-500"}`}></span>
-                    )}
+                    <span className={`mt-2 h-2 w-2 rounded-full flex-shrink-0 ${refused ? "bg-red-500" : "bg-green-500"}`}></span>
                     <h4 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm">
                         {notificationTemplates[type]({
                             itemDescription: itemName,
@@ -99,7 +111,7 @@ export const NotificationItem = ({ id, type, itemName, receivedAt, isNew = false
                         pickupTime: time || "00:00"
                     }).message}
                 </p>
-                {receivedAt && (
+                {createdAt && (
                     <span className="text-xs text-gray-400 dark:text-neutral-500 mt-1">
                         {formattedTime}
                     </span>

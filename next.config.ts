@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         port: process.env.NEXT_PUBLIC_IMAGE_PORT,
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        pathname: "/**",
+      },
     ],
   },
 };

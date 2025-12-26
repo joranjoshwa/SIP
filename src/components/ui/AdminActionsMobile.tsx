@@ -19,13 +19,13 @@ export function AdminActionsMobile() {
             {/* Actions panel */}
             <div
                 className={`
-          fixed z-50 md:hidden
-          right-8 bottom-[23%] w-72
-          rounded-xl
-          text-white
-          transition-all duration-200
-          ${open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
-        `}
+                    fixed z-50 md:hidden
+                    right-8 bottom-[23%] w-72
+                    rounded-xl
+                    text-white
+                    transition-all duration-200
+                    ${open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
+                `}
             >
                 {/* Item 1 */}
                 <Link
@@ -41,11 +41,11 @@ export function AdminActionsMobile() {
 
                 {/* Item 2 */}
                 <Link
-                    href="/dashboard/schedule/new-block"
+                    href="/dashboard/schedule/edit"
                     className="flex items-center justify-end gap-2 py-2 rounded-lg hover:bg-white/5 transition"
                     onClick={() => setOpen(false)}
                 >
-                    <span className="font-semibold text-lg">Novo horário ocupado</span>
+                    <span className="font-semibold text-lg">Editar disponibilidade</span>
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black">
                         <CalendarX2 className="h-5 w-5" />
                     </span>
