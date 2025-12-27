@@ -12,7 +12,6 @@ interface WebSocketProviderProps {
 }
 
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
-const MESSAGE_TTL_MS = 2 * 3600 * 1000; //duas horas
 
 export function dtoToNotificationContent(
     dto: NotificationDTO,

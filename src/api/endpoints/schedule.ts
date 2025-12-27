@@ -4,6 +4,7 @@ import {
     AvailableScheduleResponse,
     DayOfWeek,
 } from "@/src/types/schedule";
+import { DAY_ORDER } from "@/src/enums/WeekDay";
 
 const toHHmmss = (t: string) => (t.length === 5 ? `${t}:00` : t.slice(0, 8));
 
@@ -21,17 +22,6 @@ export const mapScheduleToAgendaEdit = (schedule: AvailableScheduleResponse) => 
         ),
     })),
 });
-
-
-const DAY_ORDER: Record<DayOfWeek, number> = {
-    MONDAY: 1,
-    TUESDAY: 2,
-    WEDNESDAY: 3,
-    THURSDAY: 4,
-    FRIDAY: 5,
-    SATURDAY: 6,
-    SUNDAY: 7,
-};
 
 export const getSchedule = async (): Promise<AvailableScheduleResponse> => {
     try {

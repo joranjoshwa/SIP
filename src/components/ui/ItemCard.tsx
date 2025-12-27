@@ -14,8 +14,9 @@ function getTimeBgColor(days?: number) {
     return "bg-[#D1FFD1]";
 }
 
-function formatDays(days?: number) {
+function formatDays(days?: number): string {
     if (days === undefined) return "";
+    if (days < 0) return "na doação";
     if (days < 7) {
         return `${days} dia${days > 1 ? "s" : ""} restante${days > 1 ? "s" : ""}`;
     }

@@ -155,7 +155,6 @@ export default function EditSchedule() {
             });
         })();
 
-        setSchedule(updated);
         await patchSchedule(updated);
     };
 
