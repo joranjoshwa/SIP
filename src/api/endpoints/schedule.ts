@@ -2,9 +2,7 @@ import { AxiosError } from "axios";
 import { api } from "../axios";
 import {
     AvailableScheduleResponse,
-    AvailableTime,
     DayOfWeek,
-    AgendaEditRequestDto
 } from "@/src/types/schedule";
 
 const toHHmmss = (t: string) => (t.length === 5 ? `${t}:00` : t.slice(0, 8));
@@ -25,7 +23,7 @@ export const mapScheduleToAgendaEdit = (schedule: AvailableScheduleResponse) => 
 });
 
 
-const DAY_ORDER: Record<string, number> = {
+const DAY_ORDER: Record<DayOfWeek, number> = {
     MONDAY: 1,
     TUESDAY: 2,
     WEDNESDAY: 3,
@@ -50,7 +48,6 @@ export const getSchedule = async (): Promise<AvailableScheduleResponse> => {
     }
 };
 
-
 export const patchSchedule = async (schedule: AvailableScheduleResponse): Promise<void> => {
     try {
         const payload = mapScheduleToAgendaEdit(schedule);
@@ -68,3 +65,19 @@ export const patchSchedule = async (schedule: AvailableScheduleResponse): Promis
         throw new Error(apiMsg ?? e.message ?? "Failed to save schedule");
     }
 };
+
+export const deleteWeekDay = async (weekDay: DayOfWeek): Promise<void> => {
+    console.log(weekDay);
+    try {
+        await api.delete(`/agenda/admin?dayOfWeek=${weekDay}`);
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to save schedule");
+    }
+}

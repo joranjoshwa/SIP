@@ -14,11 +14,6 @@ interface WebSocketProviderProps {
 const WebSocketContext = createContext<WebSocketContextValue | null>(null);
 const MESSAGE_TTL_MS = 2 * 3600 * 1000; //duas horas
 
-const filterValidMessages = (messages: NotificationContent[]): NotificationContent[] => {
-    const now = Date.now();
-    return messages.filter((m) => now - m.createdAt < MESSAGE_TTL_MS);
-};
-
 export function dtoToNotificationContent(
     dto: NotificationDTO,
 ): NotificationContent {
@@ -60,14 +55,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const shouldReconnectRef = useRef(true);
     const mountedRef = useRef(true);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setMessages((prev) => filterValidMessages(prev));
-        }, 30_000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const clearMessages = useCallback(() => {
         setMessages([]);
@@ -125,7 +112,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                     const { createdAt, ...rest } = data;
                     const incoming: NotificationContent = {
                         ...rest,
-                        createdAt: new Date(createdAt).getTime(),
+                        createdAt: createdAt ? new Date(createdAt).getTime() : new Date().getTime(),
                     };
 
                     setMessages((prev) => {
@@ -133,8 +120,6 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
                         const safePrev = Array.isArray(prev) ? prev : [];
                         return [incoming, ...safePrev];
                     });
-
-                    console.log(incoming);
                 } catch (e) {
                     setError("Error parsing message: " + e);
                 }
