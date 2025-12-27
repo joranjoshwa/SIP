@@ -6,12 +6,12 @@ import type { ItemCard } from "@/src/types/item";
 function getTimeBgColor(days?: number) {
     if (days === undefined) return "bg-gray-100 dark:bg-neutral-800";
     if (days < 7) {
-        return "bg-[#FFD1D1]";
+        return "bg-[#F9D0D0] dark:bg-[#570000]";
     }
     if (days >= 7 && days < 14) {
-        return "bg-[#FFE0D1]";
+        return "bg-[#F9E9D0] dark:bg-[#4A2E00]";
     }
-    return "bg-[#D1FFD1]";
+    return "bbg-[#D0F9EF] dark:bg-[#005641]";
 }
 
 function formatDays(days?: number): string {

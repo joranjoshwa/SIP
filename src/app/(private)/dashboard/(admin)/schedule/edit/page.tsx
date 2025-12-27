@@ -202,15 +202,23 @@ export default function EditSchedule() {
 
             <ScrollableArea>
                 <div className="flex flex-wrap gap-3">
-                    {schedule.map((day) => (
-                        <ScheduleAvailableDay
-                            key={day.id ?? day.availableDay}
-                            {...day}
-                            availableTimeList={day.availableTimeList ?? []}
-                            onDeleteTime={onDeleteTime}
-                            onDeleteDay={onDeleteDay}
-                        />
-                    ))}
+                    {loading ? (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-6">Carregando...</p>
+                    ) : schedule.length === 0 ? (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-12">
+                            Nenhum horário registrado no momento.
+                        </p>
+                    ) : (
+                        schedule.map((day) => (
+                            <ScheduleAvailableDay
+                                key={day.id ?? day.availableDay}
+                                {...day}
+                                availableTimeList={day.availableTimeList ?? []}
+                                onDeleteTime={onDeleteTime}
+                                onDeleteDay={onDeleteDay}
+                            />
+                        ))
+                    )}
                 </div>
             </ScrollableArea>
 
