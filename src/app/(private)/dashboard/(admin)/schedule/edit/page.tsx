@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { MaskedField } from "@/src/components/ui/MaskedField";
 import { Button } from "@/src/components/ui/Button";
 import { AvailableScheduleResponse, AvailableTime, DayOfWeek, PtWeekday } from "@/src/types/schedule";
-import { getSchedule, patchSchedule } from "@/src/api/endpoints/schedule";
+import { getSchedule, patchSchedule, deleteWeekDay } from "@/src/api/endpoints/schedule";
 import { ScheduleAvailableDay } from "@/src/components/ui/ScheduleAvailableDay";
 import { TimeString } from "@/src/types/schedule";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
@@ -52,10 +52,12 @@ export default function EditSchedule() {
 
     const onDeleteDay = async (id: string) => {
         let updated: AvailableScheduleResponse = schedule.filter((sc) => sc.id !== id);
+        const weekDay: DayOfWeek | undefined = schedule.find((sc) => sc.id === id)?.availableDay;
 
         setSchedule(updated);
         try {
-            await patchSchedule(updated);
+            if (!weekDay) return;
+            await deleteWeekDay(weekDay);
         } catch (e) {
             setSchedule((prev) => prev);
             throw e;
@@ -63,6 +65,15 @@ export default function EditSchedule() {
     };
 
     const onDeleteTime = async (id: string, idx: number) => {
+        const day = schedule.find((d) => d?.id === id);
+
+        const removedDay = (day?.availableTimeList?.length ?? 0) <= 1;
+
+        if (removedDay) {
+            await onDeleteDay(id);
+            return;
+        }
+
         const updated: AvailableScheduleResponse = schedule
             .map((sc) => {
                 if (sc.id !== id) return sc;
@@ -77,9 +88,6 @@ export default function EditSchedule() {
                 };
             })
             .filter(Boolean) as AvailableScheduleResponse;
-
-        const removedDay = !updated.some((sc) => sc.id === id);
-        if (removedDay) onDeleteDay?.(id);
 
         setSchedule(updated);
         await patchSchedule(updated);
@@ -147,7 +155,6 @@ export default function EditSchedule() {
             });
         })();
 
-        setSchedule(updated);
         await patchSchedule(updated);
     };
 
@@ -175,8 +182,9 @@ export default function EditSchedule() {
             setIsSaving(true);
             await onSubmit();
             setIsOpen(false);
+            setRefreshKey((prev) => prev + 1);
         } catch (err: any) {
-            setError(err.message ?? "Erro ao salvar horário.");
+            setError(err?.message ?? "Erro ao salvar horário.");
         } finally {
             setIsSaving(false);
         }
@@ -194,15 +202,23 @@ export default function EditSchedule() {
 
             <ScrollableArea>
                 <div className="flex flex-wrap gap-3">
-                    {schedule.map((day) => (
-                        <ScheduleAvailableDay
-                            key={day.id ?? day.availableDay}
-                            {...day}
-                            availableTimeList={day.availableTimeList ?? []}
-                            onDeleteTime={onDeleteTime}
-                            onDeleteDay={onDeleteDay}
-                        />
-                    ))}
+                    {loading ? (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-6">Carregando...</p>
+                    ) : schedule.length === 0 ? (
+                        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-12">
+                            Nenhum horário registrado no momento.
+                        </p>
+                    ) : (
+                        schedule.map((day) => (
+                            <ScheduleAvailableDay
+                                key={day.id ?? day.availableDay}
+                                {...day}
+                                availableTimeList={day.availableTimeList ?? []}
+                                onDeleteTime={onDeleteTime}
+                                onDeleteDay={onDeleteDay}
+                            />
+                        ))
+                    )}
                 </div>
             </ScrollableArea>
 
@@ -215,6 +231,7 @@ export default function EditSchedule() {
                         className="
                             fixed bottom-0 left-0 right-0
                             w-full px-5 pb-4 rounded-t-[30px]
+                            min-w-[400px] 
                             bg-white text-zinc-900
                             dark:bg-neutral-900 dark:text-neutral-100
 

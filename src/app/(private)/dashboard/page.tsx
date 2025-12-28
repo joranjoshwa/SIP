@@ -14,8 +14,10 @@ import { PageHeader } from "@/src/components/ui/PageHeader";
 const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
     id: dto.id as UUID,
-    picture: firstPic(dto.picture),
-    description: dto.description,
+    picture: Array.isArray(dto.picture)
+        ? (dto.picture[0] ?? null)
+        : (dto.picture ?? null),
+    description: dto.description ?? "",
     time: dto.time,
 });
 
@@ -58,6 +60,7 @@ export default function DashboardPage() {
             if (!active) return;
             await fetchItems(itemFromLast48Hours, mapToCarouselItem, setItemsLast48Hours);
         })();
+
         return () => { active = false; };
     }, [chosenCategory]);
 
@@ -78,7 +81,7 @@ export default function DashboardPage() {
                 <CategoryItem handleCategorySelection={handleCategorySelection} />
 
                 <div className="py-1 pt-4">
-                    <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} seeAllHref="/dashboard/item-list/almost-donation"/>
+                    <ItemCarousel title="Prestes a serem doados…" items={itemsAboutToBeDonated} seeAllHref="/dashboard/item-list/almost-donation" />
                     {loading && (
                         <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
                     )}
@@ -90,7 +93,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="py-1">
-                    <ItemCarousel title="Perdidos nas últimas 48 horas" items={itemsLast48Hours} seeAllHref="/dashboard/item-list/lost-48h"/>
+                    <ItemCarousel title="Perdidos nas últimas 48 horas" items={itemsLast48Hours} seeAllHref="/dashboard/item-list/lost-48h" />
                     {loading && (
                         <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>
                     )}

@@ -57,7 +57,7 @@ export const FilterBar = ({ active, onSelect, page = "search" }: Props) => {
                         className={[
                             baseClass,
                             isActive
-                                ? "bg-zinc-900 text-white border-zinc-900 dark:bg-white dark:text-zinc-900 dark:border-white"
+                                ? "bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white border-none"
                                 : "bg-transparent text-zinc-900 border-zinc-200 hover:bg-zinc-100 dark:text-white dark:border-zinc-700 dark:hover:bg-zinc-800",
                         ].join(" ")}
                     >

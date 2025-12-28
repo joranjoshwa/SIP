@@ -78,14 +78,10 @@ export function PageHeader({ title, showBell = false, goBack = true, className }
 
                             await markAsRead(ids);
 
-                            const idSet = new Set(ids);
-
                             setMessages((prev) =>
-                                prev.map((item) =>
-                                    item.notificationId && idSet.has(item.notificationId)
-                                        ? { ...item, status: "READ" as const }
-                                        : item
-                                )
+                                prev.map((item) => {
+                                    return { ...item, status: "READ" as const }
+                                })
                             );
                         }}
                         className="rounded-xl relative p-2 hover:bg-gray-100 dark:hover:bg-neutral-800 hidden md:block"

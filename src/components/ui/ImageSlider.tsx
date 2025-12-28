@@ -38,27 +38,32 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
                 </div>
             )}
 
-            <button
-                onClick={prevImage}
-                className="absolute left-0 top-0 bottom-0
+            {item.pictures.length > 1 && (
+                <button
+                    onClick={prevImage}
+                    className="absolute left-0 top-0 bottom-0
                             flex items-center justify-center
                             w-10 rounded-full"
-            >
-                <ChevronLeft
-                    className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
-                />
-            </button>
+                >
+                    <ChevronLeft
+                        className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
+                    />
+                </button>
+            )}
 
-            <button
-                onClick={nextImage}
-                className="absolute right-0 top-0 bottom-0
+            {item.pictures.length > 1 && (
+                <button
+                    onClick={nextImage}
+                    className="absolute right-0 top-0 bottom-0
                             flex items-center justify-center
                             w-10 rounded-full"
-            >
-                <ChevronRight
-                    className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
-                />
-            </button>
+                >
+                    <ChevronRight
+                        className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
+                    />
+                </button>
+            )}
+
         </div>
     );
 };

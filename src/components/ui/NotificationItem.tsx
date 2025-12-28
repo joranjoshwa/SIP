@@ -89,6 +89,7 @@ const notificationTemplates: Record<
 
 export const NotificationItem = ({ itemId, type, itemName, createdAt, status, onClick, claimer, claimScheduledTime }: Props) => {
     const refused = type === "REQUEST_REFUSED_ANOTHER_USER" || type === "REQUEST_REFUSED";
+    const everyone = type === "NEW_ITEM_ON_CHARITY" || type === "NEW_ITEM_CREATED";
     const formattedTime = createdAt ? formatRelativeTime(new Date(createdAt).toISOString()) : "";
     const { date, time } = getClaimTimeParts(claimScheduledTime as string);
 
@@ -96,8 +97,8 @@ export const NotificationItem = ({ itemId, type, itemName, createdAt, status, on
         <Link href={`/dashboard/items/${itemId}`} className="border-b block border-gray-200 dark:border-neutral-700 py-3 px-2" onClick={onClick}>
 
             <div className="flex flex-col gap-2">
-                <div className="flex items-start gap-2">
-                    <span className={`mt-2 h-2 w-2 rounded-full flex-shrink-0 ${refused ? "bg-red-500" : "bg-green-500"}`}></span>
+                <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 rounded-full flex-shrink-0 ${refused ? "bg-red-500" : everyone ? "bg-orange-500" : "bg-green-500"}`}></span>
                     <h4 className="font-semibold text-gray-900 dark:text-neutral-100 text-sm">
                         {notificationTemplates[type]({
                             itemDescription: itemName,
