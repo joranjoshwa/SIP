@@ -41,16 +41,14 @@ export function ItemCarousel({ title = "", items = [], seeAllHref }: Props) {
 
     const getStep = () => {
         const track = trackRef.current;
-        if (!track) return 160; // fallback
+        if (!track) return 160;
 
-        // first card wrapper (your map renders direct children with w-[140px]/w-[160px])
         const first = track.querySelector<HTMLElement>('[data-carousel-item="true"]');
         if (!first) return 160;
 
         const firstRect = first.getBoundingClientRect();
         const second = first.nextElementSibling as HTMLElement | null;
 
-        // if we have a second element, use distance between starts (includes gap)
         if (second) {
             const secondRect = second.getBoundingClientRect();
             const delta = Math.round(secondRect.left - firstRect.left);
@@ -118,15 +116,15 @@ export function ItemCarousel({ title = "", items = [], seeAllHref }: Props) {
                         aria-label="Scroll right"
                         onClick={() => scrollByDir("right")}
                         className="
-                        hidden md:grid
-                        absolute right-0 top-0 z-10 h-full w-10 place-items-center
-                        opacity-0 pointer-events-none
-                        group-hover:opacity-100 group-hover:pointer-events-auto
-                        transition-opacity
-                        text-gray-700 dark:text-gray-200
-                        bg-gradient-to-l from-white/90 to-transparent
-                        dark:from-neutral-900/90
-                    "
+                            hidden md:grid
+                            absolute right-0 top-0 z-10 h-full w-10 place-items-center
+                            opacity-0 pointer-events-none
+                            group-hover:opacity-100 group-hover:pointer-events-auto
+                            transition-opacity
+                            text-gray-700 dark:text-gray-200
+                            bg-gradient-to-l from-white/90 to-transparent
+                            dark:from-neutral-900/90
+                        "
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>
@@ -139,7 +137,7 @@ export function ItemCarousel({ title = "", items = [], seeAllHref }: Props) {
                     className="
                         relative flex overflow-x-auto overflow-y-hidden
                         snap-x snap-mandatory scroll-smooth pb-2
-                        gap-8 md:gap-4
+                        gap-3 md:gap-4
                         [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden
                         [touch-action:pan-x] select-none
                         md:px-10

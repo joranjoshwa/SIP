@@ -57,7 +57,6 @@ export const patchSchedule = async (schedule: AvailableScheduleResponse): Promis
 };
 
 export const deleteWeekDay = async (weekDay: DayOfWeek): Promise<void> => {
-    console.log(weekDay);
     try {
         await api.delete(`/agenda/admin?dayOfWeek=${weekDay}`);
     } catch (err) {

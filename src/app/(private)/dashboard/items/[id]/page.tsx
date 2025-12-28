@@ -1,9 +1,8 @@
-import { Calendar, MapPin, Tag, ClipboardPen, ImageOff } from "lucide-react";
+import { Calendar, MapPin, Tag, ClipboardPen, ImageOff, Hourglass } from "lucide-react";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { singleItem } from "@/src/api/endpoints/item";
-import { Area, ItemDTO } from "@/src/types/item";
+import { Area, ItemStatus } from "@/src/types/item";
 import { cookies } from "next/headers";
-import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 import { CategoryEnum } from "@/src/enums/category";
 import { CategoryLabels } from "@/src/constants/categories";
 import { AreaLabels } from "@/src/constants/area";
@@ -19,6 +18,7 @@ import { postWithdrawal, getWithdrawalRequests } from "@/src/api/endpoints/withd
 import type { TimeString, UUID, WithdrawalRequestItem } from "@/src/types/withdrawal";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { StatusLabels } from "@/src/constants/itemStatus";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -74,9 +74,9 @@ type Props = {
 };
 
 export default async function ItemPage({ params }: Props) {
-    const cookieStore = cookies() as unknown as ReadonlyRequestCookies;
+    const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    const { id } = params;
+    const { id } = await params;
 
     if (!token) {
         redirect("/dashboard/items");
@@ -112,20 +112,28 @@ export default async function ItemPage({ params }: Props) {
                                 )}
                             </div>
 
-                            <div className="flex gap-2 mt-3 flex-wrap text-black">
-                                <span className={baseClass}>
-                                    <Calendar className="w-4 h-4" />
-                                    {new Date(item.findingAt).toLocaleDateString()}
-                                </span>
-                                <span className={baseClass}>
-                                    <MapPin className="w-4 h-4" />
-                                    {AreaLabels[item.area as Area] ?? item.area}
-                                </span>
-                                <span className={baseClass}>
-                                    <Tag className="w-4 h-4" />
-                                    {CategoryLabels[item.category as CategoryEnum] ??
-                                        item.category}
-                                </span>
+                            <div className="mt-3 -mx-4 px-4 overflow-x-auto scrollbar-hide">
+                                <div className="flex gap-2 flex-nowrap text-black w-max">
+                                    <span className={`${baseClass} shrink-0`}>
+                                        <Calendar className="w-4 h-4" />
+                                        {new Date(item.findingAt).toLocaleDateString()}
+                                    </span>
+
+                                    <span className={`${baseClass} shrink-0`}>
+                                        <MapPin className="w-4 h-4" />
+                                        {AreaLabels[item.area as Area] ?? item.area}
+                                    </span>
+
+                                    <span className={`${baseClass} shrink-0`}>
+                                        <Tag className="w-4 h-4" />
+                                        {CategoryLabels[item.category as CategoryEnum] ?? item.category}
+                                    </span>
+
+                                    <span className={`${baseClass} shrink-0`}>
+                                        <Hourglass className="w-4 h-4" />
+                                        {StatusLabels[item.status as ItemStatus] ?? item.status}
+                                    </span>
+                                </div>
                             </div>
 
                             <h2 className="mt-4 font-semibold md:text-[20px] text-gray-900 dark:text-gray-100">

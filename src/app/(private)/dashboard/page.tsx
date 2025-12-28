@@ -45,7 +45,6 @@ export default function DashboardPage() {
         try {
             setLoading(true);
             const res = await fetcher(chosenCategory ? chosenCategory : "");
-            console.log(res);
             const dtos: Item[] = res as Item[];
             setter(dtos.map(mapper));
         } catch (err) {
