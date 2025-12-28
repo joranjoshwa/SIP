@@ -4,7 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { Plus, X, Hand, CalendarX2, PackagePlus } from "lucide-react";
 
-export function AdminActionsMobile() {
+type Props = {
+    position?: string,
+    positionOptions?: string,
+}
+
+export function AdminActionsMobile({ position, positionOptions }:Props) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -20,7 +25,7 @@ export function AdminActionsMobile() {
             <div
                 className={`
                     fixed z-50 md:hidden
-                    right-8 bottom-[23%] w-72
+                    w-72 ${positionOptions ? positionOptions : "right-8 bottom-[23%]"}
                     rounded-xl
                     text-white
                     transition-all duration-200
@@ -70,9 +75,12 @@ export function AdminActionsMobile() {
                 aria-expanded={open}
                 aria-controls="admin-fab-menu"
                 onClick={() => setOpen((v) => !v)}
-                className="fixed md:hidden z-50 md:hidden right-8 bottom-[15%] h-11 w-11 rounded-lg
-                   bg-[#95F8A8] dark:bg-[#183E1F] text-black shadow-md grid place-items-center
-                   active:scale-95 transition"
+                className={`
+                    ${position ? position : "right-8 bottom-[15%]"}
+                    fixed md:hidden z-50 md:hidden h-11 w-11 rounded-lg
+                    bg-[#95F8A8] dark:bg-[#183E1F] text-black shadow-md grid place-items-center
+                    active:scale-95 transition
+                `}
             >
                 {open ? <X className="h-6 w-6 dark:text-white" /> : <Plus className="h-6 w-6 dark:text-white" />}
             </button>
