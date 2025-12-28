@@ -148,11 +148,11 @@ export default function SearchPage() {
     }, [filters.page]);
 
     return (
-        <section className="flex flex-col flex-1 min-h-0 p-5 pb-0">
+        <section className="flex flex-col flex-1 min-h-0 px-5 pb-0">
             <PageHeader title={"Busca"} goBack={false} />
             <SearchBar handleSearch={handleItemNameSearch} />
 
-            <div className="relative mt-2 flex flex-col flex-1 min-h-0">
+            <div className="relative mt-2 flex flex-col flex-1 min-h-0 px-1">
                 <div
                     id="filterBar"
                     className={`transition-opacity duration-300 ${showFilters ? "opacity-0 pointer-events-none" : "opacity-100"
@@ -164,7 +164,8 @@ export default function SearchPage() {
                 <div
                     id="filterForm"
                     ref={filterRef}
-                    className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 sm:bg-transparent sm:dark:bg-transparent lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
+                    className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 sm:bg-transparent sm:dark:bg-transparent 
+                        lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
                         ? "opacity-100 scale-100 translate-y-0"
                         : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                         }`}

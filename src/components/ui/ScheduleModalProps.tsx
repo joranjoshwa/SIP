@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useActionState } from "react";
-
+import { getSchedule } from "@/src/api/endpoints/schedule";
 import { MaskedField } from "./MaskedField";
+import { AvailableScheduleResponse, AvailableTime, DayOfWeek } from "@/src/types/schedule";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -21,6 +22,22 @@ const initialState: ActionState = { status: "idle" };
 
 const evt = (channel: string) => `schedule-pickup:open:${channel}`;
 
+const DAY_MAP: Record<number, DayOfWeek> = {
+    0: "SUNDAY",
+    1: "MONDAY",
+    2: "TUESDAY",
+    3: "WEDNESDAY",
+    4: "THURSDAY",
+    5: "FRIDAY",
+    6: "SATURDAY",
+};
+
+export const getWeekdayFromBRDate = (dateStr: string): DayOfWeek => {
+    const [dd, mm, yyyy] = dateStr.split("/").map(Number);
+    const date = new Date(yyyy, mm - 1, dd);
+    return DAY_MAP[date.getDay()];
+};
+
 export function SchedulePickupModal({
     action,
     confirmLabel = "Confirmar solicitação",
@@ -37,6 +54,8 @@ export function SchedulePickupModal({
     const [dateStr, setDateStr] = useState("");
     const [timeStr, setTimeStr] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [schedule, setSchedule] = useState<AvailableScheduleResponse>([]);
+    const [availableTimeSlots, setAvailableTimeSlots] = useState<AvailableTime[]>([]);
 
     useEffect(() => {
         const handler = () => setOpen(true);
@@ -72,6 +91,37 @@ export function SchedulePickupModal({
         }
     }, [state.status]);
 
+    useEffect(() => {
+        let mounted = true;
+
+        (async () => {
+            try {
+                const data = await getSchedule();
+                if (mounted) setSchedule(data);
+            } catch (e) {
+                console.error(e);
+            }
+        })();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!dateStr || dateStr.length !== 10) {
+            setAvailableTimeSlots([]);
+            setTimeStr("");
+            return;
+        }
+
+        const day = getWeekdayFromBRDate(dateStr);
+
+        const daySchedule = schedule.find((d) => d.availableDay === day);
+
+        setAvailableTimeSlots(daySchedule?.availableTimeList ?? []);
+    }, [dateStr, schedule]);
+
     return (
         <>
             <dialog
@@ -99,7 +149,7 @@ export function SchedulePickupModal({
                         <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700" />
                     </div>
 
-                    <div className="px-6">
+                    <div className="px-6 pt-3">
                         <h2 className="text-center text-xl font-semibold">Agendar busca</h2>
                     </div>
 
@@ -150,21 +200,59 @@ export function SchedulePickupModal({
                             />
                         </div>
 
+                        {dateStr.length === 10 && (
+                            <div className="mt-4">
+                                <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                                    Horários disponíveis
+                                </p>
+
+                                {availableTimeSlots.length === 0 ? (
+                                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                        Nenhum horário disponível para este dia.
+                                    </p>
+                                ) : (
+                                    <div className="grid grid-cols-3 gap-2 overflow-x-auto scrollbar-hide">
+                                        {availableTimeSlots.map((slot) => {
+                                            const label = slot.startTime.slice(0, 5) + " - " + slot.endTime.slice(0, 5);
+                                            const startTime = slot.startTime.slice(0, 5);
+                                            const selected = timeStr === label;
+
+                                            return (
+                                                <button
+                                                    key={`${slot.startTime}-${slot.endTime}`}
+                                                    type="button"
+                                                    onClick={() => setTimeStr(startTime)}
+                                                    className={[
+                                                        "h-8 rounded-xl border text-sm font-medium transition-colors",
+                                                        selected
+                                                            ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white dark:hover:bg-[#183e1f] border-none"
+                                                            : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
+                                                    ].join(" ")}
+                                                >
+                                                    {label}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         <label
                             htmlFor="description"
                             className="mb-1 mt-2 block text-sm font-medium text-zinc-700 dark:text-zinc-200"
-                            >
+                        >
                             Justificativa
                         </label>
                         <textarea id="description" name="description" rows={3}
-                                    className=" w-full rounded-xl
+                            className=" w-full rounded-xl
                                             px-1 py-3
                                             shadow-inner resize-none
                                             focus:outline-none
                                             bg-zinc-100 text-zinc-600 pl-4 text-sm transition-colors
                                             hover:bg-zinc-200
                                             dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-                                    
+
                         </textarea>
 
                         <p className="mt-4 text-sm leading-snug text-zinc-600 dark:text-zinc-400">
@@ -177,7 +265,7 @@ export function SchedulePickupModal({
                             disabled={!dateStr || !timeStr || submitting}
                             className="
                                 mt-5 h-12 w-full rounded-xl
-                                bg-[#D4EED9] text-black hover:bg-emerald-200/90 disabled:opacity-50
+                                bg-[#D4EED9] text-black text-sm hover:bg-emerald-200/90 disabled:opacity-50
                                 dark:bg-[#183E1F] dark:text-white dark:hover:bg-[#183e1f]
                             "
                         >

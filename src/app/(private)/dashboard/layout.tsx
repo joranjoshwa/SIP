@@ -109,7 +109,7 @@ export default function DashboardLayout({
             </aside>
 
             <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
-                <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-4 pt-8 mb-[1.5rem]">
+                <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-8 mb-[1.5rem]">
                     <Logo
                         imageClassName="h-6 md:w-[87px] md:h-8"
                         mode={darkMode ? "dark" : "light"}
