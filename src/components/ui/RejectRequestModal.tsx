@@ -25,7 +25,6 @@ export function RejectRequestModal({
         statusRecovery: "REFUSED",
       });
 
-      alert("Solicitação rejeitada com sucesso!");
       onClose();
       onSuccess();
     } catch (error) {

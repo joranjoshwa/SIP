@@ -23,6 +23,7 @@ export default function SolicitacoesPage() {
 
   const [sort, setSort] = useState<string>("requestDate,desc");
   const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [page, setPage] = useState(0);
   const [size] = useState(10);
@@ -52,6 +53,10 @@ export default function SolicitacoesPage() {
     },
     [page, size, sort]
   );
+
+  const toggleExpanded = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   useEffect(() => {
     fetchRequests(page, sort);
@@ -117,25 +122,21 @@ export default function SolicitacoesPage() {
               <p className="mt-1 text-xs">Quando houver novas solicitações, elas aparecerão aqui.</p>
             </div>
           ) : (
-            requests.map((request) => (
-              <RequestCard
-                key={request.id}
-                id={request.id}
-                image={request.item.pictures?.[0]?.url}
-                title={request.item.description ?? "Item sem descrição"}
-                user={request.user?.name ?? "Usuário não identificado"}
-                date={new Date(request.requestDate).toLocaleString("pt-BR")}
-                onApprove={(id) => {
-                  setSelectedRequestId(id);
-                  setApproveOpen(true);
-                }}
-                onReject={(id) => {
-                  setSelectedRequestId(id);
-                  setRejectOpen(true);
-                }}
-              />
-            ))
-          )}
+              requests.map((request) => (
+                <RequestCard
+                  key={request.id}
+                  id={request.id}
+                  image={request.item.pictures?.[0]?.url}
+                  title={request.item.description ?? "Item sem descrição"}
+                  user={request.user?.name ?? "Usuário não identificado"}
+                  date={new Date(request.requestDate).toLocaleString("pt-BR")}
+                  description={request.description}
+                  expanded={expandedId === request.id}
+                  onToggle={toggleExpanded}
+                  onApprove={(id) => { setSelectedRequestId(id); setApproveOpen(true); }}
+                  onReject={(id) => { setSelectedRequestId(id); setRejectOpen(true); }}
+                />
+              )))}
         </section>
       </ScrollableArea>
 
@@ -154,7 +155,7 @@ export default function SolicitacoesPage() {
         </button>
 
         <div className="text-sm text-center text-zinc-600 dark:text-zinc-300">
-          Página <span className="font-medium">{page + 1}</span> de{" "}
+          Página <span className="font-medium">{totalElements > 0 ? page + 1 : 0}</span> de{" "}
           <span className="font-medium">{totalPages}</span>
           {totalElements > 0 && (
             <span className="md:ml-2 text-xs text-zinc-500 dark:text-zinc-400">
@@ -178,7 +179,7 @@ export default function SolicitacoesPage() {
         </button>
       </div>
 
-      <AdminActionsMobile position="right-8 bottom-40" positionOptions="right-8 bottom-52"/>
+      <AdminActionsMobile positionFab="right-8 bottom-40" positionOptions="right-8 bottom-52" />
 
       <ApproveRequestModal
         open={approveOpen}

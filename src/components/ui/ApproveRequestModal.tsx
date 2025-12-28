@@ -25,7 +25,6 @@ export function ApproveRequestModal({
         statusRecovery: "APPROVED",
       });
 
-      alert("Solicitação aprovada com sucesso!");
       onClose();
       onSuccess();
     } catch (error) {

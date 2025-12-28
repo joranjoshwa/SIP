@@ -5,11 +5,11 @@ import Link from "next/link";
 import { Plus, X, Hand, CalendarX2, PackagePlus } from "lucide-react";
 
 type Props = {
-    position?: string,
+    positionFab?: string,
     positionOptions?: string,
 }
 
-export function AdminActionsMobile({ position, positionOptions }:Props) {
+export function AdminActionsMobile({ positionFab, positionOptions }:Props) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -76,7 +76,7 @@ export function AdminActionsMobile({ position, positionOptions }:Props) {
                 aria-controls="admin-fab-menu"
                 onClick={() => setOpen((v) => !v)}
                 className={`
-                    ${position ? position : "right-8 bottom-[15%]"}
+                    ${positionFab ? positionFab : "right-8 bottom-[15%]"}
                     fixed md:hidden z-50 md:hidden h-11 w-11 rounded-lg
                     bg-[#95F8A8] dark:bg-[#183E1F] text-black shadow-md grid place-items-center
                     active:scale-95 transition

@@ -13,10 +13,12 @@ export async function getRecoveryRequests(
                 page,
                 size,
                 sort,
+                statusRecovery: "PENDING"
             },
         }
     );
 
+    console.log(response.data);
     return response.data;
 }
 
