@@ -4,7 +4,7 @@ import { RecoveryResponse, ReviewRecoveryPayload } from "@/src/types/recovery";
 export async function getRecoveryRequests(
     page = 0,
     size = 10,
-    sort: string[]
+    sort: string
 ): Promise<RecoveryResponse> {
     const response = await api.get<RecoveryResponse>(
         "/items/admin/recovery",
@@ -13,10 +13,12 @@ export async function getRecoveryRequests(
                 page,
                 size,
                 sort,
+                statusRecovery: "PENDING"
             },
         }
     );
 
+    console.log(response.data);
     return response.data;
 }
 

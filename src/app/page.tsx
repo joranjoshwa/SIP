@@ -1,13 +1,7 @@
 "use client"
 
-import { Login } from "../pages/Login/Login";
+import { redirect } from "next/navigation";
 
-const Page = () => {
-    return (
-        <div>
-            <Login />
-        </div>
-    );
+export default function Page() {
+  redirect("/public/login");
 }
-
-export default Page;
