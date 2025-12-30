@@ -39,12 +39,11 @@ export const SideBarItem = ({
         "text-gray-700 hover:bg-gray-100 hover:text-gray-900",
         "dark:text-neutral-300 dark:hover:bg-neutral-800 dark:hover:text-white",
         isActive ? "bg-gray-100 dark:bg-neutral-800" : "",
-        className,
     ].join(" ");
 
     if (href) {
         return (
-            <li>
+            <li className={className}>
                 <Link href={href} className={combined} aria-label={text}>
                     <Icon className="h-7 w-7 opacity-70 group-hover:opacity-100" />
                     <span className="hidden md:block">{text}</span>

@@ -48,6 +48,7 @@ export default function ProfilePage() {
                     name: data.name,
                     email: data.email,
                     avatar: data.profileImageUrl || null,
+                    role: data.role,
                     registrationDate: data.registrationDate,
                 });
 
@@ -113,7 +114,7 @@ export default function ProfilePage() {
 
                             <section className="mt-6">
                                 <p className="text-sm text-foreground/70 mb-2">Ações disponíveis</p>
-                                <ActionList />
+                                <ActionList userRole={user.role} />
                             </section>
                         </main>
                     </div>
