@@ -5,9 +5,10 @@ import { useState } from "react";
 
 type Props = {
     handleSearch: (itemName: string) => void;
+    className?: string,
 }
 
-export const SearchBar = ({ handleSearch }: Props) => {
+export const SearchBar = ({ handleSearch, className }: Props) => {
     const [value, setValue] = useState("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -21,7 +22,7 @@ export const SearchBar = ({ handleSearch }: Props) => {
     };
 
     return (
-        <div className="flex items-center gap-2 rounded-full bg-[#E4ECDF] px-4 py-3 w-full dark:bg-[#292929]">
+        <div className={`flex items-center gap-2 rounded-full bg-[#E4ECDF] px-4 py-3 w-full dark:bg-[#292929] ${className}`}>
             <Search 
                 className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300 transition-colors" 
                 onClick={handleIconClick}

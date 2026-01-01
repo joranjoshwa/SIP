@@ -79,7 +79,7 @@ export default function DashboardLayout({
 
                         {role === Role.ADMIN && (
                             <>
-                                <SideBarItem icon={HandHeart} className="hidden md:flex" text="Itens para doação" href="/dashboard/donation" exact />
+                                <SideBarItem icon={HandHeart} dynamicVisibility="hidden md:flex" text="Itens para doação" href="/dashboard/donation" exact />
                                 <SideBarItem icon={Calendar1} text="Horários" href="/dashboard/schedule" exact />
                                 <AdminActions />
                             </>

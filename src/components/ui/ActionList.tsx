@@ -27,7 +27,7 @@ export const ActionList = ({ userRole }: Props) => {
             key: "history",
             label: "Histórico de itens",
             Icon: Box,
-            onClick: () => router.push("/dashboard/history"),
+            onClick: () => router.push("/dashboard/request-history"),
             role: "COMMON"
         },
         {
