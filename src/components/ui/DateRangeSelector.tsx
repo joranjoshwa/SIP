@@ -25,7 +25,9 @@ export const DateRangeSelector = forwardRef<DateRangeSelectorRef, Props>(
             setValidStart(validDate);
             if (validDate && validEnd) {
                 handleDateSelection(validDate, validEnd);
-            } else if (!validDate && !validEnd) {
+            } else if (validDate) {
+                handleDateSelection(validDate, null);
+            } else if (!validDate) {
                 handleDateSelection(null, null);
             }
         };
@@ -39,7 +41,9 @@ export const DateRangeSelector = forwardRef<DateRangeSelectorRef, Props>(
             setValidEnd(validDate);
             if (validStart && validDate) {
                 handleDateSelection(validStart, validDate);
-            } else if (!validStart && !validDate) {
+            } else if (validDate) {
+                handleDateSelection(null, validDate);
+            } else if (!validDate) {
                 handleDateSelection(null, null);
             }
         };

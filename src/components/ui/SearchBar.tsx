@@ -1,25 +1,30 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
     handleSearch: (itemName: string) => void;
+    handleRunSearch: (query: string) => void;
     className?: string,
 }
 
-export const SearchBar = ({ handleSearch, className }: Props) => {
+export const SearchBar = ({ handleSearch, className, handleRunSearch }: Props) => {
     const [value, setValue] = useState("");
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
-            handleSearch(value);
+            handleRunSearch(value);
         }
     };
 
     const handleIconClick = () => {
         handleSearch(value);
     };
+
+    useEffect(() => {
+        handleSearch(value)
+    }, [value]);
 
     return (
         <div className={`flex items-center gap-2 rounded-full bg-[#E4ECDF] px-4 py-3 w-full dark:bg-[#292929] ${className}`}>

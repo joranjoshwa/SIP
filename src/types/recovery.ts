@@ -122,3 +122,5 @@ export type RecoveryHistoryApiResponse = {
     user: User;
     recovery: RecoveryRequest[];
 };
+
+export type FilterGroup = "search" | "requestsSelf";
