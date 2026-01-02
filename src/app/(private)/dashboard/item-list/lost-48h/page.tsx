@@ -16,7 +16,7 @@ export default function LostItems48h() {
     setLoading(true);
 
     try {
-      const data = await itemFromLast48Hours(chosenCategory ?? "");
+      const data = await itemFromLast48Hours(chosenCategory ?? "", 100);
       setItems(data);
     } catch (error) {
       console.error("Erro ao carregar itens perdidos:", error);

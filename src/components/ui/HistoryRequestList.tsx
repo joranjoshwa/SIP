@@ -98,7 +98,7 @@ export function HistoryRequestList({
                                 src={imageUrl}
                                 alt={title}
                                 fill
-                                sizes="80px"
+                                sizes="200px"
                                 className="object-cover"
                             />
                         ) : (
