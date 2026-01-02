@@ -1,4 +1,4 @@
-type RequestStatus = "APPROVED" | "REJECTED" | "PENDING";
+type RequestStatus = "APPROVED" | "REFUSED" | "PENDING";
 
 interface ItemRequest {
     id: string;

@@ -30,11 +30,11 @@ const fetchItems = async <T extends CarouselItem | ItemCard>(
     return data.content.map(mapper);
 };
 
-export const itemFromLast48Hours = async (category: string): Promise<CarouselItem[]> => {
+export const itemFromLast48Hours = async (category: string, size: number = 10): Promise<CarouselItem[]> => {
     return fetchItems(
         {
             page: 0,
-            size: 10,
+            size,
             lastDays: 2,
             category: getCategoryEnum(category),
         },
@@ -42,11 +42,11 @@ export const itemFromLast48Hours = async (category: string): Promise<CarouselIte
     );
 };
 
-export const itemAboutToBeDonated = async (category: string): Promise<CarouselItem[]> => {
+export const itemAboutToBeDonated = async (category: string, size: number = 10): Promise<CarouselItem[]> => {
     return fetchItems(
         {
             page: 0,
-            size: 10,
+            size,
             aboutToBeDonated: true,
             category: getCategoryEnum(category),
         },

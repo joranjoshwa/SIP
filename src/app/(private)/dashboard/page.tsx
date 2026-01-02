@@ -1,17 +1,14 @@
 "use client";
 
-import { BellRing } from "lucide-react";
-import { CategoryItem } from "../../../components/ui/CategoryItem";
-import { ItemCarousel } from "../../../components/ui/ItemCarousel";
+import { CategoryItem } from "@/src/components/ui/CategoryItem";
+import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
 import { useEffect, useState } from "react";
-import { CarouselItem, Item, UUID } from "../../../types/item";
-import { itemFromLast48Hours, itemAboutToBeDonated } from "../../../api/endpoints/item";
-import { useRouter } from "next/navigation";
+import { CarouselItem, Item, UUID } from "@/src/types/item";
+import { itemFromLast48Hours, itemAboutToBeDonated } from "@/src/api/endpoints/item";
 import { CategoryKey } from "@/src/constants/categories";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 
-const firstPic = (pics?: { id: string, url: string }) => (pics ? pics.url : "");
 const mapToCarouselItem = (dto: Item): CarouselItem => ({
     id: dto.id as UUID,
     picture: Array.isArray(dto.picture)
@@ -26,8 +23,6 @@ export default function DashboardPage() {
     const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
     const [chosenCategory, setChosenCategory] = useState<CategoryKey | null>(null);
     const [loading, setLoading] = useState(true);
-
-    const router = useRouter();
 
     const handleCategorySelection = (category: CategoryKey | null) => {
         if (category !== chosenCategory) {

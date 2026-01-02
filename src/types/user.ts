@@ -4,10 +4,13 @@ export type ApiResponse = {
     [key: string]: string | undefined;
 }
 
+export type Role = "ADMIN" | "COMMON" | "ROOT";
+
 export type User = {
     name: string;
     email: string;
     avatar?: string;
+    role?: Role;
     registrationDate: string;
 }
 

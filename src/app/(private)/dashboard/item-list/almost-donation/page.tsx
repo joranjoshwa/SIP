@@ -16,7 +16,7 @@ export default function AboutToBeDonatedItems() {
     setLoading(true);
 
     try {
-      const data = await itemAboutToBeDonated(chosenCategory ?? "");
+      const data = await itemAboutToBeDonated(chosenCategory ?? "", 100);
       setItems(data);
     } catch (error) {
       console.error("Erro ao carregar itens quase indo para doação:", error);
