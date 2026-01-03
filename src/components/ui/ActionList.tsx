@@ -4,13 +4,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/src/context/ThemeContext";
 import { Role } from "@/src/types/user";
+import { Role as RoleUser} from "@/src/enums/role";
 
 type Action = {
     key: string;
     label: string;
     Icon: React.ElementType;
     onClick?: () => void;
-    role?: Role,
+    role?: Role[],
 };
 
 type Props = {
@@ -28,20 +29,21 @@ export const ActionList = ({ userRole }: Props) => {
             label: "Histórico de itens",
             Icon: Box,
             onClick: () => router.push("/dashboard/request-history"),
-            role: "COMMON"
+            role: [RoleUser.COMMON]
         },
         {
             key: "donation",
             label: "Itens para doação",
             Icon: HandHeart,
             onClick: () => router.push("/dashboard/donation"),
-            role: "ADMIN"
+            role: [RoleUser.ADMIN]
         },
         {
             key: "password",
             label: "Alterar senha",
             Icon: Key,
             onClick: () => router.push("/dashboard/change-password"),
+            role: [RoleUser.COMMON, RoleUser.ADMIN]
         },
         {
             key: "theme",
@@ -60,7 +62,7 @@ export const ActionList = ({ userRole }: Props) => {
     return (
         <div className="mt-4 space-y-3">
             {actions.map(({ key, label, Icon, onClick, role }) => {
-                if(role && role !== userRole ) return;
+                if(role && !role.includes(userRole as Role) ) return;
                 return (
                     <Button
                         key={key}
