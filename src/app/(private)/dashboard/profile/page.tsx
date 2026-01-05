@@ -99,7 +99,6 @@ export default function ProfilePage() {
                         <main className="md:col-span-9 max-w-2xl w-full py-6">
                             <h1 className="text-lg font-bold mb-4">Perfil</h1>
 
-
                             <AvatarEditor currentAvatar={user.avatar || undefined} />
 
                             <div className="text-left mt-4">
