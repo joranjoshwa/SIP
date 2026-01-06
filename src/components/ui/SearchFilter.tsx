@@ -79,7 +79,6 @@ export const SearchFilter = ({
         <div className="md:border md:border-gray-300 md:dark:border-gray-600 md:rounded-2xl md:p-6">
             <h2 className="text-lg md:text-md font-bold">Filtros</h2>
 
-            {/* Category */}
             {isFilterVisible(filterGroup, "categoria") && (
                 <div className="mt-[1.5rem]">
                     <span className="text-sm">Categoria</span>
@@ -90,7 +89,6 @@ export const SearchFilter = ({
                 </div>
             )}
 
-            {/* Date */}
             {isFilterVisible(filterGroup, "data") && (
                 <div className="mt-5">
                     <span className="text-sm">Data</span>
@@ -101,7 +99,6 @@ export const SearchFilter = ({
                 </div>
             )}
 
-            {/* Toggle */}
             {isFilterVisible(filterGroup, "donation") && (
                 <div className="mt-5">
                     <SquareToggle
@@ -112,7 +109,6 @@ export const SearchFilter = ({
                 </div>
             )}
 
-            {/* Status */}
             {isFilterVisible(filterGroup, "status") && (
                 <div>
                     <PillSelector<RequestStatus>
@@ -130,7 +126,6 @@ export const SearchFilter = ({
                 </div>
             )}
 
-            {/* Buttons */}
             <div className="mt-10">
                 <Button variant="secondary" onClick={cleanFilters}>
                     Limpar Filtros

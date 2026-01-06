@@ -10,22 +10,10 @@ type Props = {
     title: string;
     imageUrl: string | null;
     status: RecoveryStatus;
-
-    /** What you want to reveal when expanded */
     description?: string;
-
-    /** ISO string, ex: "2025-05-29T09:30:00.000Z" */
     pickupIso?: string;
-
-    /** Optional: force timezone used for formatting (default: user's) */
     timeZone?: string;
-
-    /**
-     * Optional callback (e.g., navigate). If you only want expand, just omit it.
-     */
     onClick?: () => void;
-
-    /** Optional: start expanded */
     defaultExpanded?: boolean;
 };
 
