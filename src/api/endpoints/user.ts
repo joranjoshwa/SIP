@@ -89,7 +89,22 @@ export const registerAdmin = async (data: { name: string, phone: string, email: 
             e.response?.data?.error ??
             (typeof e.response?.data === "string" ? e.response.data : null);
 
-        throw new Error(apiMsg ?? e.message ?? "Failed to save schedule");
+        throw new Error(apiMsg ?? e.message ?? "Failed to register admin");
+    }
+}
+
+export const deleteAdmin = async (email: string) => {
+    try {
+        await api.delete(`/user/root/delete-admin/${email}`);
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to delete admin");
     }
 }
 
