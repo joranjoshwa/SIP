@@ -10,6 +10,7 @@ type Props = {
     exact?: boolean;
     onClick?: () => void;
     className?: string;
+    dynamicVisibility?: string;
 };
 
 export const SideBarItem = ({
@@ -19,6 +20,7 @@ export const SideBarItem = ({
     onClick,
     className = "",
     exact = false,
+    dynamicVisibility
 }: Props) => {
     const pathname = usePathname();
 
@@ -44,7 +46,7 @@ export const SideBarItem = ({
 
     if (href) {
         return (
-            <li>
+            <li className={dynamicVisibility}>
                 <Link href={href} className={combined} aria-label={text}>
                     <Icon className="h-7 w-7 opacity-70 group-hover:opacity-100" />
                     <span className="hidden md:block">{text}</span>
@@ -54,7 +56,7 @@ export const SideBarItem = ({
     }
 
     return (
-        <li>
+        <li className={dynamicVisibility}>
             <button onClick={onClick} className={combined} aria-label={text}>
                 <Icon className="h-7 w-7 opacity-70 group-hover:opacity-100" />
                 <span className="hidden md:block">{text}</span>

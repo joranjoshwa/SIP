@@ -39,6 +39,7 @@ export default function ItemCard({ id, picture, description, time }: ItemCard) {
                         src={picture}
                         alt={description}
                         fill
+                        sizes="400px"
                         className="w-10 h-10 object-cover rounded-2xl"
                     />
                 ) : (

@@ -97,7 +97,7 @@ export type ItemCard = {
     time?: number
 };
 
-export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays" | "dataBusca" | "dataSolicitacao";
+export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays" | "dataBusca" | "dataSolicitacao" | "status";
 
 export type CreateItemRequest = {
     description: string;
