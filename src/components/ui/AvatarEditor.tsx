@@ -42,17 +42,14 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
 
         const file = e.target.files[0];
 
-        // local preview (no backend)
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
 
-        // ✅ if parent wants to upload later, do NOT upload now
         if (handleImageUpload) {
-            handleImageUpload(file); // parent stores File and uploads on "Save"
+            handleImageUpload(file);
             return;
         }
 
-        // otherwise: keep your current auto-upload behavior
         let updatedAvatar: string | null;
 
         if (role === UserRole.ROOT) {

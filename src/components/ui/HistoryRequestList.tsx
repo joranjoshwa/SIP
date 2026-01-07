@@ -79,7 +79,6 @@ export function HistoryRequestList({
                 ].join(" ")}
             >
                 <div className="flex items-center gap-3">
-                    {/* Thumbnail */}
                     <div className="relative md:h-20 md:w-20 h-16 w-16 rounded-lg overflow-hidden shrink-0">
                         {imageUrl ? (
                             <Image
@@ -96,7 +95,6 @@ export function HistoryRequestList({
                         )}
                     </div>
 
-                    {/* Content */}
                     <div className="w-full flex justify-between align-center">
 
                         <div>
@@ -133,7 +131,7 @@ export function HistoryRequestList({
                         />
                     </div>
                 </div>
-                {/* Expanded area */}
+                
                 <div
                     className={[
                         "overflow-hidden px-3 pt-2",
