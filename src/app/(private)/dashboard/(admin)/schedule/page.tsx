@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { formatGroupLabel } from "@/src/utils/formatGroupLabel";
 import { getNextDays } from "@/src/utils/getNextDays";
 import { Calendar } from "lucide-react";
+import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 
 export default function Schedule() {
 
@@ -68,7 +69,7 @@ export default function Schedule() {
   }, []);
 
   return (
-    <section className="p-5 transition-colors">
+    <section className="p-5 transition-colors flex flex-col min-h-0">
 
       <h1 className="text-2xl font-bold mb-4 dark:text-gray-100">Horários</h1>
 
@@ -76,11 +77,13 @@ export default function Schedule() {
 
       <DateNav dates={getNextDays(8)} current={getNextDays(8)[0]} />
 
-      <div className="mt-6">
-        {groupedItems.map((group, i) => (
-          <HorarioGroup key={i} label={group.label} items={group.items} />
-        ))}
-      </div>
+      <ScrollableArea>
+        <div>
+          {groupedItems.map((group, i) => (
+            <HorarioGroup key={i} label={group.label} items={group.items} />
+          ))}
+        </div>
+      </ScrollableArea>
 
       {!loading && groupedItems.length === 0 && (
         <div className="flex flex-col items-center mt-10 text-gray-500 dark:text-gray-400">
