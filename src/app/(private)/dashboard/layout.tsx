@@ -71,7 +71,7 @@ export default function DashboardLayout({
                     >
                         <SideBarItem icon={House} text="Página inicial" href="/dashboard" exact />
                         <SideBarItem icon={CircleUserRound} text="Perfil" href="/dashboard/profile" exact />
-                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/items" exact />
+                        <SideBarItem icon={Search} text="Buscar" href="/dashboard/items/search" exact />
 
                         {role === Role.COMMON && (
                             <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/donation" exact />

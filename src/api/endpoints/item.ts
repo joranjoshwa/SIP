@@ -1,6 +1,7 @@
 import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
+import { AxiosError } from "axios";
 
 const getCategoryEnum = (category?: string) => {
     if (!category) return undefined;
@@ -81,11 +82,17 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     );
 
     const { data } = await api.get(`/items?${search.toString()}`);
-    return data.content.map((item: ItemDTO) => ({
-        id: item.id,
-        description: item.description,
-        picture: item.pictures[0]?.url || null,
-    })) as ItemCard[];
+    return data.content.map((item: ItemDTO) => {
+        const timeMs = new Date(item.donationDate).getTime() - Date.now();
+        const days = Math.ceil(timeMs / (1000 * 60 * 60 * 24));
+        return {
+            id: item.id,
+            description: item.description,
+            picture: item.pictures[0]?.url || null,
+            date: item.findingAt,
+            time: days,
+        }
+    }) as ItemCard[];
 };
 
 export const createItem = async (data: CreateItemRequest, token: string): Promise<ItemResponse> => {
@@ -140,3 +147,22 @@ export const editItem = async (
     );
     return response.data;
 };
+
+export const deleteItem = async (itemId: string, token: string) => {
+    try {
+        await api.delete(`/items/root/delete/${itemId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to delete item");
+    }
+}

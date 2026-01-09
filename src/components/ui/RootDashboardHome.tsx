@@ -4,9 +4,6 @@ import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ActionGroup } from "./ActionGroup";
 import { ActionGroupItem } from "./ActionGroupItem";
 import { Box, Trash2, UserPen, UserPlus } from "lucide-react";
-import { getAdminUsers } from "@/src/api/endpoints/user";
-import { getTokenFromCookie, extractEmailFromToken } from "@/src/utils/token";
-import { useEffect } from "react";
 import { ScrollableArea } from "./ScrollableArea";
 
 export default function RootDashboardHome() {
@@ -38,7 +35,7 @@ export default function RootDashboardHome() {
 
                     <ActionGroup title="Item">
                         <ActionGroupItem
-                            href="/dashboard/root/items/delete"
+                            href="/dashboard/items/search/delete"
                             title="Deletar item"
                             icon={<Box className="w-4 h-4" />}
                             danger
