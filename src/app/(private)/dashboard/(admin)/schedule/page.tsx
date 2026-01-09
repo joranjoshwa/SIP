@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 
-import { getRecoveries } from "@/src/api/endpoints/recovery";
+import { getRecoverySchedule } from "@/src/api/endpoints/recovery";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import DateNav from "@/src/components/ui/DateNav";
 import HorarioGroup, { HorarioItem } from "@/src/components/ui/HorarioGroup";
@@ -11,6 +11,7 @@ import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 
 import { formatGroupLabel } from "@/src/utils/formatGroupLabel";
 import { getNextDays } from "@/src/utils/getNextDays";
+import { extractEmailFromToken } from "@/src/api/axios";
 
 type HorarioItemWithDate = HorarioItem & { _rawDate: Date };
 
@@ -30,28 +31,43 @@ export default function Schedule() {
     async function fetchData() {
       try {
         setLoading(true);
+        setError("");
 
-        const data = await getRecoveries(0, 50);
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("Usuário não autenticado");
+        }
 
-        const items: HorarioItemWithDate[] = data.content.map((entry: any) => {
-          const requestDate = new Date(entry.requestDate);
+        const email = extractEmailFromToken(token);
+        if (!email) {
+          throw new Error("Não foi possível extrair o email do token");
+        }
 
-          return {
-            id: entry.id,
-            title: entry.item?.description || "Item",
-            user: entry.user?.name || "Usuário não informado",
-            time: requestDate.toLocaleTimeString("pt-BR", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            image: entry.item?.pictures?.[0]?.url || "/placeholder.jpg",
-            _rawDate: requestDate,
-          };
-        });
+        const data = await getRecoverySchedule(token, email, 0, 50);
+
+        const items: HorarioItemWithDate[] = data.content.flatMap(
+          (wrapper: any) =>
+            (wrapper.recovery ?? []).map((entry: any) => {
+              const pickupDate = new Date(entry.pickupDate);
+
+              return {
+                id: entry.id,
+                title: entry.item?.description || "Item",
+                user: entry.item?.owner?.name || "Usuário não informado",
+                time: pickupDate.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }),
+                image: entry.item?.pictures?.[0]?.url || "/placeholder.jpg",
+                _rawDate: pickupDate,
+              };
+            })
+        );
 
         setAllItems(items);
       } catch (err: any) {
-        setError(`Erro ao carregar os dados: ${err?.message || String(err)}`);
+        console.error("Erro completo:", err);
+        setError("Erro ao carregar os horários");
       } finally {
         setLoading(false);
       }
@@ -61,9 +77,17 @@ export default function Schedule() {
   }, []);
 
   useEffect(() => {
-    const filtered = allItems.filter(
-      (item) => item._rawDate.getDate() === selectedDay
-    );
+    const today = new Date();
+
+    const filtered = allItems.filter((item) => {
+      const d = item._rawDate;
+
+      return (
+        d.getDate() === selectedDay &&
+        d.getMonth() === today.getMonth() &&
+        d.getFullYear() === today.getFullYear()
+      );
+    });
 
     const map = new Map<string, HorarioItemWithDate[]>();
 
@@ -108,7 +132,7 @@ export default function Schedule() {
         </div>
       </ScrollableArea>
 
-      {!loading && groupedItems.length === 0 && (
+      {!loading && groupedItems.length === 0 && !error && (
         <div className="flex flex-col items-center mt-10 text-gray-500 dark:text-gray-400">
           <Calendar size={40} className="mb-2" />
           <p>Nenhum horário marcado para este dia.</p>
@@ -116,7 +140,7 @@ export default function Schedule() {
       )}
 
       {error && (
-        <p className="mt-4 text-sm text-red-500">
+        <p className="mt-4 text-sm text-red-500 text-center">
           {error}
         </p>
       )}
