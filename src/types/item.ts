@@ -94,7 +94,8 @@ export type ItemCard = {
     id?: UUID;
     picture: string | null;
     description: string;
-    time?: number
+    time?: number;
+    date?: string;
 };
 
 export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays" | "dataBusca" | "dataSolicitacao" | "status";

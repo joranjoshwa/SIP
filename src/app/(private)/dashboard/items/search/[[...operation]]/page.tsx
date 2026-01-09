@@ -10,8 +10,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { useParams } from "next/navigation";
 
 export default function SearchPage() {
+    const params = useParams<{ operation?: "delete" }>();
+    const operation = params?.operation ?? null;
+    const isDelete = !!operation;
+
     const [filters, setFilters] = useState<SearchRequest>({
         page: 0,
         sort: "findingAt,desc",
@@ -103,8 +108,6 @@ export default function SearchPage() {
                 page: 0,
             };
 
-            console.log("SUBMIT FILTERS:", nextFilters);
-
             setShowFilters(false);
             setLoading(true);
 
@@ -178,7 +181,7 @@ export default function SearchPage() {
 
     return (
         <section className="flex flex-col flex-1 min-h-0 px-5 pb-0">
-            <PageHeader title={"Busca"} goBack={false} />
+            <PageHeader title={isDelete ? "Deletar item" : "Busca"} goBack={false} />
             <SearchBar handleSearch={handleItemNameSearch} handleRunSearch={handleRunSearch} />
 
             <div className="relative mt-2 flex flex-col flex-1 min-h-0 px-1">
@@ -221,6 +224,8 @@ export default function SearchPage() {
                                     id={item.id}
                                     picture={item.picture}
                                     description={item.description}
+                                    date={item.date}
+                                    time={item.time}
                                 />
                             ))}
                         </div>

@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Tag, ClipboardPen, ImageOff, Hourglass } from "lucide-react";
+import { Calendar, MapPin, Tag, ClipboardPen, ImageOff, Hourglass, Trash } from "lucide-react";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { singleItem } from "@/src/api/endpoints/item";
 import { Area, ItemStatus } from "@/src/types/item";
@@ -16,9 +16,11 @@ import { OpenScheduleButton } from "@/src/components/ui/OpenScheduleButton";
 import { SchedulePickupModal } from "@/src/components/ui/ScheduleModalProps";
 import { postWithdrawal, getWithdrawalRequests } from "@/src/api/endpoints/withdrawal";
 import type { TimeString, UUID, WithdrawalRequestItem } from "@/src/types/withdrawal";
+import { ItemDeleteButton } from "@/src/components/ui/ItemDeleteButton";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { StatusLabels } from "@/src/constants/itemStatus";
+import { deleteItem } from "@/src/api/endpoints/item";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -81,6 +83,18 @@ export default async function ItemPage({ params }: Props) {
     if (!token) {
         redirect("/dashboard/items");
     }
+
+    async function deleteItemAction(itemId: string) {
+        "use server";
+
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) throw new Error("Sessão expirada. Faça login novamente.");
+
+        await deleteItem(itemId, token);
+    }
+
 
     try {
         const item = await singleItem(id, token as string);
@@ -159,6 +173,15 @@ export default async function ItemPage({ params }: Props) {
                                     <span>Editar item</span>
                                 </div>
                             </Link>
+
+                            <ItemDeleteButton
+                                hidden={role !== Role.ROOT}
+                                itemId={id}
+                                itemTitle={item.description}
+                                foundAt={item.findingAt}
+                                itemImageUrl={item.pictures?.[0]?.url ?? null}
+                                onDelete={deleteItemAction.bind(null, id)}
+                            />
                         </div>
 
                         <div className={`md:basis-2/5 ${role !== Role.ADMIN ? "hidden" : ""}`}>
