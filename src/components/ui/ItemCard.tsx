@@ -84,7 +84,7 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                     Encontrado {timeAgoPtBr(date as string)}
                 </p>
 
-                {time && (
+                {time && time < 15 && (
                     <div
                         className={`flex items-center gap-1 text-[10px] px-2 py-1 rounded-2xl w-fit ${bg}`}
                     >
