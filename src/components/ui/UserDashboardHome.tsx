@@ -14,6 +14,7 @@ const mapToCarouselItem = (dto: Item): CarouselItem => ({
   picture: Array.isArray(dto.picture) ? (dto.picture[0] ?? null) : (dto.picture ?? null),
   description: dto.description ?? "",
   time: dto.time,
+  date: dto.date,
 });
 
 export default function UserDashboardHome() {
@@ -35,6 +36,7 @@ export default function UserDashboardHome() {
       setLoading(true);
       const res = await fetcher(chosenCategory ? chosenCategory : "");
       const dtos: Item[] = res as Item[];
+      console.log(dtos);
       setter(dtos.map(mapper));
     } finally {
       setLoading(false);
@@ -70,7 +72,7 @@ export default function UserDashboardHome() {
           <ItemCarousel
             title="Prestes a serem doados…"
             items={itemsAboutToBeDonated}
-            seeAllHref="/dashboard/item-list/almost-donation"
+            seeAllHref="/dashboard/items/list/about-to-be-donated"
           />
           {loading && <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>}
           {!loading && itemsAboutToBeDonated.length === 0 && (
@@ -82,7 +84,7 @@ export default function UserDashboardHome() {
           <ItemCarousel
             title="Perdidos nas últimas 48 horas"
             items={itemsLast48Hours}
-            seeAllHref="/dashboard/item-list/lost-48h"
+            seeAllHref="/dashboard/items/list/last-48h"
           />
           {loading && <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>}
           {!loading && itemsLast48Hours.length === 0 && (

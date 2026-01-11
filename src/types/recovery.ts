@@ -21,10 +21,14 @@ export type ItemStatus = "DISPONIBLE" | "CLAIMED" | "CHARITY";
 export type DayPeriod = "MORNING" | "AFTERNOON" | "NIGHT";
 
 export type Category =
-    | "ACCESSORY"
     | "BOTTLE"
     | "CLOTHING"
     | "ELECTRONIC"
+    | "ACCESSORY"
+    | "CONTAINER"
+    | "BOOK"
+    | "SCHOOL_SUPPLY"
+    | "DOCUMENT"
     | "OTHER";
 
 export type Area =
@@ -105,12 +109,6 @@ export type RecoveryHistoryItem = {
     area?: Area;
     dayPeriod?: DayPeriod;
     itemStatus?: ItemStatus;
-
-    requester?: {
-        name: string;
-        email: string;
-        profileImageUrl: string | null;
-    };
 };
 
 export type ReviewRecoveryPayload = {
@@ -118,9 +116,51 @@ export type ReviewRecoveryPayload = {
     statusRecovery: Exclude<RecoveryStatus, "PENDING">;
 };
 
-export type RecoveryHistoryApiResponse = {
-    user: User;
+export type SortInfo = {
+    sorted: boolean;
+    empty: boolean;
+    unsorted: boolean;
+};
+
+export type PageableInfo = {
+    pageNumber: number;
+    pageSize: number;
+    sort: SortInfo;
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+};
+
+export type RecoveryHistoryContentItem = {
     recovery: RecoveryRequest[];
+};
+
+export type RecoveryHistoryApiResponse = {
+    content: RecoveryHistoryContentItem[];
+
+    pageable: PageableInfo;
+
+    last: boolean;
+    totalPages: number;
+    totalElements: number;
+    first: boolean;
+    size: number;
+    number: number;
+
+    sort: SortInfo;
+
+    numberOfElements: number;
+    empty: boolean;
+};
+
+export type RecoveriesByUserFilters = {
+    q?: string;
+    category?: string[];
+    status?: string | null;
+    dateStart?: Date | null;
+    dateEnd?: Date | null;
+    page?: number;
+    size?: number;
 };
 
 export type FilterGroup = "search" | "requestsSelf";

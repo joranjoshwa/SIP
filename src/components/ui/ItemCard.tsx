@@ -80,9 +80,11 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                     {description}
                 </h3>
 
-                <p className="text-[11px] font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100">
-                    Encontrado {timeAgoPtBr(date as string)}
-                </p>
+                {date && (
+                    <p className="text-[11px] font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100">
+                        Encontrado {timeAgoPtBr(date as string)}
+                    </p>
+                )}
 
                 {time && time < 15 && (
                     <div

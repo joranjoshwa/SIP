@@ -15,9 +15,9 @@ import { ApiResponse } from "@/src/types/user";
 import { AxiosError } from "axios";
 import { requestReactivation } from "@/src/api/endpoints/user";
 import { Loading } from "@/src/components/ui/Loading";
-import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { LoginResponse } from "@/src/types/auth";
+// import { GoogleLogin } from "@react-oauth/google";
+// import axios from "axios";
+// import { LoginResponse } from "@/src/types/auth";
 import { useTheme } from "@/src/context/ThemeContext";
 
 export default function Login() {
@@ -100,44 +100,44 @@ export default function Login() {
         }
     }
 
-    const handleGoogleLogin = async (credentialResponse: any) => {
+    // const handleGoogleLogin = async (credentialResponse: any) => {
        
-            if (credentialResponse.credential) {
-                try {
-                    setLoading(true);
-                    setError("");
+    //         if (credentialResponse.credential) {
+    //             try {
+    //                 setLoading(true);
+    //                 setError("");
 
-                    const response = await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_URL}/authentication/google`,
-                        { token: credentialResponse.credential }
-                    );
+    //                 const response = await axios.post(
+    //                     `${process.env.NEXT_PUBLIC_API_URL}/authentication/google`,
+    //                     { token: credentialResponse.credential }
+    //                 );
 
-                    const loginResponse: LoginResponse = response.data;
+    //                 const loginResponse: LoginResponse = response.data;
 
-                    loginWithGoogle(loginResponse);
-                    router.push("/");
-                } catch (error) {
-                    const err = error as AxiosError<ApiResponse>;
+    //                 loginWithGoogle(loginResponse);
+    //                 router.push("/");
+    //             } catch (error) {
+    //                 const err = error as AxiosError<ApiResponse>;
 
-                    if (err.response?.data) {
-                        const errors =
-                            err.response.data.message ??
-                            Object.values(err.response.data).join(" | ");
+    //                 if (err.response?.data) {
+    //                     const errors =
+    //                         err.response.data.message ??
+    //                         Object.values(err.response.data).join(" | ");
         
-                        setError(errors);
+    //                     setError(errors);
         
-                        if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
-                            setBlocked(true);
-                        }
-                    } else {
-                        setError("Erro inesperado");
-                    }
-                } finally {
-                    setLoading(false);
-                }
-            }
+    //                     if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
+    //                         setBlocked(true);
+    //                     }
+    //                 } else {
+    //                     setError("Erro inesperado");
+    //                 }
+    //             } finally {
+    //                 setLoading(false);
+    //             }
+    //         }
        
-    }
+    // }
 
     const handleSignUp = () => {
         router.push("/signup")
@@ -223,12 +223,12 @@ export default function Login() {
                 <div className="border-t border-gray-300 w-1/3" />
                 </div>
 
-                <GoogleLogin
+                {/* <GoogleLogin
                     onSuccess={handleGoogleLogin}
                     onError={() => setError("Erro ao fazer login com Google.")}
                     useOneTap
                     theme={theme === "dark" ? "filled_black" : "outline"}
-                />
+                /> */}
 
 
                 <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
