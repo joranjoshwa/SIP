@@ -63,7 +63,8 @@ export function ConfirmDestructiveModal({
     const isBlob = (url?: string | null) => !!url?.startsWith("blob:");
 
     return (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-[100]">
+
             <button
                 aria-label="Fechar"
                 onClick={() => !loading && onOpenChange(false)}
@@ -73,6 +74,11 @@ export function ConfirmDestructiveModal({
             <div className="absolute md:left-1/2 md:top-1/2 md:w-[92vw] md:max-w-sm md:-translate-x-1/2 md:-translate-y-1/2
                             bottom-0 w-full">
                 <div className="md:rounded-2xl rounded-t-2xl rounded-b-none bg-white md:p-5 p-5 pb-6 shadow-xl dark:bg-neutral-900">
+                    
+                    <div className="md:hidden px-6 pb-3">
+                        <div className="mx-auto mb-2 h-1 w-12 rounded-full bg-zinc-200 dark:bg-zinc-700" />
+                    </div>
+
                     <h2 className="text-center text-base font-semibold text-zinc-900 dark:text-zinc-100">
                         {title}
                     </h2>
