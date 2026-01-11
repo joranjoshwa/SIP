@@ -15,26 +15,23 @@ import { SearchFilter } from "@/src/components/ui/SearchFilter";
 export const mapRecoveryResponseToHistoryItems = (
     page: RecoveryHistoryApiResponse
 ): RecoveryHistoryItem[] =>
-    page.recovery.map((r) => ({
-        recoveryId: r.id,
-        itemId: r.item.id,
-        title: r.item.description,
-        status: r.status,
-        description: r.description,
-        pickup: r.pickupDate,
-        createdAtIso: r.requestDate,
-        imageUrl: r.item.pictures?.[0]?.url ?? null,
-        code: r.item.code,
-        category: r.item.category,
-        area: r.item.area,
-        dayPeriod: r.item.dayPeriod,
-        itemStatus: r.item.status,
-        requester: {
-            name: page.user.name,
-            email: page.user.email,
-            profileImageUrl: page.user.profileImageUrl,
-        },
-    }));
+    page.content.flatMap((group) =>
+        group.recovery.map((r) => ({
+            recoveryId: r.id,
+            itemId: r.item.id,
+            title: r.item.description,
+            status: r.status,
+            description: r.description,
+            pickup: r.pickupDate,
+            createdAtIso: r.requestDate,
+            imageUrl: r.item.pictures?.[0]?.url ?? null,
+            code: r.item.code,
+            category: r.item.category,
+            area: r.item.area,
+            dayPeriod: r.item.dayPeriod,
+            itemStatus: r.item.status,
+        }))
+    );
 
 type LocalFilters = {
     category: string[];
@@ -141,19 +138,28 @@ export default function RequestHistory() {
         load();
     }, []);
 
-    const onSubmitFilters = useCallback(() => {
-        console.table([
-            {
-                query,
-                category: filters.category.join(", "),
-                dateStart: filters.dateStart?.toISOString() ?? "",
-                dateEnd: filters.dateEnd?.toISOString() ?? "",
-                status: filters.status ?? "",
-            },
-        ]);
+    const onSubmitFilters = useCallback(async () => {
+        const token = getTokenFromCookie();
+        if (!token) return;
 
-        setShowFilters(false);
+        const email = extractEmailFromToken(token);
+        if (!email) return;
+
+        setLoading(true);
+
+        try {
+            const response = await getRecoveriesByUser(email, { ...filters, q: query });
+
+            const hi = mapRecoveryResponseToHistoryItems(response);
+            setData(hi);
+        } catch (err) {
+            console.error("Failed to load recoveries with filters", err);
+        } finally {
+            setLoading(false);
+            setShowFilters(false);
+        }
     }, [filters, query]);
+
 
     return (
         <main className="min-h-0 flex flex-col p-2">
