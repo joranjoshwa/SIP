@@ -44,8 +44,8 @@ const PAGE_SIZE = 20;
 
 export default function RequestHistory() {
     const [data, setData] = useState<RecoveryHistoryItem[]>([]);
-    const [loading, setLoading] = useState(true);        // initial / reset loading
-    const [loadingMore, setLoadingMore] = useState(false); // next pages
+    const [loading, setLoading] = useState(true); 
+    const [loadingMore, setLoadingMore] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
 
