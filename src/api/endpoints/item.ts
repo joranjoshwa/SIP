@@ -13,6 +13,7 @@ const toCarouselItem = (item: ItemDTO): CarouselItem => ({
     id: item.id,
     description: item.description,
     picture: item.pictures[0]?.url || null,
+    date: item.findingAt,
 });
 
 const fetchItems = async <T extends CarouselItem | ItemCard>(
@@ -36,7 +37,7 @@ export const itemFromLast48Hours = async (category: string, size: number = 10): 
         {
             page: 0,
             size,
-            lastDays: 2,
+            startPeriod: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
             category: getCategoryEnum(category),
         },
         toCarouselItem

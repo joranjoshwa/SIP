@@ -14,6 +14,7 @@ const mapToCarouselItem = (dto: Item): CarouselItem => ({
   picture: Array.isArray(dto.picture) ? (dto.picture[0] ?? null) : (dto.picture ?? null),
   description: dto.description ?? "",
   time: dto.time,
+  date: dto.date,
 });
 
 export default function UserDashboardHome() {
@@ -35,6 +36,7 @@ export default function UserDashboardHome() {
       setLoading(true);
       const res = await fetcher(chosenCategory ? chosenCategory : "");
       const dtos: Item[] = res as Item[];
+      console.log(dtos);
       setter(dtos.map(mapper));
     } finally {
       setLoading(false);
