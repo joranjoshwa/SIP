@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { createItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { Button } from "@/src/components/ui/Button";
@@ -10,9 +10,14 @@ import { useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { useTopPopup } from "@/src/utils/useTopPopup";
+import { TopPopup } from "@/src/components/ui/TopPopup";
 
 export default function RegisterLostItem() {
-    const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
+    const { popup, openPopup, closePopup } = useTopPopup();
+
+    const [selectedCategory, setSelectedCategory] =
+        useState<CategoryKey | null>(null);
     const [description, setDescription] = useState("");
     const [findingDate, setFindingDate] = useState("");
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
@@ -29,7 +34,10 @@ export default function RegisterLostItem() {
         e.preventDefault();
 
         if (!selectedCategory || !area) {
-            alert("Por favor, selecione a categoria e o local");
+            openPopup(
+                "Por favor, selecione a categoria e o local.",
+                "warning"
+            );
             return;
         }
 
@@ -43,8 +51,9 @@ export default function RegisterLostItem() {
 
         try {
             const token = localStorage.getItem("token");
+
             if (!token) {
-                alert("Você não está autenticado!");
+                openPopup("Você não está autenticado.", "error");
                 return;
             }
 
@@ -54,7 +63,7 @@ export default function RegisterLostItem() {
                 await uploadItemImage(created.itemId, imageFile);
             }
 
-            alert("Item registrado com sucesso!");
+            openPopup("Item registrado com sucesso!", "success");
 
             setDescription("");
             setFindingDate("");
@@ -65,20 +74,23 @@ export default function RegisterLostItem() {
 
         } catch (error) {
             console.error("Erro ao registrar item:", error);
-            alert("Erro ao registrar o item.");
+
+            openPopup(
+                "Ocorreu um erro ao registrar o item. Tente novamente.",
+                "error"
+            );
         }
     };
 
     return (
         <main className="w-full flex flex-col px-4 py-0 md:ml-3 md:pl-6 md:pb-0 min-h-0">
-            <PageHeader title={"Registrar novo item perdido"} />
+            <PageHeader title="Registrar novo item perdido" />
 
             <ScrollableArea>
                 <form
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
                 >
-
                     <InputField
                         label="Descrição"
                         placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
@@ -158,6 +170,13 @@ export default function RegisterLostItem() {
                     </div>
                 </form>
             </ScrollableArea>
+
+            <TopPopup
+                isOpen={popup.open}
+                message={popup.message}
+                variant={popup.variant}
+                onClose={closePopup}
+            />
         </main>
     );
 }
