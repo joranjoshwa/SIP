@@ -40,9 +40,14 @@ type LocalFilters = {
     status: RequestStatus | null;
 };
 
+const PAGE_SIZE = 20;
+
 export default function RequestHistory() {
     const [data, setData] = useState<RecoveryHistoryItem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);        // initial / reset loading
+    const [loadingMore, setLoadingMore] = useState(false); // next pages
+    const [pageNumber, setPageNumber] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
 
     const [showFilters, setShowFilters] = useState(false);
     const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
@@ -56,6 +61,59 @@ export default function RequestHistory() {
         dateEnd: null,
         status: null,
     });
+
+    const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+    const mapAndAppend = useCallback((response: RecoveryHistoryApiResponse, mode: "replace" | "append") => {
+        const hi = mapRecoveryResponseToHistoryItems(response);
+
+        setHasMore(!response.last);
+        setPageNumber(response.number);
+
+        setData((prev) => {
+            if (mode === "replace") return hi;
+
+            const seen = new Set(prev.map((x) => x.recoveryId));
+            const merged = [...prev];
+            for (const item of hi) {
+                if (!seen.has(item.recoveryId)) merged.push(item);
+            }
+            return merged;
+        });
+    }, []);
+
+    const fetchPage = useCallback(
+        async (opts: { page: number; mode: "replace" | "append"; qOverride?: string }) => {
+            const token = getTokenFromCookie();
+            if (!token) return;
+
+            const email = extractEmailFromToken(token);
+            if (!email) return;
+
+            const qToSend = (opts.qOverride ?? query).trim();
+
+            try {
+                if (opts.mode === "replace") setLoading(true);
+                else setLoadingMore(true);
+
+                const response = await getRecoveriesByUser(email, {
+                    ...filters,
+                    q: qToSend || undefined,
+                    page: opts.page,
+                    size: PAGE_SIZE,
+                });
+
+                mapAndAppend(response, opts.mode);
+            } catch (err) {
+                console.error("Failed to load recoveries", err);
+            } finally {
+                setLoading(false);
+                setLoadingMore(false);
+                setShowFilters(false);
+            }
+        },
+        [filters, query, mapAndAppend]
+    );
 
     const toggleFilter = () => setShowFilters((prev) => !prev);
 
@@ -77,14 +135,12 @@ export default function RequestHistory() {
     }
 
     const handleCleanFilters = () => {
-        setFilters({
-            category: [],
-            dateStart: null,
-            dateEnd: null,
-            status: null,
-        });
+        setFilters({ category: [], dateStart: null, dateEnd: null, status: null });
         setActiveFilters([]);
         setShowFilters(false);
+
+        setQuery("");
+        onSubmitFilters("");
     };
 
     useEffect(() => {
@@ -117,49 +173,37 @@ export default function RequestHistory() {
     }, [filters]);
 
     useEffect(() => {
-        const token = getTokenFromCookie();
-        if (!token) return;
-
-        const email = extractEmailFromToken(token);
-        if (!email) return;
-
-        const load = async () => {
-            try {
-                const response = await getRecoveriesByUser(email);
-                const hi = mapRecoveryResponseToHistoryItems(response);
-                setData(hi);
-            } catch (err) {
-                console.error("Failed to load recoveries", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        load();
+        fetchPage({ page: 0, mode: "replace" });
     }, []);
 
-    const onSubmitFilters = useCallback(async () => {
-        const token = getTokenFromCookie();
-        if (!token) return;
+    const onSubmitFilters = useCallback(async (qOverride?: string) => {
+        setHasMore(true);
+        setPageNumber(0);
 
-        const email = extractEmailFromToken(token);
-        if (!email) return;
+        await fetchPage({ page: 0, mode: "replace", qOverride });
+    }, [fetchPage]);
 
-        setLoading(true);
+    useEffect(() => {
+        if (!loadMoreRef.current) return;
 
-        try {
-            const response = await getRecoveriesByUser(email, { ...filters, q: query });
+        const el = loadMoreRef.current;
 
-            const hi = mapRecoveryResponseToHistoryItems(response);
-            setData(hi);
-        } catch (err) {
-            console.error("Failed to load recoveries with filters", err);
-        } finally {
-            setLoading(false);
-            setShowFilters(false);
-        }
-    }, [filters, query]);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const first = entries[0];
+                if (!first?.isIntersecting) return;
 
+                if (loading || loadingMore) return;
+                if (!hasMore) return;
+
+                fetchPage({ page: pageNumber + 1, mode: "append" });
+            },
+            { root: null, rootMargin: "200px", threshold: 0.01 }
+        );
+
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [fetchPage, hasMore, loading, loadingMore, pageNumber]);
 
     return (
         <main className="min-h-0 flex flex-col p-2">
@@ -223,6 +267,14 @@ export default function RequestHistory() {
                                 description={item.description}
                             />
                         ))}
+
+                    <div ref={loadMoreRef} className="h-10" />
+
+                    {loadingMore && (
+                        <p className="mt-2 text-sm text-zinc-500 dark:text-neutral-400">
+                            Carregando mais…
+                        </p>
+                    )}
                 </ScrollableArea>
             </div>
         </main>
