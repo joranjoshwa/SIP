@@ -13,9 +13,17 @@ const toCarouselItem = (item: ItemDTO): CarouselItem => ({
     id: item.id,
     description: item.description,
     picture: item.pictures[0]?.url || null,
+    date: item.findingAt,
 });
 
-const fetchItems = async <T extends CarouselItem | ItemCard>(
+const withTimeLeft = (item: ItemDTO): CarouselItem => ({
+    ...toCarouselItem(item),
+    time: Math.ceil(
+        (new Date(item.donationDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    ),
+});
+
+const fetchItems = async <T>(
     params: Record<string, string | number | boolean | undefined>,
     mapper: (item: ItemDTO) => T
 ): Promise<T[]> => {
@@ -31,35 +39,56 @@ const fetchItems = async <T extends CarouselItem | ItemCard>(
     return data.content.map(mapper);
 };
 
-export const itemFromLast48Hours = async (category: string, size: number = 10): Promise<CarouselItem[]> => {
+export const itemFromLast48Hours = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page: 0,
+            page,
             size,
-            lastDays: 2,
+            startPeriod: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0],
             category: getCategoryEnum(category),
         },
         toCarouselItem
     );
 };
 
-export const itemAboutToBeDonated = async (category: string, size: number = 10): Promise<CarouselItem[]> => {
+export const itemAboutToBeDonated = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page: 0,
+            page,
             size,
             aboutToBeDonated: true,
             category: getCategoryEnum(category),
         },
-        (item) => ({
-            ...toCarouselItem(item),
-            time: Math.ceil(
-                (new Date(item.donationDate).getTime() - Date.now()) /
-                (1000 * 60 * 60 * 24)
-            ),
-        })
+        withTimeLeft
     );
 };
+
+export const itemForDonation = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
+    return fetchItems(
+        {
+            page, 
+            size, 
+            status: "CHARITY", 
+            category: category ? getCategoryEnum(category) : undefined,
+        },
+        withTimeLeft
+    );
+};
+
 
 export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]> => {
     const params: Record<string, string | number | boolean | undefined> = {
@@ -114,28 +143,13 @@ export const uploadItemImage = async (itemId: string, file: File): Promise<void>
         },
     });
 };
+
 export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
     const { data } = await api.get<ItemDTO>(`/items/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     return data;
 }
-
-export const itemForDonation = async (
-    category: string,
-    page = 0,
-    size = 10
-): Promise<CarouselItem[]> => {
-    return fetchItems(
-        {
-            page,
-            size,
-            status: "CHARITY",
-            category: category ? getCategoryEnum(category) : undefined,
-        },
-        toCarouselItem
-    );
-};
 
 export const editItem = async (
     itemId: string,

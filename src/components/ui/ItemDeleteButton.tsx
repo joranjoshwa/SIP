@@ -67,7 +67,7 @@ export function ItemDeleteButton({
                     primary: itemTitle,
                     meta: (() => {
                         const date = formatPtBr(foundAt);
-                        return date ? `Achado em: ${date}` : undefined;
+                        return date ? `Achado em: ${date}` : "";
                     })(),
                 }}
                 onConfirm={async () => {
@@ -75,6 +75,7 @@ export function ItemDeleteButton({
                     router.back();
                     router.refresh();
                 }}
+                isItem
             />
         </>
     );

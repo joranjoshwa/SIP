@@ -30,8 +30,6 @@ export const getRecoveriesByUser = async (
   filters?: RecoveriesByUserFilters
 ): Promise<RecoveryHistoryApiResponse> => {
   try {
-
-
     const params: Record<string, string | number | boolean | undefined> = {
       email,
       itemName: filters?.q?.trim() || undefined,

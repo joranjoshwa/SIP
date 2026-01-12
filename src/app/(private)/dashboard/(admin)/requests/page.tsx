@@ -78,7 +78,10 @@ export default function SolicitacoesPage() {
 
     if (key === "dataBusca") {
       setPage(0);
-      // setSort((prev) => prev === "pickupDate,desc" ? "pickupDate,asc" : "pickupDate,desc");
+
+      setSort((prev) => 
+        prev === "recoveryDateTime,desc" ? "recoveryDateTime,asc" : "recoveryDateTime,desc");
+      
       return;
     }
   };
