@@ -22,12 +22,17 @@ export default function RegisterLostItem() {
     const [findingDate, setFindingDate] = useState("");
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [area, setArea] = useState<Area | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [images, setImages] = useState<File[]>([]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setImageFile(e.target.files[0]);
-        }
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        const file = e.target.files[0];
+        setImages(prev => {
+            const newImages = [...prev];
+            newImages[index] = file;
+            return newImages;
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -59,8 +64,8 @@ export default function RegisterLostItem() {
 
             const created = await createItem(payload, token);
 
-            if (imageFile) {
-                await uploadItemImage(created.itemId, imageFile);
+            if (images.length > 0) {
+                await Promise.all(images.filter(Boolean).map(file => uploadItemImage(created.itemId, file)));
             }
 
             openPopup("Item registrado com sucesso!", "success");
@@ -70,8 +75,7 @@ export default function RegisterLostItem() {
             setDayPeriod("MORNING");
             setSelectedCategory(null);
             setArea(null);
-            setImageFile(null);
-
+            setImages([]);
         } catch (error) {
             console.error("Erro ao registrar item:", error);
 
@@ -150,14 +154,17 @@ export default function RegisterLostItem() {
 
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagem do item
+                            Imagens do item (até 3)
                         </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
-                            onChange={handleImageChange}
-                        />
+                        {[0, 1, 2].map(index => (
+                            <input
+                                key={index}
+                                type="file"
+                                accept="image/*"
+                                className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
+                                onChange={(e) => handleImageChange(e, index)}
+                            />
+                        ))}
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
