@@ -13,6 +13,8 @@ import { editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item"
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { api } from "@/src/api/axios";
+import { TopPopup } from "@/src/components/ui/TopPopup";
+import { useTopPopup } from "@/src/utils/useTopPopup"
 
 export default function EditItem() {
 
@@ -32,6 +34,8 @@ export default function EditItem() {
     const [imageName, setImageName] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [images, setImages] = useState<(File | string | null)[]>([null, null, null]);
+
+    const { popup, openPopup, closePopup } = useTopPopup(3000);
 
     useEffect(() => {
         if (!itemId) {
@@ -113,15 +117,15 @@ export default function EditItem() {
                 }
             }
 
-            alert("Item atualizado com sucesso!");
+            openPopup("Item atualizado com sucesso!", "success");
             router.push("/dashboard");
         } catch (error: any) {
             console.error("Erro ao atualizar item:", error);
 
             if (error.response?.status === 400 && error.response?.data?.message) {
-                alert(error.response.data.message);
+                openPopup(error.response.data.message, "error");
             } else {
-                alert("Falha ao atualizar o item. Tente novamente.");
+                openPopup("Falha ao atualizar o item. Tente novamente.", "error");
             }
         }
     };
@@ -255,6 +259,13 @@ export default function EditItem() {
                     </div>
                 </form>
             </ScrollableArea>
+
+            <TopPopup
+                message={popup.message}
+                isOpen={popup.open}
+                variant={popup.variant}
+                onClose={closePopup}
+            />
         </main>
     );
 }
