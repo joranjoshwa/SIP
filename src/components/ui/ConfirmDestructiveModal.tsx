@@ -25,6 +25,8 @@ type Props = {
     confirmLabel: string;
 
     onConfirm: () => Promise<void>;
+
+    isItem?: boolean;
 };
 
 export function ConfirmDestructiveModal({
@@ -36,6 +38,7 @@ export function ConfirmDestructiveModal({
     cancelLabel = "Cancelar",
     confirmLabel,
     onConfirm,
+    isItem = false
 }: Props) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -89,7 +92,7 @@ export function ConfirmDestructiveModal({
 
                     {preview && (
                         <div className="mt-4 flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-white/5">
-                            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+                            <div className={`relative h-10 w-10 overflow-hidden ${isItem ? "rounded-l" : "rounded-full" } bg-zinc-200 dark:bg-zinc-700`}>
                                 {preview.imageUrl ? (
                                     isBlob(preview.imageUrl) ? (
                                         <img
