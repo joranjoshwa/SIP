@@ -1,18 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { categories, CategoryKey } from "@/src/constants/categories";
 
 type CategoryItemProps = {
     handleCategorySelection: (category: CategoryKey | null) => void;
     onSelect?: (key: CategoryKey | null) => void;
+    selectedCategory?: CategoryKey | null;
 };
 
-export const CategoryItem = ({ onSelect, handleCategorySelection }: CategoryItemProps) => {
+export const CategoryItem = ({ onSelect, handleCategorySelection, selectedCategory = null }: CategoryItemProps) => {
     const [activeCat, setActiveCat] = useState<CategoryKey | null>(null);
 
     const activeRing =
         "ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900";
+
+    useEffect(() => {
+        setActiveCat(selectedCategory);
+    }, [selectedCategory]);
 
     const handleClick = (key: CategoryKey) => {
         const newActive = activeCat === key ? null : key;
@@ -55,8 +60,8 @@ export const CategoryItem = ({ onSelect, handleCategorySelection }: CategoryItem
                                 <span className="grid h-6 w-full place-items-center rounded-lg">
                                     <Icon
                                         className={`h-6 w-6 md:h-7 md:w-7 ${isActive
-                                                ? "text-black dark:text-white"
-                                                : "text-gray-800 dark:text-neutral-200"
+                                            ? "text-black dark:text-white"
+                                            : "text-gray-800 dark:text-neutral-200"
                                             }`}
                                     />
                                 </span>

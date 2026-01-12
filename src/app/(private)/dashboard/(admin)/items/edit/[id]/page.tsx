@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/src/utils/token";
-import { editItem, singleItem } from "@/src/api/endpoints/item";
+import { editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { api } from "@/src/api/axios";
@@ -31,6 +31,7 @@ export default function EditItem() {
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
     const [imageName, setImageName] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const [images, setImages] = useState<(File | string | null)[]>([null, null, null]);
 
     useEffect(() => {
         if (!itemId) {
@@ -59,6 +60,13 @@ export default function EditItem() {
                 setSelectedCategory(data.category ? categoryToCategoryKey(data.category) : null);
                 setImageName(data.pictures?.[0]?.url ?? null);
 
+                const existingImages = [
+                    data.pictures?.[0]?.url ?? null,
+                    data.pictures?.[1]?.url ?? null,
+                    data.pictures?.[2]?.url ?? null,
+                ];
+                setImages(existingImages);
+
             } catch (err) {
                 console.error("Erro ao carregar item:", err);
                 setError("Erro ao carregar o item.");
@@ -70,9 +78,15 @@ export default function EditItem() {
         fetchItem();
     }, [itemId]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) setImageFile(file);
+        if (file) {
+            setImages(prev => {
+                const newImages = [...prev];
+                newImages[index] = file;
+                return newImages;
+            });
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -92,6 +106,12 @@ export default function EditItem() {
             };
 
             await editItem(itemId, payload as EditItemRequest);
+
+            for (const img of images) {
+                if (img instanceof File) {
+                    await uploadItemImage(itemId, img);
+                }
+            }
 
             alert("Item atualizado com sucesso!");
             router.push("/dashboard");
@@ -199,24 +219,30 @@ export default function EditItem() {
                             Categoria
                         </label>
                         <CategoryItem
+                            selectedCategory={selectedCategory}
                             handleCategorySelection={(category) => setSelectedCategory(category as CategoryKey | null)}
                         />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagem do item
+                            Imagens do item (até 3)
                         </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
-                            onChange={handleImageChange}
-                            disabled
-                        />
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {imageFile ? imageFile.name : "IMG_2025_06_20_43874983.png"}
-                        </span>
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {images.map((img, index) => (
+                                <div key={index} className="flex flex-col gap-1 md:w-1/3">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
+                                        onChange={(e) => handleImageChange(index, e)}
+                                    />
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {img instanceof File ? img.name : img ? img.split("/").pop() : "Nenhuma imagem"}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
