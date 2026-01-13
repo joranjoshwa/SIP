@@ -12,6 +12,7 @@ import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { Loading } from "../../../../components/ui/Loading";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
+import { Role } from "@/src/enums/role";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<User | null>(null);
@@ -48,6 +49,7 @@ export default function ProfilePage() {
                     name: data.name,
                     email: data.email,
                     avatar: data.profileImageUrl || null,
+                    role: data.role,
                     registrationDate: data.registrationDate,
                 });
 
@@ -97,7 +99,6 @@ export default function ProfilePage() {
                         <main className="md:col-span-9 max-w-2xl w-full py-6">
                             <h1 className="text-lg font-bold mb-4">Perfil</h1>
 
-
                             <AvatarEditor currentAvatar={user.avatar || undefined} />
 
                             <div className="text-left mt-4">
@@ -105,15 +106,17 @@ export default function ProfilePage() {
                                 <p className="text-sm text-foreground/70">{user.email}</p>
                             </div>
 
-                            <section>
-                                <InfoItem label="Total de itens recuperados" value={`... itens`} />
-                                <InfoItem label="Última vez que recuperou item" value={`... itens`} />
-                                <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
-                            </section>
+                            {user.role !== Role.ROOT && (
+                                <section>
+                                    <InfoItem label="Total de itens recuperados" value={`... itens`} />
+                                    <InfoItem label="Última vez que recuperou item" value={`... itens`} />
+                                    <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
+                                </section>
+                            )}
 
                             <section className="mt-6">
                                 <p className="text-sm text-foreground/70 mb-2">Ações disponíveis</p>
-                                <ActionList />
+                                <ActionList userRole={user.role} />
                             </section>
                         </main>
                     </div>

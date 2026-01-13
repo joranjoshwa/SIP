@@ -64,6 +64,7 @@ export type CarouselItem = {
     picture: string | null;
     description: string;
     time?: number;
+    date?: string;
 };
 
 export type Item = {
@@ -71,6 +72,7 @@ export type Item = {
     description: string;
     donationDate?: string;
     time?: number | undefined;
+    date?: string;
     picture?: { id: string, url: string };
 };
 
@@ -94,10 +96,11 @@ export type ItemCard = {
     id?: UUID;
     picture: string | null;
     description: string;
-    time?: number
+    time?: number;
+    date?: string;
 };
 
-export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays" | "dataBusca" | "dataSolicitacao";
+export type FilterType = "categoria" | "data" | "local" | "donation" | "lastDays" | "dataBusca" | "dataSolicitacao" | "status";
 
 export type CreateItemRequest = {
     description: string;

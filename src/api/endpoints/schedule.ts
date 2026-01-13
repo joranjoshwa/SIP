@@ -4,7 +4,7 @@ import {
     AvailableScheduleResponse,
     DayOfWeek,
 } from "@/src/types/schedule";
-import { DAY_ORDER } from "@/src/enums/WeekDay";
+import { DAY_ORDER } from "@/src/enums/weekDay";
 
 const toHHmmss = (t: string) => (t.length === 5 ? `${t}:00` : t.slice(0, 8));
 

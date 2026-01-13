@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { ApiResponse, ChangePasswordRequest } from "../../types/user";
 import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../axios";
@@ -44,12 +45,67 @@ export const recoverPassword = async (email: string) => {
     return data;
 }
 
+export const getAdminUsers = async (email: string) => {
+    const { data } = await api.get(`/user/root/admin-users/${email}`);
+    return data;
+}
+
+export const getAdminUser = async (email: string) => {
+    const { data } = await api.get(`/user/root/admin-detail/${email}`);
+    return data;
+}
+
 export const resetPassword = async (token: string, password: string) => {
     const { data } = await api.post("/user/account/password-reset", {
         token,
         password,
     });
     return data;
+}
+
+export const userUpdate = async (data: { name: string, phone: string }, email: string) => {
+    try {
+        await api.put(`/user/root/update/${email}`, data);
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to save schedule");
+    }
+}
+
+export const registerAdmin = async (data: { name: string, phone: string, email: string, cpf: string }) => {
+    try {
+        await api.post(`/authentication/register-admin`, data);
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to register admin");
+    }
+}
+
+export const deleteAdmin = async (email: string) => {
+    try {
+        await api.delete(`/user/root/delete-admin/${email}`);
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to delete admin");
+    }
 }
 
 export const changePassword = async (

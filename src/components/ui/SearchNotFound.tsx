@@ -23,7 +23,6 @@ export const SearchNotFound = ({
                     alt="Lista vazia"
                     width={480}
                     height={480}
-                    priority
                 />
             </div>
 

@@ -23,7 +23,6 @@ export const Logo = ({ className, mode = "light", imageClassName="" }: Props) =>
                 width={60}
                 height={90}
                 className={imageClassName}
-                priority
             />
         </div>
     );

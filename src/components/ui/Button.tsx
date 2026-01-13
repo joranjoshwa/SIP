@@ -3,7 +3,7 @@ import { useTheme } from "../../context/ThemeContext";
 
 type Props = {
     children: ReactNode;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "tertiary";
     onClick?: () => void;
     className?: string;
     disabled?: Boolean;

@@ -10,7 +10,7 @@ import { getSchedule, patchSchedule, deleteWeekDay } from "@/src/api/endpoints/s
 import { ScheduleAvailableDay } from "@/src/components/ui/ScheduleAvailableDay";
 import { TimeString } from "@/src/types/schedule";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
-import { DAY_ORDER, PT_TO_DAY } from "@/src/enums/WeekDay";
+import { DAY_ORDER, PT_TO_DAY } from "@/src/enums/weekDay";
 
 const sortSchedule = (arr: AvailableScheduleResponse): AvailableScheduleResponse =>
     [...arr].sort(

@@ -1,6 +1,7 @@
 import type { ItemPage, CarouselItem, SearchRequest, ItemCard, ItemDTO, UUID, CreateItemRequest, ItemResponse, EditItemRequest } from "../../types/item";
 import { CategoryEnum } from "@/src/enums/category";
 import { api } from "../axios";
+import { AxiosError } from "axios";
 
 const getCategoryEnum = (category?: string) => {
     if (!category) return undefined;
@@ -12,9 +13,17 @@ const toCarouselItem = (item: ItemDTO): CarouselItem => ({
     id: item.id,
     description: item.description,
     picture: item.pictures[0]?.url || null,
+    date: item.findingAt,
 });
 
-const fetchItems = async <T extends CarouselItem | ItemCard>(
+const withTimeLeft = (item: ItemDTO): CarouselItem => ({
+    ...toCarouselItem(item),
+    time: Math.ceil(
+        (new Date(item.donationDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    ),
+});
+
+const fetchItems = async <T>(
     params: Record<string, string | number | boolean | undefined>,
     mapper: (item: ItemDTO) => T
 ): Promise<T[]> => {
@@ -30,35 +39,56 @@ const fetchItems = async <T extends CarouselItem | ItemCard>(
     return data.content.map(mapper);
 };
 
-export const itemFromLast48Hours = async (category: string): Promise<CarouselItem[]> => {
+export const itemFromLast48Hours = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page: 0,
-            size: 10,
-            lastDays: 2,
+            page,
+            size,
+            startPeriod: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+                .toISOString()
+                .split("T")[0],
             category: getCategoryEnum(category),
         },
         toCarouselItem
     );
 };
 
-export const itemAboutToBeDonated = async (category: string): Promise<CarouselItem[]> => {
+export const itemAboutToBeDonated = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page: 0,
-            size: 10,
+            page,
+            size,
             aboutToBeDonated: true,
             category: getCategoryEnum(category),
         },
-        (item) => ({
-            ...toCarouselItem(item),
-            time: Math.ceil(
-                (new Date(item.donationDate).getTime() - Date.now()) /
-                (1000 * 60 * 60 * 24)
-            ),
-        })
+        withTimeLeft
     );
 };
+
+export const itemForDonation = async (
+    category: string,
+    page: number = 0,
+    size: number = 10
+): Promise<CarouselItem[]> => {
+    return fetchItems(
+        {
+            page, 
+            size, 
+            status: "CHARITY", 
+            category: category ? getCategoryEnum(category) : undefined,
+        },
+        withTimeLeft
+    );
+};
+
 
 export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]> => {
     const params: Record<string, string | number | boolean | undefined> = {
@@ -81,11 +111,17 @@ export const itemPaginated = async (filters: SearchRequest): Promise<ItemCard[]>
     );
 
     const { data } = await api.get(`/items?${search.toString()}`);
-    return data.content.map((item: ItemDTO) => ({
-        id: item.id,
-        description: item.description,
-        picture: item.pictures[0]?.url || null,
-    })) as ItemCard[];
+    return data.content.map((item: ItemDTO) => {
+        const timeMs = new Date(item.donationDate).getTime() - Date.now();
+        const days = Math.ceil(timeMs / (1000 * 60 * 60 * 24));
+        return {
+            id: item.id,
+            description: item.description,
+            picture: item.pictures[0]?.url || null,
+            date: item.findingAt,
+            time: days,
+        }
+    }) as ItemCard[];
 };
 
 export const createItem = async (data: CreateItemRequest, token: string): Promise<ItemResponse> => {
@@ -107,28 +143,13 @@ export const uploadItemImage = async (itemId: string, file: File): Promise<void>
         },
     });
 };
+
 export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
     const { data } = await api.get<ItemDTO>(`/items/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     return data;
 }
-
-export const itemForDonation = async (
-    category: string,
-    page = 0,
-    size = 10
-): Promise<CarouselItem[]> => {
-    return fetchItems(
-        {
-            page,
-            size,
-            status: "CHARITY",
-            category: category ? getCategoryEnum(category) : undefined,
-        },
-        toCarouselItem
-    );
-};
 
 export const editItem = async (
     itemId: string,
@@ -140,3 +161,22 @@ export const editItem = async (
     );
     return response.data;
 };
+
+export const deleteItem = async (itemId: string, token: string) => {
+    try {
+        await api.delete(`/items/root/delete/${itemId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to delete item");
+    }
+}

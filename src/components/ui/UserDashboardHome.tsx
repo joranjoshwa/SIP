@@ -1,0 +1,101 @@
+"use client";
+
+import { CategoryItem } from "@/src/components/ui/CategoryItem";
+import { ItemCarousel } from "@/src/components/ui/ItemCarousel";
+import { useEffect, useState } from "react";
+import { CarouselItem, Item, UUID } from "@/src/types/item";
+import { itemFromLast48Hours, itemAboutToBeDonated } from "@/src/api/endpoints/item";
+import { CategoryKey } from "@/src/constants/categories";
+import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
+import { PageHeader } from "@/src/components/ui/PageHeader";
+
+const mapToCarouselItem = (dto: Item): CarouselItem => ({
+  id: dto.id as UUID,
+  picture: Array.isArray(dto.picture) ? (dto.picture[0] ?? null) : (dto.picture ?? null),
+  description: dto.description ?? "",
+  time: dto.time,
+  date: dto.date,
+});
+
+export default function UserDashboardHome() {
+  const [itemsLast48Hours, setItemsLast48Hours] = useState<CarouselItem[]>([]);
+  const [itemsAboutToBeDonated, setItemAboutToBeDonated] = useState<CarouselItem[]>([]);
+  const [chosenCategory, setChosenCategory] = useState<CategoryKey | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const handleCategorySelection = (category: CategoryKey | null) => {
+    setChosenCategory((prev) => (prev === category ? null : category));
+  };
+
+  const fetchItems = async <T,>(
+    fetcher: (category: string) => Promise<T>,
+    mapper: (item: Item) => CarouselItem,
+    setter: (items: CarouselItem[]) => void
+  ) => {
+    try {
+      setLoading(true);
+      const res = await fetcher(chosenCategory ? chosenCategory : "");
+      const dtos: Item[] = res as Item[];
+      console.log(dtos);
+      setter(dtos.map(mapper));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) return;
+      await fetchItems(itemFromLast48Hours, mapToCarouselItem, setItemsLast48Hours);
+    })();
+    return () => { active = false; };
+  }, [chosenCategory]);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!active) return;
+      await fetchItems(itemAboutToBeDonated, mapToCarouselItem, setItemAboutToBeDonated);
+    })();
+    return () => { active = false; };
+  }, [chosenCategory]);
+
+  return (
+    <>
+      <PageHeader title="Itens perdidos" goBack={false} className="px-5 text-[18px]" showBell={true} />
+
+      <section className="p-5 pt-0 md:pt-5">
+        <CategoryItem handleCategorySelection={handleCategorySelection} />
+
+        <div className="py-1 pt-4">
+          <ItemCarousel
+            title="Prestes a serem doados…"
+            items={itemsAboutToBeDonated}
+            seeAllHref="/dashboard/items/list/about-to-be-donated"
+          />
+          {loading && <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>}
+          {!loading && itemsAboutToBeDonated.length === 0 && (
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Nenhum item para ser doado.</p>
+          )}
+        </div>
+
+        <div className="py-1">
+          <ItemCarousel
+            title="Perdidos nas últimas 48 horas"
+            items={itemsLast48Hours}
+            seeAllHref="/dashboard/items/list/last-48h"
+          />
+          {loading && <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">Carregando…</p>}
+          {!loading && itemsLast48Hours.length === 0 && (
+            <p className="text-sm text-gray-500 dark:text-neutral-400 mt-2">
+              Nenhum item encontrado nas últimas 48 horas.
+            </p>
+          )}
+        </div>
+      </section>
+
+      <AdminActionsMobile />
+    </>
+  );
+}

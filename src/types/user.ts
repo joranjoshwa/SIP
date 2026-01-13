@@ -4,25 +4,32 @@ export type ApiResponse = {
     [key: string]: string | undefined;
 }
 
+export type Role = "ADMIN" | "COMMON" | "ROOT";
+export type StatusMember =
+    | "NOT_VERIFIED"
+    | "ACTIVE"
+    | "BLOCKED";
+
 export type User = {
     name: string;
     email: string;
     avatar?: string;
+    role?: Role;
     registrationDate: string;
 }
 
 export interface ChangePasswordRequest {
     password: string;
-    newPassword: string; 
-  }
+    newPassword: string;
+}
 
 export interface UserDTO {
     name: string;
     cpf: string;
     email: string;
-    role: string;             
-    statusMember: string;     
+    role: string;
+    statusMember: string;
     phone: string;
     profileImageUrl: string;
-    registrationDate: string; 
+    registrationDate: string;
 }

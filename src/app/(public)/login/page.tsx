@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Mail } from "lucide-react";
 import { AuthCard } from "@/src/components/layout/AuthCard";
@@ -15,18 +15,14 @@ import { ApiResponse } from "@/src/types/user";
 import { AxiosError } from "axios";
 import { requestReactivation } from "@/src/api/endpoints/user";
 import { Loading } from "@/src/components/ui/Loading";
-import { GoogleLogin } from "@react-oauth/google";
-import axios from "axios";
-import { LoginResponse } from "@/src/types/auth";
-import { useTheme } from "@/src/context/ThemeContext";
 
 export default function Login() {
-
-    const { login, loginWithGoogle } = useAuth();
+    // ✅ call ALL hooks unconditionally, in the same order every render
+    const { login } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -38,6 +34,8 @@ export default function Login() {
         message: "",
         isOpen: false,
     });
+
+    useEffect(() => setMounted(true), []);
 
     useEffect(() => {
         const success = searchParams?.get("success");
@@ -75,73 +73,27 @@ export default function Login() {
         try {
             await login({ email, password });
             router.push("/");
-
         } catch (error) {
             const err = error as AxiosError<ApiResponse>;
 
             if (err.response?.data) {
                 const errors =
-                    err.response.data.message ??
-                    Object.values(err.response.data).join(" | ");
+                    err.response.data.message ?? Object.values(err.response.data).join(" | ");
 
                 setError(errors);
 
                 if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
                     setBlocked(true);
                 }
-
-
             } else {
                 setError("Erro inesperado");
             }
-
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    const handleGoogleLogin = async (credentialResponse: any) => {
-       
-            if (credentialResponse.credential) {
-                try {
-                    setLoading(true);
-                    setError("");
-
-                    const response = await axios.post(
-                        `${process.env.NEXT_PUBLIC_API_URL}/authentication/google`,
-                        { token: credentialResponse.credential }
-                    );
-
-                    const loginResponse: LoginResponse = response.data;
-
-                    loginWithGoogle(loginResponse);
-                    router.push("/");
-                } catch (error) {
-                    const err = error as AxiosError<ApiResponse>;
-
-                    if (err.response?.data) {
-                        const errors =
-                            err.response.data.message ??
-                            Object.values(err.response.data).join(" | ");
-        
-                        setError(errors);
-        
-                        if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
-                            setBlocked(true);
-                        }
-                    } else {
-                        setError("Erro inesperado");
-                    }
-                } finally {
-                    setLoading(false);
-                }
-            }
-       
-    }
-
-    const handleSignUp = () => {
-        router.push("/signup")
-    }
+    const handleSignUp = () => router.push("/signup");
 
     const handleReactivation = async (email: string) => {
         setLoading(true);
@@ -153,21 +105,27 @@ export default function Login() {
                 message: "E-mail de reativação enviado! Verifique sua caixa de entrada.",
                 isOpen: true,
             });
-
-        } catch (error) {
+        } catch {
             setError("Erro ao solicitar reativação. Tente novamente.");
-
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) =>{
-        if(event.key == "Enter"){
-            handleLogin()
-        }
-    }
+    const handleOnPressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") handleLogin();
+    };
 
+    // ✅ now it’s safe to early return
+    if (!mounted) {
+        return (
+            <main role="main">
+                <div className="min-h-screen flex items-center justify-center px-2">
+                    <div className="w-full max-w-sm p-6 rounded-2xl shadow-md" />
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main role="main">
@@ -185,53 +143,48 @@ export default function Login() {
                     icon={<Mail size={18} />}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required={true}
+                    required
                     autoComplete="username"
-                    onPressEnter={(e) => handleOnPressEnter(e)}
+                    onPressEnter={handleOnPressEnter}
                 />
 
                 <PasswordField
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required={true}
+                    required
                     autoComplete="current-password"
-                    onPressEnter={(e) => handleOnPressEnter(e)}
+                    onPressEnter={handleOnPressEnter}
                 />
 
-                {error && (
-                    blocked ? (
+                {error &&
+                    (blocked ? (
                         <p
                             onClick={() => handleReactivation(email)}
                             className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
-                        >  {error} Clique aqui para reativar a conta.
+                        >
+                            {error} Clique aqui para reativar a conta.
                         </p>
                     ) : (
                         <p className="text-red-600 text-sm">{error}</p>
-                    )
-                )}
+                    ))}
 
-                <TextLink href="/forgot-password" className="self-end ml-2 dark:text-gray-300">Esqueci minha senha</TextLink>
+                <TextLink href="/forgot-password" className="self-end ml-2 dark:text-gray-300">
+                    Esqueci minha senha
+                </TextLink>
 
-                <Button
-                    variant="primary"
-                    onClick={handleLogin}
-                > {loading ? "Entrando..." : "Entrar na conta"} </Button>
+                <Button variant="primary" onClick={handleLogin}>
+                    {loading ? "Entrando..." : "Entrar na conta"}
+                </Button>
 
                 <div className="flex items-center justify-center my-4">
-                <div className="border-t border-gray-300 w-1/3" />
-                <span className="mx-2 text-gray-500 text-sm">ou</span>
-                <div className="border-t border-gray-300 w-1/3" />
+                    <div className="border-t border-gray-300 w-1/3" />
+                    <span className="mx-2 text-gray-500 text-sm">ou</span>
+                    <div className="border-t border-gray-300 w-1/3" />
                 </div>
 
-                <GoogleLogin
-                    onSuccess={handleGoogleLogin}
-                    onError={() => setError("Erro ao fazer login com Google.")}
-                    useOneTap
-                    theme={theme === "dark" ? "filled_black" : "outline"}
-                />
-
-
-                <Button variant="secondary" onClick={handleSignUp}>Criar nova conta</Button>
+                <Button variant="secondary" onClick={handleSignUp}>
+                    Criar nova conta
+                </Button>
 
                 <TopPopup
                     message="Cadastro realizado! Verifique seu email para a ativação da conta."
@@ -244,7 +197,6 @@ export default function Login() {
                     isOpen={popup.isOpen}
                     onClose={() => setPopup((prev) => ({ ...prev, isOpen: false }))}
                 />
-
             </AuthCard>
 
             <Loading isLoading={loading} />

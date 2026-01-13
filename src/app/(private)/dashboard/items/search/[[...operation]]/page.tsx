@@ -10,8 +10,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { useParams } from "next/navigation";
 
 export default function SearchPage() {
+    const params = useParams<{ operation?: "delete" }>();
+    const operation = params?.operation ?? null;
+    const isDelete = !!operation;
+
     const [filters, setFilters] = useState<SearchRequest>({
         page: 0,
         sort: "findingAt,desc",
@@ -70,11 +75,16 @@ export default function SearchPage() {
     const handleItemNameSearch = (itemName: string) => {
         setFilters((prev) => ({ ...prev, itemName, page: 0 }));
     };
+
+    const handleRunSearch = (query: string) => {
+        submitFilters({ itemName: query });
+    };
+
     const handleToggleChange = () =>
         updateFilters({ donation: !filters.donation });
 
     const handleCleanFilters = () => {
-        setFilters({
+        const reset = {
             page: 0,
             sort: "findingAt,desc",
             size: 25,
@@ -84,19 +94,41 @@ export default function SearchPage() {
             donation: false,
             itemName: null,
             lastDays: null,
-        });
+        };
+        setFilters(reset);
         setActiveFilters([]);
+        submitFilters(reset);
     };
+
+    const submitFilters = useCallback(
+        async (patch?: Partial<SearchRequest>) => {
+            const nextFilters: SearchRequest = {
+                ...filters,
+                ...patch,
+                page: 0,
+            };
+
+            setShowFilters(false);
+            setLoading(true);
+
+            const data = await itemPaginated(nextFilters);
+
+            setResults(() => {
+                const unique = Array.from(new Map(data.map((i: any) => [i.id, i])).values());
+                return unique;
+            });
+
+            setHasMore(data.length === nextFilters.size);
+            setLoading(false);
+
+            setFilters(nextFilters);
+        },
+        [filters]
+    );
 
     useEffect(() => {
         fetchItems(true);
     }, []);
-
-    useEffect(() => {
-        if (filters.itemName !== null) {
-            fetchItems(true);
-        }
-    }, [filters.itemName]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -135,7 +167,7 @@ export default function SearchPage() {
     useEffect(() => {
         const af: FilterType[] = [];
         if (filters.category.length) af.push("categoria");
-        if (filters.dateStart && filters.dateEnd) af.push("data");
+        if (filters.dateStart || filters.dateEnd) af.push("data");
         if (filters.donation) af.push("donation");
         if (filters.lastDays != null) af.push("lastDays");
         setActiveFilters(af);
@@ -149,8 +181,8 @@ export default function SearchPage() {
 
     return (
         <section className="flex flex-col flex-1 min-h-0 px-5 pb-0">
-            <PageHeader title={"Busca"} goBack={false} />
-            <SearchBar handleSearch={handleItemNameSearch} />
+            <PageHeader title={isDelete ? "Deletar item" : "Busca"} goBack={false} />
+            <SearchBar handleSearch={handleItemNameSearch} handleRunSearch={handleRunSearch} />
 
             <div className="relative mt-2 flex flex-col flex-1 min-h-0 px-1">
                 <div
@@ -166,19 +198,17 @@ export default function SearchPage() {
                     ref={filterRef}
                     className={`absolute top-0 left-0 right-0 z-50 bottom-0 bg-white dark:bg-neutral-900 sm:bg-transparent sm:dark:bg-transparent 
                         lg:max-w-[450px] w-full transition-all duration-300 transform ${showFilters
-                        ? "opacity-100 scale-100 translate-y-0"
-                        : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                            ? "opacity-100 scale-100 translate-y-0"
+                            : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
                         }`}
                 >
                     <div className="filter-scroll overscroll-y-contain touch-pan-y rounded-xl bg-white dark:bg-neutral-900">
                         <SearchFilter
+                            filterGroup="search"
                             handleCategorySelection={handleCategorySelection}
                             handleDateSelection={handleDateChange}
                             handleToggleChange={handleToggleChange}
-                            handleSubmit={() => {
-                                fetchItems(true);
-                                setShowFilters(false);
-                            }}
+                            handleSubmit={submitFilters}
                             handleCleanFilters={handleCleanFilters}
                         />
                     </div>
@@ -194,6 +224,8 @@ export default function SearchPage() {
                                     id={item.id}
                                     picture={item.picture}
                                     description={item.description}
+                                    date={item.date}
+                                    time={item.time}
                                 />
                             ))}
                         </div>
