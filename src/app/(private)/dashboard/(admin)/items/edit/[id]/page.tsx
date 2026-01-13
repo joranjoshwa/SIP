@@ -5,7 +5,7 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory, categoryToCategoryKey } from "@/src/constants/categories";
 import { Area, Category, DayPeriod, EditItemRequest, ItemDTO } from "@/src/types/item";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/src/utils/token";
@@ -31,9 +31,8 @@ export default function EditItem() {
     const [area, setArea] = useState<Area | null>(null);
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
-    const [imageName, setImageName] = useState<string | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [images, setImages] = useState<(File | string | null)[]>([null, null, null]);
+    const [images, setImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const { popup, openPopup, closePopup } = useTopPopup(3000);
 
@@ -62,14 +61,6 @@ export default function EditItem() {
                 setArea(data.area ?? null);
                 setDayPeriod(data.dayPeriod ?? "MORNING");
                 setSelectedCategory(data.category ? categoryToCategoryKey(data.category) : null);
-                setImageName(data.pictures?.[0]?.url ?? null);
-
-                const existingImages = [
-                    data.pictures?.[0]?.url ?? null,
-                    data.pictures?.[1]?.url ?? null,
-                    data.pictures?.[2]?.url ?? null,
-                ];
-                setImages(existingImages);
 
             } catch (err) {
                 console.error("Erro ao carregar item:", err);
@@ -82,15 +73,19 @@ export default function EditItem() {
         fetchItem();
     }, [itemId]);
 
-    const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImages(prev => {
-                const newImages = [...prev];
-                newImages[index] = file;
-                return newImages;
-            });
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+
+        const files = Array.from(e.target.files);
+
+        if (files.length > 3) {
+            openPopup("Você pode selecionar no máximo 3 imagens.", "warning");
+            fileInputRef.current!.value = "";
+            setImages([]);
+            return;
         }
+
+        setImages(files);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -111,10 +106,10 @@ export default function EditItem() {
 
             await editItem(itemId, payload as EditItemRequest);
 
-            for (const img of images) {
-                if (img instanceof File) {
-                    await uploadItemImage(itemId, img);
-                }
+            if (images.length > 0) {
+                await Promise.all(
+                    images.map(file => uploadItemImage(itemId, file))
+                );
             }
 
             openPopup("Item atualizado com sucesso!", "success");
@@ -232,21 +227,19 @@ export default function EditItem() {
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Imagens do item (até 3)
                         </label>
-                        <div className="flex flex-col md:flex-row gap-4">
-                            {images.map((img, index) => (
-                                <div key={index} className="flex flex-col gap-1 md:w-1/3">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
-                                        onChange={(e) => handleImageChange(index, e)}
-                                    />
-                                    <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                        {img instanceof File ? img.name : img ? img.split("/").pop() : "Nenhuma imagem"}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929]"
+                            onChange={handleImageChange}
+                        />
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Se você não selecionar novas imagens, as atuais serão mantidas.
+                        </p>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
