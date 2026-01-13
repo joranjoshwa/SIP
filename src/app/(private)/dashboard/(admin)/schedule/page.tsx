@@ -14,6 +14,9 @@ import { getNextDays } from "@/src/utils/getNextDays";
 import { extractEmailFromToken } from "@/src/api/axios";
 
 type HorarioItemWithDate = HorarioItem & { _rawDate: Date };
+type Nullable<T> = T | null;
+
+const isNotNull = <T,>(v: Nullable<T>): v is T => v !== null;
 
 export default function Schedule() {
   const days = getNextDays(8);
@@ -45,26 +48,30 @@ export default function Schedule() {
 
         const data = await getRecoverySchedule(token, email, 0, 50);
 
-        const items: HorarioItemWithDate[] = data.content.flatMap(
-          (wrapper: any) =>
-            (wrapper.recovery ?? []).map((entry: any) => {
-              const pickupDate = new Date(entry.pickupDate);
+        const items: HorarioItemWithDate[] = (data?.content ?? [])
+          .map((entry: any): Nullable<HorarioItemWithDate> => {
+            const pickupDate = new Date(entry.pickupDate);
+            if (Number.isNaN(pickupDate.getTime())) return null;
 
-              return {
-                id: entry.id,
-                title: entry.item?.description || "Item",
-                user: entry.item?.owner?.name || "Usuário não informado",
-                time: pickupDate.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }),
-                image: entry.item?.pictures?.[0]?.url || "/placeholder.jpg",
-                _rawDate: pickupDate,
-              };
-            })
-        );
+            return {
+              id: entry.id,
+              title: entry?.item?.description ?? "Item",
+              user: entry?.item?.owner?.name ?? "Usuário não informado",
+              time: pickupDate.toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              image: entry?.item?.pictures?.[0]?.url ?? "/placeholder.jpg",
+              _rawDate: pickupDate,
+            };
+          })
+          .filter(isNotNull);
+
+        items.sort((a, b) => a._rawDate.getTime() - b._rawDate.getTime());
 
         setAllItems(items);
+
+        console.log(data);
       } catch (err: any) {
         console.error("Erro completo:", err);
         setError("Erro ao carregar os horários");

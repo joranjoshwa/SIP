@@ -22,16 +22,15 @@ export const getRecoverySchedule = async (
   email: string,
   page = 0,
   size = 10,
-  sort = "pickupDate,asc"
+  sort = "recoveryDateTime,asc"
 ): Promise<RecoveryScheduleResponse> => {
   const response = await api.get<RecoveryScheduleResponse>(
-    "/items/recovery-self",
+    "/items/admin/recovery",
     {
       params: {
         page,
         size,
         sort,
-        email,
       },
       headers: {
         Authorization: `Bearer ${token}`,
