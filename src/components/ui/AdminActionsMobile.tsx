@@ -9,17 +9,22 @@ type Props = {
     positionOptions?: string,
 }
 
-export function AdminActionsMobile({ positionFab, positionOptions }:Props) {
+export function AdminActionsMobile({ positionFab, positionOptions }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
         <>
-            {/* Backdrop (tap to close) */}
-            <button
-                aria-hidden={!open}
-                onClick={() => setOpen(false)}
-                className={`fixed inset-0 z-40 md:hidden transition ${open ? "bg-black/40 backdrop-blur-[1px]" : "pointer-events-none bg-transparent"}`}
-            />
+            {open && (
+                <button
+                    aria-hidden
+                    onClick={() => setOpen(false)}
+                    className="
+                        fixed inset-0 z-40 md:hidden
+                        bg-black/40 backdrop-blur-[1px]
+                        transition
+                    "
+                />
+            )}
 
             {/* Actions panel */}
             <div

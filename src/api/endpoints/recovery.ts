@@ -1,3 +1,4 @@
+import { RecoveryResponse, RecoveryScheduleResponse } from "@/src/types/recovery";
 import { RecoveriesByUserFilters, RecoveryHistoryApiResponse, RecoveryResponse } from "@/src/types/recovery";
 import { api } from "../axios";
 import { AxiosError } from "axios";
@@ -19,6 +20,29 @@ export const getRecoveries = async (
   return response.data;
 };
 
+export const getRecoverySchedule = async (
+  token: string,
+  email: string,
+  page = 0,
+  size = 10,
+  sort = "recoveryDateTime,asc"
+): Promise<RecoveryScheduleResponse> => {
+  const response = await api.get<RecoveryScheduleResponse>(
+    "/items/admin/recovery",
+    {
+      params: {
+        page,
+        size,
+        sort,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
 const getCategoryValueFromPtLabel = (label?: string) => {
   if (!label) return undefined;
   const key = label.trim().toUpperCase() as keyof typeof CategoryEnum;

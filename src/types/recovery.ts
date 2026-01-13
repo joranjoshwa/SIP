@@ -92,6 +92,21 @@ export type RecoveryResponse = {
     empty: boolean;
 };
 
+export type RecoveryScheduleResponse = {
+    content: {
+      recovery: {
+        id: string;
+        description: string;
+        status: string;
+        pickupDate: string;
+        requestDate: string;
+        item: {
+          description: string;
+          pictures?: { url: string }[];
+        };
+      }[];
+    }[];
+  };
 export type RecoveryHistoryItem = {
     recoveryId: string;
     itemId: string;
