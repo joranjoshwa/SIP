@@ -1,5 +1,4 @@
-import { RecoveryResponse, RecoveryScheduleResponse } from "@/src/types/recovery";
-import { RecoveriesByUserFilters, RecoveryHistoryApiResponse, RecoveryResponse } from "@/src/types/recovery";
+import { RecoveriesByUserFilters, RecoveryHistoryApiResponse, RecoveryResponse, RecoveryScheduleResponse } from "@/src/types/recovery";
 import { api } from "../axios";
 import { AxiosError } from "axios";
 import { CategoryEnum } from "@/src/enums/category";

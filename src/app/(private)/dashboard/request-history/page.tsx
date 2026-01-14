@@ -12,7 +12,7 @@ import { HistoryRequestList } from "@/src/components/ui/HistoryRequestList";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { SearchFilter } from "@/src/components/ui/SearchFilter";
 
-export const mapRecoveryResponseToHistoryItems = (
+const mapRecoveryResponseToHistoryItems = (
     page: RecoveryHistoryApiResponse
 ): RecoveryHistoryItem[] =>
     page.content.flatMap((group) =>
