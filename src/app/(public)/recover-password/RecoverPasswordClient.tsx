@@ -2,19 +2,19 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react";
-import { AuthCard } from "../../components/layout/AuthCard";
-import { Button } from "../../components/ui/Button";
-import { Logo } from "../../components/ui/Logo";
-import { resetPassword } from "../../api/endpoints/user";
+import { AuthCard } from "@/src/components/layout/AuthCard";
+import { Button } from "@/src/components/ui/Button";
+import { Logo } from "@/src/components/ui/Logo";
+import { resetPassword } from "@/src/api/endpoints/user";
 import { AxiosError } from "axios";
-import { ApiResponse } from "../../types/user";
-import { PasswordField } from "../../components/ui/PasswordField";
-import { Loading } from "../../components/ui/Loading";
+import { ApiResponse } from "@/src/types/user";
+import { PasswordField } from "@/src/components/ui/PasswordField";
+import { Loading } from "@/src/components/ui/Loading";
 
-export const ResetPassword = () => {
+export default function ResetPassword() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const token = searchParams.get("token");
+    const token = searchParams?.get("token") || null;
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");

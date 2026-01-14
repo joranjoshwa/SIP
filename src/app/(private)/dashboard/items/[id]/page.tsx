@@ -24,6 +24,7 @@ import { deleteItem } from "@/src/api/endpoints/item";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
+
 async function checkAvailability(
     _: ActionState,
     formData: FormData
@@ -72,7 +73,7 @@ async function checkAvailability(
 }
 
 type Props = {
-    params: { id: string };
+    params: Promise<{ id: string }>;
 };
 
 export default async function ItemPage({ params }: Props) {
