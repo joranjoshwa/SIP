@@ -233,7 +233,17 @@ export default function EditItem() {
                             type="file"
                             accept="image/*"
                             multiple
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929]"
+                            className="
+                                w-full px-3 py-3 rounded-xl
+                              bg-[#ECECEC] dark:bg-[#292929]
+                                text-sm text-gray-700 dark:text-gray-100
+
+                                file:mr-3 file:py-2 file:px-3
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-medium
+                              file:bg-gray-200 dark:file:bg-gray-700
+                              file:text-gray-700 dark:file:text-gray-100
+                            "
                             onChange={handleImageChange}
                         />
 
