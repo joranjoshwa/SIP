@@ -5,14 +5,16 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory, categoryToCategoryKey } from "@/src/constants/categories";
 import { Area, Category, DayPeriod, EditItemRequest, ItemDTO } from "@/src/types/item";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/src/utils/token";
-import { editItem, singleItem } from "@/src/api/endpoints/item";
+import { editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { api } from "@/src/api/axios";
+import { TopPopup } from "@/src/components/ui/TopPopup";
+import { useTopPopup } from "@/src/utils/useTopPopup"
 
 export default function EditItem() {
 
@@ -29,8 +31,10 @@ export default function EditItem() {
     const [area, setArea] = useState<Area | null>(null);
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
-    const [imageName, setImageName] = useState<string | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [images, setImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const { popup, openPopup, closePopup } = useTopPopup(3000);
 
     useEffect(() => {
         if (!itemId) {
@@ -57,7 +61,6 @@ export default function EditItem() {
                 setArea(data.area ?? null);
                 setDayPeriod(data.dayPeriod ?? "MORNING");
                 setSelectedCategory(data.category ? categoryToCategoryKey(data.category) : null);
-                setImageName(data.pictures?.[0]?.url ?? null);
 
             } catch (err) {
                 console.error("Erro ao carregar item:", err);
@@ -71,8 +74,18 @@ export default function EditItem() {
     }, [itemId]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) setImageFile(file);
+        if (!e.target.files) return;
+
+        const files = Array.from(e.target.files);
+
+        if (files.length > 3) {
+            openPopup("Você pode selecionar no máximo 3 imagens.", "warning");
+            fileInputRef.current!.value = "";
+            setImages([]);
+            return;
+        }
+
+        setImages(files);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -93,15 +106,21 @@ export default function EditItem() {
 
             await editItem(itemId, payload as EditItemRequest);
 
-            alert("Item atualizado com sucesso!");
+            if (images.length > 0) {
+                await Promise.all(
+                    images.map(file => uploadItemImage(itemId, file))
+                );
+            }
+
+            openPopup("Item atualizado com sucesso!", "success");
             router.push("/dashboard");
         } catch (error: any) {
             console.error("Erro ao atualizar item:", error);
 
             if (error.response?.status === 400 && error.response?.data?.message) {
-                alert(error.response.data.message);
+                openPopup(error.response.data.message, "error");
             } else {
-                alert("Falha ao atualizar o item. Tente novamente.");
+                openPopup("Falha ao atualizar o item. Tente novamente.", "error");
             }
         }
     };
@@ -199,24 +218,38 @@ export default function EditItem() {
                             Categoria
                         </label>
                         <CategoryItem
+                            selectedCategory={selectedCategory}
                             handleCategorySelection={(category) => setSelectedCategory(category as CategoryKey | null)}
                         />
                     </div>
 
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagem do item
+                            Imagens do item (até 3)
                         </label>
+
                         <input
+                            ref={fileInputRef}
                             type="file"
                             accept="image/*"
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
+                            multiple
+                            className="
+                                w-full px-3 py-3 rounded-xl
+                              bg-[#ECECEC] dark:bg-[#292929]
+                                text-sm text-gray-700 dark:text-gray-100
+
+                                file:mr-3 file:py-2 file:px-3
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-medium
+                              file:bg-gray-200 dark:file:bg-gray-700
+                              file:text-gray-700 dark:file:text-gray-100
+                            "
                             onChange={handleImageChange}
-                            disabled
                         />
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {imageFile ? imageFile.name : "IMG_2025_06_20_43874983.png"}
-                        </span>
+
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Se você não selecionar novas imagens, as atuais serão mantidas.
+                        </p>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
@@ -229,6 +262,13 @@ export default function EditItem() {
                     </div>
                 </form>
             </ScrollableArea>
+
+            <TopPopup
+                message={popup.message}
+                isOpen={popup.open}
+                variant={popup.variant}
+                onClose={closePopup}
+            />
         </main>
     );
 }
