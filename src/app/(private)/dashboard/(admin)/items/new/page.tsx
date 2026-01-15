@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { createItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { Button } from "@/src/components/ui/Button";
@@ -6,30 +6,50 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory } from "@/src/constants/categories";
 import { Area, CreateItemRequest, DayPeriod } from "@/src/types/item";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { PageHeader } from "@/src/components/ui/PageHeader";
+import { useTopPopup } from "@/src/utils/useTopPopup";
+import { TopPopup } from "@/src/components/ui/TopPopup";
 
 export default function RegisterLostItem() {
-    const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
+    const { popup, openPopup, closePopup } = useTopPopup();
+
+    const [selectedCategory, setSelectedCategory] =
+        useState<CategoryKey | null>(null);
     const [description, setDescription] = useState("");
     const [findingDate, setFindingDate] = useState("");
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [area, setArea] = useState<Area | null>(null);
-    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [images, setImages] = useState<File[]>([]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setImageFile(e.target.files[0]);
+        if (!e.target.files) return;
+
+        const selectedFiles = Array.from(e.target.files);
+
+        if (selectedFiles.length > 3) {
+            openPopup("Você pode selecionar no máximo 3 imagens.", "warning");
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
+            return;
         }
+
+        setImages(selectedFiles);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!selectedCategory || !area) {
-            alert("Por favor, selecione a categoria e o local");
+            openPopup(
+                "Por favor, selecione a categoria e o local.",
+                "warning"
+            );
             return;
         }
 
@@ -43,42 +63,45 @@ export default function RegisterLostItem() {
 
         try {
             const token = localStorage.getItem("token");
+
             if (!token) {
-                alert("Você não está autenticado!");
+                openPopup("Você não está autenticado.", "error");
                 return;
             }
 
             const created = await createItem(payload, token);
 
-            if (imageFile) {
-                await uploadItemImage(created.itemId, imageFile);
+            if (images.length > 0) {
+                await Promise.all(images.filter(Boolean).map(file => uploadItemImage(created.itemId, file)));
             }
 
-            alert("Item registrado com sucesso!");
+            openPopup("Item registrado com sucesso!", "success");
 
             setDescription("");
             setFindingDate("");
             setDayPeriod("MORNING");
             setSelectedCategory(null);
             setArea(null);
-            setImageFile(null);
-
+            setImages([]);
         } catch (error) {
             console.error("Erro ao registrar item:", error);
-            alert("Erro ao registrar o item.");
+
+            openPopup(
+                "Ocorreu um erro ao registrar o item. Tente novamente.",
+                "error"
+            );
         }
     };
 
     return (
         <main className="w-full flex flex-col px-4 py-0 md:ml-3 md:pl-6 md:pb-0 min-h-0">
-            <PageHeader title={"Registrar novo item perdido"} />
+            <PageHeader title="Registrar novo item perdido" />
 
             <ScrollableArea>
                 <form
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
                 >
-
                     <InputField
                         label="Descrição"
                         placeholder="Ex.: Essa marmita rosa com amarelo foi encontrada..."
@@ -138,14 +161,20 @@ export default function RegisterLostItem() {
 
                     <div className="flex flex-col gap-2">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagem do item
+                            Imagens do item (até 3)
                         </label>
                         <input
                             type="file"
                             accept="image/*"
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-200 dark:file:bg-gray-700 file:text-gray-700 dark:file:text-gray-100"
+                            multiple
+                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100
+                                file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0
+                                file:text-sm file:font-medium
+                              file:bg-gray-200 dark:file:bg-gray-700
+                              file:text-gray-700 dark:file:text-gray-100"
                             onChange={handleImageChange}
                         />
+
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
@@ -158,6 +187,13 @@ export default function RegisterLostItem() {
                     </div>
                 </form>
             </ScrollableArea>
+
+            <TopPopup
+                isOpen={popup.open}
+                message={popup.message}
+                variant={popup.variant}
+                onClose={closePopup}
+            />
         </main>
     );
 }
