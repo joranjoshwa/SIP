@@ -16,7 +16,7 @@ import { formatCPF, formatPhone } from "@/src/utils/masks";
 import { Loading } from "@/src/components/ui/Loading";
 import { useAvatarUpload } from "@/src/utils/useAvatarUpload";
 
-export default function SignUp () {
+export default function SignUp() {
 
     const { register } = useAuth();
     const router = useRouter();
@@ -45,11 +45,12 @@ export default function SignUp () {
         setError("");
 
         try {
-            await register({ name, cpf, email, phone, password });
+            await register({ name, cpf, email, phone, password }).then(async () => {
+                if (profileImage) {
+                    await uploadAvatar(profileImage, false, email);
+                }
+            });
 
-            if (profileImage) {
-                await uploadAvatar(profileImage);
-            }
 
             router.push("/login?success=register")
 
