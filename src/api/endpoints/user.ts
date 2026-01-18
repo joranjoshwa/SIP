@@ -3,9 +3,35 @@ import { ApiResponse, ChangePasswordRequest } from "../../types/user";
 import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../axios";
 
+
+function extractNiceMessage(err: unknown, fallback: string) {
+    if (err instanceof Error && err.message) return err.message;
+
+    const anyErr = err as any;
+    const data = anyErr?.response?.data;
+
+    const apiMsg =
+        data?.message ??
+        data?.error ??
+        (typeof data === "string" ? data : null);
+
+    return apiMsg ?? anyErr?.message ?? fallback;
+}
+
 export const verifyToken = async (token: string): Promise<ApiResponse> => {
-    const { data } = await api.post(`/user/account/verify/${token}`);
-    return data;
+    try {
+        const { data } = await api.post(`/user/account/verify/${token}`);
+        return data;
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to verify token");
+    }
 }
 
 export const resendVerifyToken = async (token: string): Promise<ApiResponse> => {
@@ -15,8 +41,19 @@ export const resendVerifyToken = async (token: string): Promise<ApiResponse> => 
         throw new Error("Não foi possível extrair o email de token.");
     }
 
-    const { data } = await api.post(`/user/account/resend-verify-account/${email}`);
-    return data;
+    try {
+        const { data } = await api.post(`/user/account/resend-verify-account/${email}`);
+        return data;
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to resend token");
+    }
 }
 
 export const requestReactivation = async (email: string): Promise<ApiResponse> => {

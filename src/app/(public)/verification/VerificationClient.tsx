@@ -13,38 +13,60 @@ import {
 } from "@/src/api/endpoints/user";
 import { TokenType } from "@/src/types/token";
 
+function extractNiceMessage(err: unknown, fallback: string) {
+    if (err instanceof Error && err.message) return err.message;
+
+    const anyErr = err as any;
+    const data = anyErr?.response?.data;
+
+    const apiMsg =
+        data?.message ??
+        data?.error ??
+        (typeof data === "string" ? data : null);
+
+    return apiMsg ?? anyErr?.message ?? fallback;
+}
+
 export default function VerificationClient() {
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [token, setToken] = useState<string | null>(null);
     const [tokenType, setTokenType] = useState<TokenType | null>(null);
 
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const [infoMsg, setInfoMsg] = useState<string | null>(null);
+
     const searchParams = useSearchParams();
     const router = useRouter();
 
     useEffect(() => {
-        const token = searchParams?.get("token");
-
-        if (!token) {
+        const t = searchParams?.get("token");
+        if (!t) {
+            setErrorMsg("Token não encontrado na URL.");
             setStatus("error");
             return;
         }
 
-        setToken(token);
+        setToken(t);
 
-        const tokenType = searchParams?.get("type") as TokenType | null;
-        setTokenType(tokenType);
+        const tt = searchParams?.get("type") as TokenType | null;
+        setTokenType(tt);
 
         const checkToken = async () => {
+            setErrorMsg(null);
+            setInfoMsg(null);
+
             try {
-                if (tokenType === TokenType.VERIFICATION) {
-                    await verifyToken(token);
-                } else if (tokenType === TokenType.REACTIVATE) {
-                    await verifyReactivationToken(token);
+                if (tt === TokenType.VERIFICATION) {
+                    await verifyToken(t);
+                } else if (tt === TokenType.REACTIVATE) {
+                    await verifyReactivationToken(t);
+                } else {
+                    throw new Error("Tipo de token inválido.");
                 }
 
                 setStatus("success");
-            } catch (error) {
-                console.error("Erro ao verificar token: ", error);
+            } catch (err) {
+                setErrorMsg(extractNiceMessage(err, "Erro ao verificar token."));
                 setStatus("error");
             }
         };
@@ -52,31 +74,33 @@ export default function VerificationClient() {
         checkToken();
     }, [searchParams]);
 
-    const handleSendLogin = () => {
-        router.push("/login");
-    };
+    const handleSendLogin = () => router.push("/login");
 
     const handleResend = async () => {
         if (!token) return;
 
+        setErrorMsg(null);
+        setInfoMsg(null);
+
         try {
             await resendVerifyToken(token);
-            alert("Novo link enviado para seu e-mail.");
-        } catch (error) {
-            console.error("Erro ao reenviar: ", error);
-            alert("Erro ao reenviar link. Tente novamente.");
+            setInfoMsg("Novo link enviado para seu e-mail.");
+        } catch (err) {
+            setErrorMsg(extractNiceMessage(err, "Erro ao reenviar link. Tente novamente."));
         }
     };
 
     const handleResendReactivation = async () => {
         if (!token) return;
 
+        setErrorMsg(null);
+        setInfoMsg(null);
+
         try {
             await resendReactivationToken(token);
-            alert("Novo link de reativação enviado para seu e-mail.");
-        } catch (error) {
-            console.error("Erro ao reenviar reativação: ", error);
-            alert("Erro ao reenviar link de reativação. Tente novamente.");
+            setInfoMsg("Novo link de reativação enviado para seu e-mail.");
+        } catch (err) {
+            setErrorMsg(extractNiceMessage(err, "Erro ao reenviar link de reativação. Tente novamente."));
         }
     };
 
@@ -85,7 +109,7 @@ export default function VerificationClient() {
             <AuthCard
                 title={tokenType === TokenType.REACTIVATE ? "Reativando conta..." : "Verificando o seu e-mail..."}
                 subtitle="Aguarde alguns segundos enquanto confirmamos."
-                headerContent={<Loader2 className="w-12 h-12 animate-spin text-blue-600" />}
+                headerContent={<Loader2 className="w-12 h-12 animate-spin text-blue-600" suppressHydrationWarning />}
             >
                 <></>
             </AuthCard>
@@ -96,8 +120,8 @@ export default function VerificationClient() {
         return (
             <AuthCard
                 title={tokenType === TokenType.REACTIVATE ? "Conta reativada!" : "E-mail verificado com sucesso!"}
-                subtitle="Agora você já pode acessar a sua conta."
-                headerContent={<CheckCircle className="w-12 h-12 text-green-600" />}
+                subtitle={infoMsg ?? "Agora você já pode acessar a sua conta."}
+                headerContent={<CheckCircle className="w-12 h-12 text-green-600" suppressHydrationWarning />}
             >
                 <Button variant="primary" onClick={handleSendLogin}>
                     Ir para login
@@ -106,16 +130,23 @@ export default function VerificationClient() {
         );
     }
 
+    const defaultSubtitle =
+        tokenType === TokenType.REACTIVATE
+            ? "Solicite um novo link para reativação."
+            : "Solicite um novo link para verificar o seu e-mail.";
+
     return (
         <AuthCard
             title={tokenType === TokenType.REACTIVATE ? "Falha ao reativar conta" : "Link inválido ou expirado"}
-            subtitle={
-                tokenType === TokenType.REACTIVATE
-                    ? "Solicite um novo link para reativação."
-                    : "Solicite um novo link para verificar o seu e-mail."
-            }
-            headerContent={<XCircle className="w-12 h-12 text-red-600" />}
+            subtitle={errorMsg ?? defaultSubtitle}
+            headerContent={<XCircle className="w-12 h-12 text-red-600" suppressHydrationWarning />}
         >
+            {infoMsg && (
+                <div className="text-sm text-green-600">
+                    {infoMsg}
+                </div>
+            )}
+
             {tokenType === TokenType.VERIFICATION && (
                 <Button variant="secondary" onClick={handleResend}>
                     Reenviar e-mail

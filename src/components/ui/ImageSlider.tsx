@@ -27,7 +27,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
         <div className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden">
             {item.pictures.length > 0 ? (
                 <Image
-                    src={item.pictures[currentIndex].url as string}
+                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string + item.pictures[currentIndex].url as string}
                     alt={item.description || "Item sem descrição"}
                     fill
                     className="object-contain object-center rounded-xl"

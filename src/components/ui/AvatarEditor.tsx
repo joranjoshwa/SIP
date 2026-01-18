@@ -53,7 +53,7 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
         let updatedAvatar: string | null;
 
         if (role === UserRole.ROOT) {
-            updatedAvatar = await uploadAvatar(file, adminEmail);
+            updatedAvatar = await uploadAvatar(file, true, adminEmail);
         } else {
             updatedAvatar = await uploadAvatar(file);
         }
@@ -80,7 +80,7 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
                     ) : (
                         <Image
                             key={preview}
-                            src={withBust(preview)}
+                            src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + withBust(preview)}
                             alt="Avatar"
                             fill
                             sizes="112px"

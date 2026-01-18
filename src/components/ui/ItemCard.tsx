@@ -64,7 +64,7 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
             <div className="relative w-full h-[140px] md:h-[170px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
                 {validPhoto ? (
                     <Image
-                        src={picture}
+                        src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + picture}
                         alt={description}
                         fill
                         sizes="400px"
@@ -75,7 +75,7 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                 )}
             </div>
 
-            <div className="py-2 space-y-2">
+            <div className="py-2 space-y-2 min-h-[5rem]">
                 <h3 className="text-sm font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100">
                     {description}
                 </h3>
