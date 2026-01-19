@@ -26,7 +26,7 @@ export function RequestItem({
             <div className="flex items-center gap-2">
                 {requestItem.user.avatar ? (
                     <Image
-                        src={requestItem.user.avatar}
+                        src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + requestItem.user.avatar}
                         alt={requestItem.user.name}
                         width={36}
                         height={36}

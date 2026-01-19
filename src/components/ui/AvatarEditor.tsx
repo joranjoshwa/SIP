@@ -37,11 +37,40 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
         return `${url}${sep}v=${Date.now()}`;
     };
 
+    const isAbsoluteUrl = (url: string) => /^https?:\/\//i.test(url);
+
+    const buildRemoteSrc = (avatarPathOrUrl: string) => {
+        const base = process.env.NEXT_PUBLIC_IMAGE_BASE_URL ?? "";
+        const raw = isAbsoluteUrl(avatarPathOrUrl) ? avatarPathOrUrl : base + avatarPathOrUrl;
+        return withBust(raw);
+    };
+
+    const waitForImage = (src: string, timeoutMs = 8000) =>
+        new Promise<boolean>((resolve) => {
+            const img = new window.Image();
+            const t = window.setTimeout(() => {
+                img.onload = null;
+                img.onerror = null;
+                resolve(false);
+            }, timeoutMs);
+
+            img.onload = () => {
+                window.clearTimeout(t);
+                resolve(true);
+            };
+            img.onerror = () => {
+                window.clearTimeout(t);
+                resolve(false);
+            };
+
+            img.src = src;
+        });
+
+
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files?.[0]) return;
 
         const file = e.target.files[0];
-
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
 
@@ -58,14 +87,32 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
             updatedAvatar = await uploadAvatar(file);
         }
 
-        if (updatedAvatar) {
-            const busted = withBust(updatedAvatar);
-            setPreview(busted);
-            onAvatarUpdated?.(busted);
-        } else {
+        if (!updatedAvatar) {
+            URL.revokeObjectURL(localPreview);
             setPreview(currentAvatar || "");
+            return;
+        }
+
+        const remoteSrc = buildRemoteSrc(updatedAvatar);
+
+        const ok = await waitForImage(remoteSrc, 10000);
+
+        if (ok) {
+            URL.revokeObjectURL(localPreview);
+            setPreview(remoteSrc);
+            onAvatarUpdated?.(remoteSrc);
+        } else {
+            window.setTimeout(async () => {
+                const ok2 = await waitForImage(remoteSrc, 10000);
+                if (ok2) {
+                    URL.revokeObjectURL(localPreview);
+                    setPreview(remoteSrc);
+                    onAvatarUpdated?.(remoteSrc);
+                }
+            }, 1200);
         }
     };
+
 
     return (
         <div className="relative w-28 h-28 md:w-32 md:h-32">

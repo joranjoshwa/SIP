@@ -116,7 +116,7 @@ export default function AdminAccountOperationPage() {
                                         <div className="shrink-0 w-9 h-9 rounded-full overflow-hidden bg-emerald-100 dark:bg-emerald-950/30 grid place-items-center">
                                             {acc.avatarUrl ? (
                                                 <Image
-                                                    src={acc.avatarUrl}
+                                                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + acc.avatarUrl}
                                                     alt={`Avatar de ${acc.fullName}`}
                                                     width={36}
                                                     height={36}

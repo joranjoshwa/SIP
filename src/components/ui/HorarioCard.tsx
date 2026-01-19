@@ -38,7 +38,7 @@ export default function HorarioCard({
       <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-700 grid place-items-center">
         {validPhoto ? (
           <Image
-            src={image as string}
+            src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string + image as string}
             alt={title}
             fill
             sizes="48px"

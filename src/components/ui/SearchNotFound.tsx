@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTheme } from "@/src/context/ThemeContext"; // 👈 use your own context
+import { useTheme } from "@/src/context/ThemeContext";
 import imageSrc from "@/src/assets/noItems.png";
 
 type Props = {
@@ -19,7 +19,7 @@ export const SearchNotFound = ({
         <div className="flex flex-col items-center justify-center text-center p-6">
             <div className="mb-4">
                 <Image
-                    src={imageSrc}
+                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string + imageSrc}
                     alt="Lista vazia"
                     width={480}
                     height={480}
