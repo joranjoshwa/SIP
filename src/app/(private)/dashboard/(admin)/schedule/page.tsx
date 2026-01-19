@@ -8,7 +8,6 @@ import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import DateNav from "@/src/components/ui/DateNav";
 import HorarioGroup, { HorarioItem } from "@/src/components/ui/HorarioGroup";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
-
 import { formatGroupLabel } from "@/src/utils/formatGroupLabel";
 import { getNextDays } from "@/src/utils/getNextDays";
 import { extractEmailFromToken } from "@/src/api/axios";
@@ -50,7 +49,7 @@ export default function Schedule() {
 
         const items: HorarioItemWithDate[] = (data?.content ?? [])
           .map((entry: any): Nullable<HorarioItemWithDate> => {
-            const pickupDate = new Date(entry.pickupDate);
+            const pickupDate = new Date(entry.requestDate);
             if (Number.isNaN(pickupDate.getTime())) return null;
 
             return {
@@ -88,11 +87,13 @@ export default function Schedule() {
 
     const filtered = allItems.filter((item) => {
       const d = item._rawDate;
-
+      const selectedDate = new Date();
+      selectedDate.setDate(selectedDay);
+    
       return (
-        d.getDate() === selectedDay &&
-        d.getMonth() === today.getMonth() &&
-        d.getFullYear() === today.getFullYear()
+        d.getDate() === selectedDate.getDate() &&
+        d.getMonth() === selectedDate.getMonth() &&
+        d.getFullYear() === selectedDate.getFullYear()
       );
     });
 
