@@ -71,13 +71,13 @@ body {
 
 input {
     background-color: #ECECEC;
-    color: #1F2937; /* texto escuro no light mode */
+    color: #1F2937; 
     caret-color: #1F2937;
 }
 
 .dark input {
     background-color: #292929;
-    color: #F9FAFB; /* texto claro no dark mode */
+    color: #F9FAFB; 
     caret-color: #F9FAFB;
 }
 
