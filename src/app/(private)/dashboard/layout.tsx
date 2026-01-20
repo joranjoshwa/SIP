@@ -18,6 +18,7 @@ import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
 import { WebSocketProvider } from "@/src/context/WebsocketContext";
+import { Http403Listener } from "@/src/components/system/Http403Listener";
 
 export default function DashboardLayout({
     children,
@@ -116,10 +117,13 @@ export default function DashboardLayout({
                     />
                 </div>
 
-                <WebSocketProvider
-                    autoReconnect={true}
-                    reconnectInterval={5000}>
-                        {children}
+                <WebSocketProvider autoReconnect={true} reconnectInterval={5000}>
+                    <Http403Listener
+                        onForbidden={(err) => {
+                            console.log("403 captured:", err.response?.data);
+                        }}
+                    />
+                    {children}
                 </WebSocketProvider>
             </main>
         </div>

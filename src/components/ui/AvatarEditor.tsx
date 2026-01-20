@@ -17,6 +17,7 @@ type Props = {
 };
 
 const isBlob = (url: string) => url.startsWith("blob:");
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handleImageUpload }: Props) => {
     const [preview, setPreview] = useState(currentAvatar || "");
@@ -62,6 +63,11 @@ export const AvatarEditor = ({ currentAvatar, onAvatarUpdated, adminEmail, handl
         setShowError(false);
 
         const file = e.target.files[0];
+
+        setIsProcessing(true);
+        await sleep(2000);
+        setIsProcessing(false);
+
         const localPreview = URL.createObjectURL(file);
         setPreview(localPreview);
 
