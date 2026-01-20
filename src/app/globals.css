@@ -15,6 +15,7 @@
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -30,18 +31,27 @@ body {
 }
 
 .schedule-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
 }
+
 :root.dark .schedule-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.7);
 }
 
 @keyframes sheet-enter {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+    from {
+        transform: translateY(16px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
+
 .animate-sheet {
-  animation: sheet-enter 180ms ease-out;
+    animation: sheet-enter 180ms ease-out;
 }
 
 @media (max-height: 740px) {
@@ -53,7 +63,55 @@ body {
         scrollbar-width: none;
         touch-action: pan-y;
     }
+
     .filter-scroll::-webkit-scrollbar {
         display: none;
     }
+}
+
+input {
+    background-color: #ECECEC;
+    color: #1F2937; /* texto escuro no light mode */
+    caret-color: #1F2937;
+}
+
+.dark input {
+    background-color: #292929;
+    color: #F9FAFB; /* texto claro no dark mode */
+    caret-color: #F9FAFB;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 10000px #ECECEC inset !important;
+    -webkit-text-fill-color: #1F2937 !important;
+    background-clip: content-box !important;
+    caret-color: #1F2937 !important;
+    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+}
+
+input:-moz-autofill {
+    box-shadow: 0 0 0 10000px #ECECEC inset;
+    -moz-text-fill-color: #1F2937;
+    background-clip: content-box !important;
+    caret-color: #1F2937;
+}
+
+:root.dark input:-webkit-autofill,
+:root.dark input:-webkit-autofill:hover,
+:root.dark input:-webkit-autofill:focus,
+:root.dark input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 10000px #292929 inset !important;
+    -webkit-text-fill-color: #F9FAFB !important;
+    background-clip: content-box !important;
+    caret-color: #F9FAFB !important;
+}
+
+:root.dark input:-moz-autofill {
+    box-shadow: 0 0 0 10000px #292929 inset;
+    -moz-text-fill-color: #F9FAFB;
+    background-clip: content-box !important;
+    caret-color: #F9FAFB;
 }
