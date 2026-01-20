@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/src/context/ThemeContext";
 import { Role } from "@/src/types/user";
 import { Role as RoleUser} from "@/src/enums/role";
+import { logout } from "@/src/utils/token";
 
 type Action = {
     key: string;
@@ -19,7 +20,6 @@ type Props = {
 }
 
 export const ActionList = ({ userRole }: Props) => {
-    const { logout } = useAuth();
     const router = useRouter();
     const { theme, toggleTheme } = useTheme();
 
@@ -55,7 +55,7 @@ export const ActionList = ({ userRole }: Props) => {
             key: "logout",
             label: "Sair da conta",
             Icon: LogOut,
-            onClick: () => logout("/login"),
+            onClick: () => logout(),
         },
     ];
 

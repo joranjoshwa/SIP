@@ -106,8 +106,6 @@ export default function ProfilePage() {
 
                             {user.role !== Role.ROOT && (
                                 <section>
-                                    <InfoItem label="Total de itens recuperados" value={`... itens`} />
-                                    <InfoItem label="Última vez que recuperou item" value={`... itens`} />
                                     <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
                                 </section>
                             )}
