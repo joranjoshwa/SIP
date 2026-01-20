@@ -13,6 +13,7 @@ type Props = {
     autoComplete?: string;
     disabled?: boolean;
     onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    accept?: string;
 };
 
 export const InputField = ({
@@ -27,7 +28,8 @@ export const InputField = ({
     required = false,
     autoComplete,
     disabled,
-    onPressEnter
+    onPressEnter,
+    accept,
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
@@ -72,6 +74,7 @@ export const InputField = ({
                     placeholder={placeholder}
                     {...(type !== "file" && { value })}
                     onChange={onChange}
+                    accept={accept}
                     className={`flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
                                 dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input
                                 ${type === "file" ? "hidden" : ""}
