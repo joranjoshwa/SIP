@@ -72,6 +72,8 @@ export default function Login() {
         try {
             await login({ email, password });
             router.push("/");
+            return;
+
         } catch (error) {
             const err = error as AxiosError<ApiResponse>;
 
@@ -87,7 +89,7 @@ export default function Login() {
             } else {
                 setError("Erro inesperado");
             }
-        } finally {
+
             setLoading(false);
         }
     };
