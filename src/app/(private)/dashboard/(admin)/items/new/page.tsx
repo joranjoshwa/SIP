@@ -6,12 +6,19 @@ import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory } from "@/src/constants/categories";
 import { Area, CreateItemRequest, DayPeriod } from "@/src/types/item";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { useTopPopup } from "@/src/utils/useTopPopup";
 import { TopPopup } from "@/src/components/ui/TopPopup";
+import { ImagePicker } from "@/src/components/ui/ImagePicker";
+import { Loading } from "@/src/components/ui/Loading";
+
+type ImageItem = {
+    file: File;
+    preview: string;
+};
 
 export default function RegisterLostItem() {
     const { popup, openPopup, closePopup } = useTopPopup();
@@ -22,28 +29,36 @@ export default function RegisterLostItem() {
     const [findingDate, setFindingDate] = useState("");
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [area, setArea] = useState<Area | null>(null);
-    const [images, setImages] = useState<File[]>([]);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [images, setImages] = useState<ImageItem[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-
-        const selectedFiles = Array.from(e.target.files);
-
-        if (selectedFiles.length > 3) {
-            openPopup("Você pode selecionar no máximo 3 imagens.", "warning");
-
-            if (fileInputRef.current) {
-                fileInputRef.current.value = "";
+    const handleAddImage = (files: File[]) => {
+        setImages(prev => {
+            if (prev.length + files.length > 3) {
+                openPopup("Você pode adicionar no máximo 3 imagens.", "warning");
+                return prev;
             }
-            return;
-        }
 
-        setImages(selectedFiles);
+            const newImages = files.map(file => ({
+                file,
+                preview: URL.createObjectURL(file),
+            }));
+
+            return [...prev, ...newImages];
+        });
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setImages(prev => {
+            URL.revokeObjectURL(prev[index].preview);
+            return prev.filter((_, i) => i !== index);
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (isSubmitting) return;
 
         if (!selectedCategory || !area) {
             openPopup(
@@ -52,6 +67,8 @@ export default function RegisterLostItem() {
             );
             return;
         }
+
+        setIsSubmitting(true);
 
         const payload: CreateItemRequest = {
             description,
@@ -72,7 +89,11 @@ export default function RegisterLostItem() {
             const created = await createItem(payload, token);
 
             if (images.length > 0) {
-                await Promise.all(images.filter(Boolean).map(file => uploadItemImage(created.itemId, file)));
+                await Promise.all(
+                    images.map(img =>
+                        uploadItemImage(created.itemId, img.file)
+                    )
+                );
             }
 
             openPopup("Item registrado com sucesso!", "success");
@@ -82,6 +103,7 @@ export default function RegisterLostItem() {
             setDayPeriod("MORNING");
             setSelectedCategory(null);
             setArea(null);
+            images.forEach(img => URL.revokeObjectURL(img.preview));
             setImages([]);
         } catch (error) {
             console.error("Erro ao registrar item:", error);
@@ -90,8 +112,16 @@ export default function RegisterLostItem() {
                 "Ocorreu um erro ao registrar o item. Tente novamente.",
                 "error"
             );
+        } finally {
+            setIsSubmitting(false);
         }
     };
+
+    useEffect(() => {
+        return () => {
+            images.forEach(img => URL.revokeObjectURL(img.preview));
+        };
+    }, []);
 
     return (
         <main className="w-full flex flex-col px-4 py-0 md:ml-3 md:pl-6 md:pb-0 min-h-0">
@@ -159,29 +189,19 @@ export default function RegisterLostItem() {
                         <CategoryItem handleCategorySelection={setSelectedCategory} />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagens do item (até 3)
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="w-full px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100
-                                file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0
-                                file:text-sm file:font-medium
-                              file:bg-gray-200 dark:file:bg-gray-700
-                              file:text-gray-700 dark:file:text-gray-100"
-                            onChange={handleImageChange}
-                        />
+                    <ImagePicker
+                        images={images}
+                        maxImages={3}
+                        onAddImages={handleAddImage}
+                        onRemoveImage={handleRemoveImage}
+                    />
 
-                    </div>
 
-                    <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
-                        <Button variant="primary" className="md:w-40">
+                    <div className="flex flex-col gap-3 mt-4 w-full">
+                        <Button variant="primary" className="w-full py-3" disabled={isSubmitting}>
                             Registrar item
                         </Button>
-                        <Button variant="secondary" className="md:w-40">
+                        <Button variant="secondary" className="w-full py-3" disabled={isSubmitting}>
                             Cancelar
                         </Button>
                     </div>
@@ -194,6 +214,8 @@ export default function RegisterLostItem() {
                 variant={popup.variant}
                 onClose={closePopup}
             />
+
+            <Loading isLoading={isSubmitting} />
         </main>
     );
 }
