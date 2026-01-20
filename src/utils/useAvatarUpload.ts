@@ -60,7 +60,6 @@ export const useAvatarUpload = () => {
                 content = data;
             }
 
-
             return content.profileImageUrl;
 
         } catch (error) {
