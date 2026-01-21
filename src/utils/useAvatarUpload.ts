@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { extractEmailFromToken, extractRoleFromToken } from "./token";
 import { api } from "../api/axios";
-import { headers } from "next/headers";
 
 export const useAvatarUpload = () => {
     const [loading, setLoading] = useState(false);
@@ -59,7 +58,6 @@ export const useAvatarUpload = () => {
                 )
                 content = data;
             }
-
 
             return content.profileImageUrl;
 

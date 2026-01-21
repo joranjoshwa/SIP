@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Plus, X, Hand, CalendarX2, PackagePlus } from "lucide-react";
+import { extractRoleFromToken, getTokenFromCookie } from "@/src/utils/token";
+import { Role } from "@/src/enums/role";
+import { Role as UserRole } from "@/src/enums/role";
 
 type Props = {
     positionFab?: string,
@@ -11,6 +14,10 @@ type Props = {
 
 export function AdminActionsMobile({ positionFab, positionOptions }: Props) {
     const [open, setOpen] = useState(false);
+    const token = getTokenFromCookie();
+    const role = extractRoleFromToken(token as string) as Role;
+
+    if (role !== UserRole.ADMIN) return (<></>);
 
     return (
         <>

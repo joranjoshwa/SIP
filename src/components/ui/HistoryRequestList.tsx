@@ -82,7 +82,7 @@ export function HistoryRequestList({
                     <div className="relative md:h-20 md:w-20 h-16 w-16 rounded-lg overflow-hidden shrink-0">
                         {imageUrl ? (
                             <Image
-                                src={imageUrl}
+                                src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + imageUrl}
                                 alt={title}
                                 fill
                                 sizes="200px"

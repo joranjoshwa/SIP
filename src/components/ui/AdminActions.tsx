@@ -1,7 +1,11 @@
+"use client"
+
 import { useState } from "react";
 import { Plus, X, Hand, CalendarX2, PackagePlus } from "lucide-react";
-import { Role } from "@/src/enums/role";
+import { Role } from "@/src/types/user";
+import { Role as UserRole } from "@/src/enums/role";
 import { SideBarItem } from "@/src/components/ui/SideBarItem";
+import { extractRoleFromToken, getTokenFromCookie } from "@/src/utils/token";
 
 export function AdminActions() {
     const [open, setOpen] = useState(false);
