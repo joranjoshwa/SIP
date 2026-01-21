@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { getSchedule } from "@/src/api/endpoints/schedule";
 import { MaskedField } from "./MaskedField";
 import { AvailableScheduleResponse, AvailableTime, DayOfWeek } from "@/src/types/schedule";
+import { useLayoutEffect } from "react";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -38,6 +39,36 @@ export const getWeekdayFromBRDate = (dateStr: string): DayOfWeek => {
     return DAY_MAP[date.getDay()];
 };
 
+const pad2 = (n: number) => String(n).padStart(2, "0");
+
+const formatBR = (dt: Date) =>
+    `${pad2(dt.getDate())}/${pad2(dt.getMonth() + 1)}/${dt.getFullYear()}`;
+
+const WEEKDAY_PT: Record<number, string> = {
+    0: "DOM",
+    1: "SEG",
+    2: "TER",
+    3: "QUA",
+    4: "QUI",
+    5: "SEX",
+    6: "SAB",
+};
+
+const isWeekday = (dt: Date) => {
+    const d = dt.getDay();
+    return d !== 0 && d !== 6;
+};
+
+const nextWeekdays = (count: number, from: Date) => {
+    const res: Date[] = [];
+    const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate()); // midnight local
+    while (res.length < count) {
+        if (isWeekday(cur)) res.push(new Date(cur));
+        cur.setDate(cur.getDate() + 1);
+    }
+    return res;
+};
+
 export function SchedulePickupModal({
     action,
     confirmLabel = "Confirmar solicitação",
@@ -56,6 +87,37 @@ export function SchedulePickupModal({
     const [submitting, setSubmitting] = useState(false);
     const [schedule, setSchedule] = useState<AvailableScheduleResponse>([]);
     const [availableTimeSlots, setAvailableTimeSlots] = useState<AvailableTime[]>([]);
+    const [activeField, setActiveField] = useState<"date" | "time" | null>(null);
+    const quickPanelRef = useRef<HTMLDivElement>(null);
+    const [showQuickPanel, setShowQuickPanel] = useState(false);
+    const [quickPhase, setQuickPhase] = useState<"enter" | "exit">("exit");
+    const dateFieldWrapRef = useRef<HTMLDivElement>(null);
+    const panelAnimRef = useRef<Animation | null>(null);
+    const [quickAnim, setQuickAnim] = useState<{ fromX: number; fromY: number; ready: boolean }>({
+        fromX: 0,
+        fromY: 0,
+        ready: false,
+    });
+    const animTokenRef = useRef(0);
+    const showDatePanel = activeField === "date" || dateStr.length === 10;
+    const quickDayOptions = (() => {
+        const allowed = new Set(schedule.map((d) => d.availableDay));
+        const days = nextWeekdays(7, new Date());
+
+        return days
+            .map((dt) => {
+                const dayOfWeek = DAY_MAP[dt.getDay()];
+                if (!allowed.has(dayOfWeek)) return null;
+
+                return {
+                    key: dt.toISOString().slice(0, 10),
+                    date: dt,
+                    label: `${WEEKDAY_PT[dt.getDay()]}`,
+                    value: formatBR(dt),
+                };
+            })
+            .filter(Boolean) as { key: string; date: Date; label: string; value: string }[];
+    })();
 
     useEffect(() => {
         const handler = () => setOpen(true);
@@ -74,15 +136,21 @@ export function SchedulePickupModal({
         const d = dialogRef.current;
         const content = contentRef.current;
         if (!d || !content) return;
+
         const handleBackdrop = (e: MouseEvent) => {
-            const r = content.getBoundingClientRect();
-            const isBackdrop =
-                e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
-            if (isBackdrop) setOpen(false);
+            const target = e.target as Node;
+
+            if (content.contains(target)) return;
+
+            if (quickPanelRef.current?.contains(target)) return;
+
+            setOpen(false);
         };
+
         d.addEventListener("click", handleBackdrop);
         return () => d.removeEventListener("click", handleBackdrop);
     }, []);
+
 
     useEffect(() => {
         if (state.status === "success") {
@@ -122,6 +190,75 @@ export function SchedulePickupModal({
         setAvailableTimeSlots(daySchedule?.availableTimeList ?? []);
     }, [dateStr, schedule]);
 
+    useLayoutEffect(() => {
+        const shouldBeOpen = quickDayOptions.length > 0 && showDatePanel;
+
+        if (shouldBeOpen) {
+            setShowQuickPanel(true);
+            setQuickPhase("enter");
+            return;
+        }
+
+        if (showQuickPanel) {
+            setQuickPhase("exit");
+        }
+    }, [showDatePanel, quickDayOptions.length, showQuickPanel]);
+
+
+    useLayoutEffect(() => {
+        const content = contentRef.current;
+        const field = dateFieldWrapRef.current;
+        const panel = quickPanelRef.current;
+
+        if (!content || !field || !panel) return;
+        panelAnimRef.current?.cancel();
+        const token = ++animTokenRef.current;
+
+        const contentRect = content.getBoundingClientRect();
+        const fieldRect = field.getBoundingClientRect();
+        const panelRect = panel.getBoundingClientRect();
+
+        const originX = fieldRect.left - contentRect.left + 12;
+        const originY = fieldRect.top - contentRect.top + fieldRect.height / 2;
+
+        const finalX = panelRect.left - contentRect.left;
+        const finalY = panelRect.top - contentRect.top;
+
+        const fromX = originX - finalX;
+        const fromY = originY - finalY;
+
+        panel.style.willChange = "transform, opacity";
+        panel.style.transformOrigin = "left center";
+
+        if (quickPhase === "enter") {
+            panelAnimRef.current = panel.animate(
+                [
+                    { transform: `translate(${fromX}px, ${fromY}px) scale(0.98)`, opacity: 0 },
+                    { transform: "translate(0px, 0px) scale(1)", opacity: 1 },
+                ],
+                { duration: 220, easing: "ease", fill: "both" }
+            );
+        }
+
+        if (quickPhase === "exit") {
+            const anim = panel.animate(
+                [
+                    { transform: "translate(0px, 0px) scale(1)", opacity: 1 },
+                    { transform: `translate(${fromX}px, ${fromY}px) scale(0.98)`, opacity: 0 },
+                ],
+                { duration: 180, easing: "ease", fill: "both" }
+            );
+
+            panelAnimRef.current = anim;
+
+            anim.onfinish = () => {
+                if (animTokenRef.current !== token) return;
+                setShowQuickPanel(false);
+            };
+        }
+    }, [showQuickPanel, quickPhase]);
+
+
     return (
         <>
             <dialog
@@ -131,6 +268,7 @@ export function SchedulePickupModal({
                     ${className}
                 `}
             >
+
                 <div
                     ref={contentRef}
                     className="
@@ -153,6 +291,59 @@ export function SchedulePickupModal({
                         <h2 className="text-center text-xl font-semibold">Agendar busca</h2>
                     </div>
 
+                    {showQuickPanel && (
+                        <div
+                            ref={quickPanelRef}
+                            className="m-4 absolute z-50 top-[-80px] md:top-0 md:left-[-100px]"
+                            style={{
+                                willChange: "transform, opacity",
+                                transition: "transform 220ms ease, opacity 220ms ease",
+                                transform: quickAnim.ready
+                                    ? "translate(0px, 0px) scale(1)"
+                                    : `translate(${quickAnim.fromX}px, ${quickAnim.fromY}px) scale(0.98)`,
+                                opacity: quickAnim.ready ? 1 : 0,
+                                transformOrigin: "left center",
+                                pointerEvents: quickAnim.ready ? "auto" : "none",
+                            }}
+                            onTransitionEnd={(e) => {
+                                if (quickPhase === "exit" && e.propertyName === "transform") {
+                                    setShowQuickPanel(false);
+                                }
+                            }}
+                        >
+                            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+                                {quickDayOptions.map((opt) => {
+                                    const selected = dateStr === opt.value;
+
+                                    return (
+                                        <button
+                                            key={opt.key}
+                                            type="button"
+                                            onMouseDown={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                            }}
+                                            onClick={() => {
+                                                setSubmitting(false);
+                                                setDateStr(opt.value);
+                                                setActiveField("date");
+                                            }}
+                                            className={[
+                                                "shrink-0 h-12 w-12 rounded-full border text-md font-bold transition-colors pt-[2px]",
+                                                selected
+                                                    ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white border-none"
+                                                    : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
+                                            ].join(" ")}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+
+
                     <form
                         action={async (fd) => {
                             setSubmitting(true);
@@ -174,17 +365,20 @@ export function SchedulePickupModal({
                         <input type="hidden" name="token" value={token} />
 
                         <div className="mt-4 grid grid-cols-2 gap-3">
-                            <MaskedField
-                                mode="date"
-                                label="Data"
-                                value={dateStr}
-                                onChange={(v) => {
-                                    setSubmitting(false);
-                                    setDateStr(v);
-                                }}
-                                onValidChange={() => { }}
-                                ghostText="Data da busca"
-                            />
+                            <div ref={dateFieldWrapRef}>
+                                <MaskedField
+                                    mode="date"
+                                    label="Data"
+                                    value={dateStr}
+                                    onChange={(v) => {
+                                        setSubmitting(false);
+                                        setDateStr(v);
+                                    }}
+                                    onFocusChange={(f) => setActiveField(f ? "date" : null)}
+                                    onValidChange={() => { }}
+                                    ghostText="Data da busca"
+                                />
+                            </div>
 
                             <MaskedField
                                 mode="time"
@@ -200,9 +394,13 @@ export function SchedulePickupModal({
                             />
                         </div>
 
-                        {dateStr.length === 10 && (
-                            <div className="mt-4">
-                                <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+                        {dateStr.length !== 10 ? (
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-4">
+                                Digite uma data (DD/MM/AAAA) para carregar os horários disponíveis.
+                            </p>
+                        ) : (
+                            <>
+                                <p className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-200 mt-4">
                                     Horários disponíveis
                                 </p>
 
@@ -213,9 +411,10 @@ export function SchedulePickupModal({
                                 ) : (
                                     <div className="grid grid-cols-3 gap-2 overflow-x-auto scrollbar-hide">
                                         {availableTimeSlots.map((slot) => {
-                                            const label = slot.startTime.slice(0, 5) + " - " + slot.endTime.slice(0, 5);
+                                            const label =
+                                                slot.startTime.slice(0, 5) + " - " + slot.endTime.slice(0, 5);
                                             const startTime = slot.startTime.slice(0, 5);
-                                            const selected = timeStr === label;
+                                            const selected = timeStr === startTime;
 
                                             return (
                                                 <button
@@ -225,7 +424,7 @@ export function SchedulePickupModal({
                                                     className={[
                                                         "h-8 rounded-xl border text-sm font-medium transition-colors",
                                                         selected
-                                                            ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white dark:hover:bg-[#183e1f] border-none"
+                                                            ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white border-none"
                                                             : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
                                                     ].join(" ")}
                                                 >
@@ -235,7 +434,7 @@ export function SchedulePickupModal({
                                         })}
                                     </div>
                                 )}
-                            </div>
+                            </>
                         )}
 
                         <label
