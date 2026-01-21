@@ -3,8 +3,10 @@
 import { Check, X, Clock, ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
+  itemId: string;
   title: string;
   user: string;
   time: string;
@@ -15,6 +17,7 @@ type Props = {
 };
 
 export default function HorarioCard({
+  itemId,
   title,
   user,
   time,
@@ -26,15 +29,18 @@ export default function HorarioCard({
   const [hasError, setHasError] = useState(false);
   const validPhoto = !!image?.trim() && !hasError;
 
+  const router = useRouter();
+
   return (
     <div
+      onClick={() => router.push(`items/${itemId}`)}
       className={[
         "flex items-center gap-4 bg-white p-4 rounded-xl shadow-sm",
         "dark:bg-neutral-800 transition-colors",
         "border border-transparent hover:border-gray-200 dark:hover:border-neutral-600 hover:shadow-md",
       ].join(" ")}
     >
-      
+
       <div className="relative shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-700 grid place-items-center">
         {validPhoto ? (
           <Image
@@ -68,7 +74,10 @@ export default function HorarioCard({
         <div className="flex gap-3 ml-2 shrink-0">
           <button
             type="button"
-            onClick={onReject}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReject?.();
+            }}
             aria-label="Recusar"
             className="p-2 rounded-lg text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
           >
@@ -77,7 +86,10 @@ export default function HorarioCard({
 
           <button
             type="button"
-            onClick={onApprove}
+            onClick={(e) => {
+              e.stopPropagation();
+              onApprove?.();
+            }}
             aria-label="Aprovar"
             className="p-2 rounded-lg text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/30"
           >

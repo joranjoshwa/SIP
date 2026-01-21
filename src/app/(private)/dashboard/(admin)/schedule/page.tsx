@@ -49,13 +49,16 @@ export default function Schedule() {
 
         const items: HorarioItemWithDate[] = (data?.content ?? [])
           .map((entry: any): Nullable<HorarioItemWithDate> => {
-            const pickupDate = new Date(entry.requestDate);
-            if (Number.isNaN(pickupDate.getTime())) return null;
+            const rawDate = entry.pickupDate ?? entry.requestDate;
+            const pickupDate = new Date(rawDate);
+
+            if (!rawDate || Number.isNaN(pickupDate.getTime())) return null;
 
             return {
               id: entry.id,
+              itemId: entry.item.id,
               title: entry?.item?.description ?? "Item",
-              user: entry?.item?.owner?.name ?? "Usuário não informado",
+              user: entry?.item?.owner?.name ?? entry?.user?.name ?? "Usuário não informado",
               time: pickupDate.toLocaleTimeString("pt-BR", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -89,7 +92,7 @@ export default function Schedule() {
       const d = item._rawDate;
       const selectedDate = new Date();
       selectedDate.setDate(selectedDay);
-    
+
       return (
         d.getDate() === selectedDate.getDate() &&
         d.getMonth() === selectedDate.getMonth() &&
