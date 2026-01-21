@@ -56,6 +56,26 @@ export const resendVerifyToken = async (token: string): Promise<ApiResponse> => 
     }
 }
 
+export const resendVerifyByEmail = async (email: string): Promise<ApiResponse> => {
+    try {
+        const { data } = await api.post(
+            `/user/account/resend-verify-account/${email}`,
+            { email }
+        );
+
+        return data;
+    } catch (err) {
+        const e = err as AxiosError<any>;
+
+        const apiMsg =
+            e.response?.data?.message ??
+            e.response?.data?.error ??
+            (typeof e.response?.data === "string" ? e.response.data : null);
+
+        throw new Error(apiMsg ?? e.message ?? "Failed to resend verification email");
+    }
+};
+
 export const requestReactivation = async (email: string): Promise<ApiResponse> => {
     const { data } = await api.post(`/user/account/request-reactivation/${email}`);
     return data;

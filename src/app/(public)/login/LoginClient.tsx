@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TopPopup } from "@/src/components/ui/TopPopup";
 import { ApiResponse } from "@/src/types/user";
 import { AxiosError } from "axios";
-import { requestReactivation } from "@/src/api/endpoints/user";
+import { requestReactivation, resendVerifyByEmail } from "@/src/api/endpoints/user";
 import { Loading } from "@/src/components/ui/Loading";
 
 export default function Login() {
@@ -29,6 +29,7 @@ export default function Login() {
     const [error, setError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [blocked, setBlocked] = useState(false);
+    const [notVerified, setNotVerified] = useState(false);
     const [popup, setPopup] = useState<{ message: string; isOpen: boolean }>({
         message: "",
         isOpen: false,
@@ -82,10 +83,18 @@ export default function Login() {
                     err.response.data.message ?? Object.values(err.response.data).join(" | ");
 
                 setError(errors);
+                setBlocked(false);
+                setNotVerified(false);
 
                 if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
                     setBlocked(true);
                 }
+
+                if (errors.includes("Usuário ainda não foi verificado. Procure o código no seu email e faça a verificação.")) {
+                    setNotVerified(true);
+                    setError("Usuário ainda não foi verificado.");
+                }
+
             } else {
                 setError("Erro inesperado");
             }
@@ -108,6 +117,28 @@ export default function Login() {
             });
         } catch {
             setError("Erro ao solicitar reativação. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResendVerification = async (email: string) => {
+        if (!email) {
+            setError("Informe o e-mail para reenviar a verificação.");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            await resendVerifyByEmail(email);
+            setPopup({
+                message: "E-mail de verificação reenviado! Confira sua caixa de entrada.",
+                isOpen: true,
+            });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao reenviar verificação.");
         } finally {
             setLoading(false);
         }
@@ -163,6 +194,13 @@ export default function Login() {
                             className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
                         >
                             {error} Clique aqui para reativar a conta.
+                        </p>
+                    ) : notVerified ? (
+                        <p
+                            onClick={() => handleResendVerification(email)}
+                            className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
+                        >
+                            {error} Clique aqui para reenviar o e-mail de verificação.
                         </p>
                     ) : (
                         <p className="text-red-600 text-sm">{error}</p>
