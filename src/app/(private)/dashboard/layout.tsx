@@ -13,12 +13,16 @@ import {
     Sun,
 } from "lucide-react";
 import { useTheme } from "@/src/context/ThemeContext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { extractRoleFromToken, logout } from "@/src/utils/token";
 import { Role } from "@/src/enums/role";
 import { AdminActions } from "@/src/components/ui/AdminActions";
 import { WebSocketProvider } from "@/src/context/WebsocketContext";
 import { Http403Listener } from "@/src/components/system/Http403Listener";
+import { RouteLoadingOverlay } from "@/src/components/system/RouteLoadingOverlay";
+import { usePathname, useSearchParams } from "next/navigation";
+
+const MIN_LOADING_MS = 200;
 
 export default function DashboardLayout({
     children,
@@ -36,6 +40,40 @@ export default function DashboardLayout({
             setRole(extractRoleFromToken(token) as Role);
         }
     }, []);
+
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const [routeLoading, setRouteLoading] = useState(false);
+    const startRef = useRef<number | null>(null);
+    const timerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        startRef.current = Date.now();
+        setRouteLoading(true);
+
+        if (timerRef.current) {
+            window.clearTimeout(timerRef.current);
+            timerRef.current = null;
+        }
+
+        timerRef.current = window.setTimeout(() => {
+            const elapsed = Date.now() - (startRef.current ?? Date.now());
+            const remaining = Math.max(0, MIN_LOADING_MS - elapsed);
+
+            timerRef.current = window.setTimeout(() => {
+                setRouteLoading(false);
+                startRef.current = null;
+            }, remaining);
+        }, 0);
+
+        return () => {
+            if (timerRef.current) {
+                window.clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [pathname, searchParams]);
 
     return (
         <div
@@ -113,6 +151,8 @@ export default function DashboardLayout({
             </aside>
 
             <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
+                <RouteLoadingOverlay show={routeLoading} darkMode={darkMode} />
+
                 <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-8 mb-[1.5rem]">
                     <Logo
                         imageClassName="h-6 md:w-[87px] md:h-8"
