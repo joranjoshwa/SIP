@@ -1,21 +1,24 @@
 "use client";
 
 import Image from "next/image";
-import logo from "@/src/assets/sip-icon.svg";
 import loading from "@/src/assets/loading.gif";
 import loadingWhite from "@/src/assets/loading-white.gif";
-import { useTheme } from "@/src/context/ThemeContext";
+import logo from "@/src/assets/sip-icon.svg";
 
-export default function Loading() {
-    const { theme } = useTheme();
-
-    const gifSrc = theme === "dark" ? loadingWhite : loading;
+export function RouteLoadingOverlay({
+    show,
+    darkMode,
+}: {
+    show: boolean;
+    darkMode: boolean;
+}) {
+    if (!show) return null;
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/70 dark:bg-neutral-900/70 backdrop-blur-sm">
             <div className="relative h-39">
                 <Image
-                    src={gifSrc}
+                    src={darkMode ? loadingWhite : loading}
                     alt="Carregando..."
                     unoptimized
                     priority

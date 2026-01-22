@@ -19,7 +19,7 @@ export const SearchNotFound = ({
         <div className="flex flex-col items-center justify-center text-center p-6">
             <div className="mb-4">
                 <Image
-                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string + imageSrc}
+                    src={imageSrc}
                     alt="Lista vazia"
                     width={480}
                     height={480}

@@ -36,7 +36,7 @@ const ROOT_ONLY: RegExp[] = [
 
 const ADMIN_AREA: RegExp[] = [
     /^\/dashboard\/requests(\/|$)/,
-    /^\/dashboard\/schedule(\/|$)/,
+    /^\/dashboard\/schedule\/edit(\/|$)/,
     /^\/dashboard\/items\/new(\/|$)/,
     /^\/dashboard\/items\/edit(\/|$)/,
 ];

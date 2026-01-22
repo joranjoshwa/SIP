@@ -1,5 +1,6 @@
+"use client"
+
 import Image from "next/image";
-import logoInverted from "../../assets/logo-sip-dark.svg";
 import logo from "../../assets/logo-sip.svg"
 import logoBranca from "../../assets/logo-sip-branco.svg"
 import { useTheme } from "@/src/context/ThemeContext";
