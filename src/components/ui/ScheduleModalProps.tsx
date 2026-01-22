@@ -61,12 +61,28 @@ const isWeekday = (dt: Date) => {
 
 const nextWeekdays = (count: number, from: Date) => {
     const res: Date[] = [];
-    const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate()); // midnight local
+    const cur = new Date(from.getFullYear(), from.getMonth(), from.getDate());
     while (res.length < count) {
         if (isWeekday(cur)) res.push(new Date(cur));
         cur.setDate(cur.getDate() + 1);
     }
     return res;
+};
+
+const startOfWeekMonday = (d: Date) => {
+    const dt = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const day = dt.getDay();
+    const diff = (day === 0 ? -6 : 1 - day);
+    dt.setDate(dt.getDate() + diff);
+    dt.setHours(0, 0, 0, 0);
+    return dt;
+};
+
+const weekOffsetFromNow = (d: Date) => {
+    const nowStart = startOfWeekMonday(new Date());
+    const dStart = startOfWeekMonday(d);
+    const msWeek = 7 * 24 * 60 * 60 * 1000;
+    return Math.round((dStart.getTime() - nowStart.getTime()) / msWeek);
 };
 
 export function SchedulePickupModal({
@@ -84,6 +100,7 @@ export function SchedulePickupModal({
     const [open, setOpen] = useState(false);
     const [dateStr, setDateStr] = useState("");
     const [timeStr, setTimeStr] = useState("");
+    const [description, setDescription] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [schedule, setSchedule] = useState<AvailableScheduleResponse>([]);
     const [availableTimeSlots, setAvailableTimeSlots] = useState<AvailableTime[]>([]);
@@ -93,11 +110,6 @@ export function SchedulePickupModal({
     const [quickPhase, setQuickPhase] = useState<"enter" | "exit">("exit");
     const dateFieldWrapRef = useRef<HTMLDivElement>(null);
     const panelAnimRef = useRef<Animation | null>(null);
-    const [quickAnim, setQuickAnim] = useState<{ fromX: number; fromY: number; ready: boolean }>({
-        fromX: 0,
-        fromY: 0,
-        ready: false,
-    });
     const animTokenRef = useRef(0);
     const showDatePanel = activeField === "date" || dateStr.length === 10;
     const quickDayOptions = (() => {
@@ -118,6 +130,9 @@ export function SchedulePickupModal({
             })
             .filter(Boolean) as { key: string; date: Date; label: string; value: string }[];
     })();
+    const thisWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 0);
+    const nextWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 1);
+
 
     useEffect(() => {
         const handler = () => setOpen(true);
@@ -294,52 +309,110 @@ export function SchedulePickupModal({
                     {showQuickPanel && (
                         <div
                             ref={quickPanelRef}
-                            className="m-4 absolute z-50 top-[-80px] md:top-0 md:left-[-100px]"
+                            className="m-4 absolute z-50 top-[-100px] md:top-0 md:left-[-150px]"
                             style={{
                                 willChange: "transform, opacity",
-                                transition: "transform 220ms ease, opacity 220ms ease",
-                                transform: quickAnim.ready
-                                    ? "translate(0px, 0px) scale(1)"
-                                    : `translate(${quickAnim.fromX}px, ${quickAnim.fromY}px) scale(0.98)`,
-                                opacity: quickAnim.ready ? 1 : 0,
-                                transformOrigin: "left center",
-                                pointerEvents: quickAnim.ready ? "auto" : "none",
+                                pointerEvents: "auto",
                             }}
                             onTransitionEnd={(e) => {
                                 if (quickPhase === "exit" && e.propertyName === "transform") {
                                     setShowQuickPanel(false);
                                 }
                             }}
+                            onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                            }}
                         >
-                            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                                {quickDayOptions.map((opt) => {
-                                    const selected = dateStr === opt.value;
+                            <div className="flex md:flex-col gap-2">
+                                <div className="flex flex-col">
+                                    {thisWeekOptions.length > 0 && (
+                                        <div className="text-[11px] font-semibold uppercase tracking-wide text-white dark:text-zinc-400 md:mb-2">
+                                            Esta semana
+                                        </div>
+                                    )}
+                                    {thisWeekOptions.length > 0 && (
+                                        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 md:flex-col">
+                                            {thisWeekOptions.map((opt) => {
+                                                const selected = dateStr === opt.value;
 
-                                    return (
-                                        <button
-                                            key={opt.key}
-                                            type="button"
-                                            onMouseDown={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                            }}
-                                            onClick={() => {
-                                                setSubmitting(false);
-                                                setDateStr(opt.value);
-                                                setActiveField("date");
-                                            }}
-                                            className={[
-                                                "shrink-0 h-12 w-12 rounded-full border text-md font-bold transition-colors pt-[2px]",
-                                                selected
-                                                    ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white border-none"
-                                                    : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
-                                            ].join(" ")}
-                                        >
-                                            {opt.label}
-                                        </button>
-                                    );
-                                })}
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                        }}
+                                                        onClick={() => {
+                                                            setSubmitting(false);
+                                                            setDateStr(opt.value);
+                                                            setActiveField("date");
+                                                        }}
+                                                        className={[
+                                                            "shrink-0 h-12 w-12 rounded-full border text-md font-bold transition-colors pt-[2px]",
+                                                            selected
+                                                                ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white border-none"
+                                                                : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
+                                                        ].join(" ")}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {thisWeekOptions.length > 0 && nextWeekOptions.length > 0 && (
+                                    <div className="h-15 w-px md:h-px md:w-full bg-zinc-200 dark:bg-zinc-700 my-1" />
+                                )}
+
+                                <div className="flex flex-col">
+
+                                    {nextWeekOptions.length > 0 && (
+                                        <div className="text-[11px] font-semibold uppercase tracking-wide text-white dark:text-zinc-400 md:mb-2">
+                                            Próxima semana
+                                        </div>
+                                    )}
+                                    {nextWeekOptions.length > 0 && (
+                                        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 md:flex-col">
+                                            {nextWeekOptions.map((opt) => {
+                                                const selected = dateStr === opt.value;
+
+                                                return (
+                                                    <button
+                                                        key={opt.key}
+                                                        type="button"
+                                                        onMouseDown={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                        }}
+                                                        onClick={() => {
+                                                            setSubmitting(false);
+                                                            setDateStr(opt.value);
+                                                            setActiveField("date");
+                                                        }}
+                                                        className={[
+                                                            "shrink-0 h-12 w-12 rounded-full border text-md font-bold transition-colors pt-[2px]",
+                                                            selected
+                                                                ? "bg-[#D4EED9] text-zinc-900 dark:bg-[#183E1F] dark:text-white border-none"
+                                                                : "bg-zinc-100 border-zinc-200 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-700",
+                                                        ].join(" ")}
+                                                    >
+                                                        {opt.label}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+
                             </div>
+
                         </div>
                     )}
 
@@ -443,16 +516,20 @@ export function SchedulePickupModal({
                         >
                             Justificativa
                         </label>
-                        <textarea id="description" name="description" rows={3}
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows={3}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             className=" w-full rounded-xl
-                                            px-1 py-3
-                                            shadow-inner resize-none
-                                            focus:outline-none
-                                            bg-zinc-100 text-zinc-600 pl-4 text-sm transition-colors
-                                            hover:bg-zinc-200
-                                            dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
-
-                        </textarea>
+                                        px-1 py-3
+                                        shadow-inner resize-none
+                                        focus:outline-none
+                                        bg-zinc-100 text-zinc-600 pl-4 text-sm transition-colors
+                                        hover:bg-zinc-200
+                                        dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                        />
 
                         <p className="mt-4 text-sm leading-snug text-zinc-600 dark:text-zinc-400">
                             Esteja na sala da <strong>CAENS</strong> com pelo menos 5 minutos de antecedência e
@@ -461,7 +538,7 @@ export function SchedulePickupModal({
 
                         <button
                             type="submit"
-                            disabled={!dateStr || !timeStr || submitting}
+                            disabled={!dateStr || !timeStr || !description.trim() || submitting}
                             className="
                                 mt-5 h-12 w-full rounded-xl
                                 bg-[#D4EED9] text-black text-sm hover:bg-emerald-200/90 disabled:opacity-50
@@ -470,6 +547,7 @@ export function SchedulePickupModal({
                         >
                             {confirmLabel}
                         </button>
+
 
                         {state.status === "success" && (
                             <div
