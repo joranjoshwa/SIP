@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { CalendarClock, ImageOff } from "lucide-react";
 import type { ItemCard } from "@/src/types/item";
-import { RetryingImage } from "./RetryingImage";
 
 function getTimeBgColor(days?: number) {
     if (days === undefined) return "bg-gray-100 dark:bg-neutral-800";
@@ -67,16 +66,18 @@ export default function ItemCard({ id, picture, description, time, date, isCarro
         >
             <div className="relative w-full h-[140px] md:h-[170px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
                 {validPhoto ? (
-                    <RetryingImage
+                    <Image
                         src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + picture}
                         alt={description}
+                        fill
                         sizes="400px"
-                        className="object-cover rounded-2xl"
+                        className="w-10 h-10 object-cover rounded-2xl"
+                        loading="lazy"
+                        unoptimized
                     />
                 ) : (
                     <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-600" />
                 )}
-
             </div>
 
             <div className="py-2 space-y-2">
