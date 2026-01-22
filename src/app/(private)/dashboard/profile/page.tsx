@@ -16,12 +16,14 @@ import { Role } from "@/src/enums/role";
 
 export default function ProfilePage() {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
         const fetchUser = async () => {
+            setLoading(true);
+
             try {
                 const token = localStorage.getItem("token");
 
@@ -74,11 +76,7 @@ export default function ProfilePage() {
     }, []);
 
     if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Carregando...</p>
-            </div>
-        );
+        return <Loading isLoading />;
     }
 
     if (!user) {
@@ -108,8 +106,6 @@ export default function ProfilePage() {
 
                             {user.role !== Role.ROOT && (
                                 <section>
-                                    <InfoItem label="Total de itens recuperados" value={`... itens`} />
-                                    <InfoItem label="Última vez que recuperou item" value={`... itens`} />
                                     <InfoItem label="Cadastrado desde" value={`${new Date(user.registrationDate).toLocaleDateString("pt-BR")}`} />
                                 </section>
                             )}

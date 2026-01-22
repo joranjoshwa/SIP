@@ -125,6 +125,7 @@ export default function SignUp() {
                 <InputField
                     label="Foto de perfil"
                     type="file"
+                    accept="image/*"
                     placeholder="Insira uma foto com o seu rosto aqui"
                     icon={<Upload size={18} />}
                     onChange={(e) => setProfileImage(e.target.files ? e.target.files[0] : null)}

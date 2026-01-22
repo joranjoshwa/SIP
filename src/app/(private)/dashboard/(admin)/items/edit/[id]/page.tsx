@@ -4,7 +4,7 @@ import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory, categoryToCategoryKey } from "@/src/constants/categories";
-import { Area, Category, DayPeriod, EditItemRequest, ItemDTO } from "@/src/types/item";
+import { Area, DayPeriod, EditItemRequest, ItemDTO } from "@/src/types/item";
 import { useEffect, useRef, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
@@ -12,9 +12,18 @@ import { getTokenFromCookie } from "@/src/utils/token";
 import { editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
-import { api } from "@/src/api/axios";
 import { TopPopup } from "@/src/components/ui/TopPopup";
 import { useTopPopup } from "@/src/utils/useTopPopup"
+import { ImagePicker } from "@/src/components/ui/ImagePicker";
+import { Loading } from "@/src/components/ui/Loading";
+import { ChevronDown } from "lucide-react";
+
+type ImageItem = {
+    file?: File;
+    preview: string;
+    existing?: boolean;
+    id?: string;
+};
 
 export default function EditItem() {
 
@@ -22,7 +31,8 @@ export default function EditItem() {
     const router = useRouter();
     const itemId = params?.id as string | undefined;
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const [name, setName] = useState<string>("");
@@ -31,10 +41,9 @@ export default function EditItem() {
     const [area, setArea] = useState<Area | null>(null);
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
-    const [images, setImages] = useState<File[]>([]);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-
+    const [images, setImages] = useState<ImageItem[]>([]);
     const { popup, openPopup, closePopup } = useTopPopup(3000);
+
 
     useEffect(() => {
         if (!itemId) {
@@ -62,6 +71,16 @@ export default function EditItem() {
                 setDayPeriod(data.dayPeriod ?? "MORNING");
                 setSelectedCategory(data.category ? categoryToCategoryKey(data.category) : null);
 
+                if (data.pictures && data.pictures.length > 0) {
+                    const existingImages: ImageItem[] = data.pictures.map(pic => ({
+                        id: pic.id,
+                        preview: pic.url!,
+                        existing: true,
+                    }));
+
+                    setImages(existingImages);
+                }
+
             } catch (err) {
                 console.error("Erro ao carregar item:", err);
                 setError("Erro ao carregar o item.");
@@ -73,19 +92,42 @@ export default function EditItem() {
         fetchItem();
     }, [itemId]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
+    useEffect(() => {
+        return () => {
+            images.forEach(img => {
+                if (img.file) {
+                    URL.revokeObjectURL(img.preview);
+                }
+            });
+        };
+    }, []);
 
-        const files = Array.from(e.target.files);
+    const handleAddImage = (files: File[]) => {
+        setImages(prev => {
+            if (prev.length + files.length > 3) {
+                openPopup("Você pode adicionar no máximo 3 imagens.", "warning");
+                return prev;
+            }
 
-        if (files.length > 3) {
-            openPopup("Você pode selecionar no máximo 3 imagens.", "warning");
-            fileInputRef.current!.value = "";
-            setImages([]);
-            return;
-        }
+            const newImages = files.map(file => ({
+                file,
+                preview: URL.createObjectURL(file),
+            }));
 
-        setImages(files);
+            return [...prev, ...newImages];
+        });
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setImages(prev => {
+            const img = prev[index];
+
+            if (img.file) {
+                URL.revokeObjectURL(img.preview);
+            }
+
+            return prev.filter((_, i) => i !== index);
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -97,6 +139,8 @@ export default function EditItem() {
             return;
         }
 
+        setIsSubmitting(true);
+
         try {
             const payload = {
                 description,
@@ -106,14 +150,22 @@ export default function EditItem() {
 
             await editItem(itemId, payload as EditItemRequest);
 
-            if (images.length > 0) {
+            const newImages = images.filter(img => img.file);
+
+            if (newImages.length > 0) {
                 await Promise.all(
-                    images.map(file => uploadItemImage(itemId, file))
+                    newImages.map(img =>
+                        uploadItemImage(itemId, img.file!)
+                    )
                 );
             }
 
             openPopup("Item atualizado com sucesso!", "success");
-            router.push("/dashboard");
+            setIsSubmitting(false);
+            
+            setTimeout(() => {
+                router.push("/dashboard");
+            }, 3000);
         } catch (error: any) {
             console.error("Erro ao atualizar item:", error);
 
@@ -122,6 +174,8 @@ export default function EditItem() {
             } else {
                 openPopup("Falha ao atualizar o item. Tente novamente.", "error");
             }
+
+            setIsSubmitting(false);
         }
     };
 
@@ -130,7 +184,11 @@ export default function EditItem() {
     }
 
     if (loading) {
-        return <div className="p-4">Carregando item...</div>;
+        return (
+            <main className="w-full h-full flex items-center justify-center">
+                <Loading isLoading />
+            </main>
+        );
     }
 
     if (error) {
@@ -173,20 +231,30 @@ export default function EditItem() {
                         <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                             Local onde foi encontrado
                         </label>
-                        <select
-                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                            required
-                            value={area ?? ""}
-                            onChange={(e) => setArea(e.target.value as Area)}
-                        >
-                            <option value="">Selecione uma das opções</option>
-                            {Object.entries(areaLabels).map(([key, label]) => (
-                                <option key={key} value={key}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
+
+                        <div className="relative w-full">
+                            <select
+                                className="w-full px-3 py-3 appearance-none rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 border-2 border-transparent focus:border-blue-500 outline-none"
+                                required
+                                value={area ?? ""}
+                                onChange={(e) => setArea(e.target.value as Area)}
+                            >
+                                <option value="">Selecione uma das opções</option>
+                                {Object.entries(areaLabels).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown
+                                size={18}
+                                className="
+                                    absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none
+                                "
+                            />
+                        </div>
                     </div>
+
 
                     <InputField
                         label="Dia que encontraram"
@@ -197,20 +265,38 @@ export default function EditItem() {
                         disabled
                     />
 
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="flex flex-col w-full">
+                        <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                             Período do dia
                         </label>
-                        <select
-                            value={dayPeriod}
-                            onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
-                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                            disabled
-                        >
-                            <option value="MORNING">Manhã</option>
-                            <option value="AFTERNOON">Tarde</option>
-                            <option value="NIGHT">Noite</option>
-                        </select>
+
+                        <div className="relative w-full">
+                            <select
+                                value={dayPeriod}
+                                onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
+                                disabled
+                                className="
+                                    w-full px-4 py-3 appearance-none rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 
+                                    border-2 border-transparent focus:border-blue-500 outline-none cursor-not-allowed disabled:opacity-60
+                                "
+                            >
+                                <option value="MORNING">Manhã</option>
+                                <option value="AFTERNOON">Tarde</option>
+                                <option value="NIGHT">Noite</option>
+                            </select>
+
+                            <ChevronDown
+                                size={18}
+                                className="
+                                    absolute
+                                    right-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-gray-400
+                                    pointer-events-none
+                                "
+                            />
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -223,41 +309,23 @@ export default function EditItem() {
                         />
                     </div>
 
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Imagens do item (até 3)
-                        </label>
+                    <ImagePicker
+                        images={images}
+                        maxImages={3}
+                        onAddImages={handleAddImage}
+                        onRemoveImage={handleRemoveImage}
+                    />
 
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            className="
-                                w-full px-3 py-3 rounded-xl
-                              bg-[#ECECEC] dark:bg-[#292929]
-                                text-sm text-gray-700 dark:text-gray-100
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Se você não selecionar novas imagens, as atuais serão mantidas.
+                    </p>
 
-                                file:mr-3 file:py-2 file:px-3
-                                file:rounded-md file:border-0
-                                file:text-sm file:font-medium
-                              file:bg-gray-200 dark:file:bg-gray-700
-                              file:text-gray-700 dark:file:text-gray-100
-                            "
-                            onChange={handleImageChange}
-                        />
-
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Se você não selecionar novas imagens, as atuais serão mantidas.
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row gap-3 md:justify-end mt-4">
-                        <Button variant="secondary" className="md:w-40" onClick={() => router.back()}>
+                    <div className="flex flex-col gap-3 mt-4 w-full">
+                        <Button variant="secondary" className="w-full py-3" onClick={() => router.back()} disabled={isSubmitting}>
                             Cancelar
                         </Button>
-                        <Button variant="primary" className="md:w-40">
-                            Salvar alterações
+                        <Button variant="primary" className="w-full py-3 mb-4" disabled={isSubmitting}>
+                            {isSubmitting ? "Salvando..." : "Salvar alterações"}
                         </Button>
                     </div>
                 </form>
@@ -269,6 +337,8 @@ export default function EditItem() {
                 variant={popup.variant}
                 onClose={closePopup}
             />
+
+            <Loading isLoading={isSubmitting} />
         </main>
     );
 }

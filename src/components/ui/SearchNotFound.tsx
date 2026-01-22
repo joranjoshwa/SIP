@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useTheme } from "@/src/context/ThemeContext"; // 👈 use your own context
+import { useTheme } from "@/src/context/ThemeContext";
 import imageSrc from "@/src/assets/noItems.png";
 
 type Props = {
