@@ -14,6 +14,7 @@ import { useTopPopup } from "@/src/utils/useTopPopup";
 import { TopPopup } from "@/src/components/ui/TopPopup";
 import { ImagePicker } from "@/src/components/ui/ImagePicker";
 import { Loading } from "@/src/components/ui/Loading";
+import { ChevronDown } from "lucide-react";
 
 type ImageItem = {
     file: File;
@@ -144,19 +145,47 @@ export default function RegisterLostItem() {
                         <label className="text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
                             Local onde foi encontrado
                         </label>
-                        <select
-                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                            required
-                            value={area ?? ""}
-                            onChange={(e) => setArea(e.target.value as Area)}
-                        >
-                            <option value="">Selecione uma das opções</option>
-                            {Object.entries(areaLabels).map(([key, label]) => (
-                                <option key={key} value={key}>
-                                    {label}
-                                </option>
-                            ))}
-                        </select>
+
+                        <div className="relative w-full">
+                            <select
+                                className="
+                                    w-full
+                                    px-4 py-3
+                                    appearance-none
+                                    rounded-xl
+                                    bg-[#ECECEC]
+                                    dark:bg-[#292929]
+                                    text-sm
+                                    text-gray-700
+                                    dark:text-gray-100
+                                    border-2 border-transparent
+                                    focus:border-blue-500
+                                    outline-none
+                                "
+                                required
+                                value={area ?? ""}
+                                onChange={(e) => setArea(e.target.value as Area)}
+                            >
+                                <option value="">Selecione uma das opções</option>
+                                {Object.entries(areaLabels).map(([key, label]) => (
+                                    <option key={key} value={key}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <ChevronDown
+                                size={18}
+                                className="
+                                    absolute
+                                    right-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-gray-500
+                                    pointer-events-none
+                                "
+                            />
+                        </div>
                     </div>
 
                     <InputField
@@ -167,19 +196,47 @@ export default function RegisterLostItem() {
                         onChange={(e) => setFindingDate(e.target.value)}
                     />
 
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 w-full">
                         <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                             Período do dia
                         </label>
-                        <select
-                            value={dayPeriod}
-                            onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
-                            className="px-3 py-3 rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                        >
-                            <option value="MORNING">Manhã</option>
-                            <option value="AFTERNOON">Tarde</option>
-                            <option value="NIGHT">Noite</option>
-                        </select>
+
+                        <div className="relative w-full">
+                            <select
+                                value={dayPeriod}
+                                onChange={(e) => setDayPeriod(e.target.value as DayPeriod)}
+                                className="
+                                    w-full
+                                    px-4 py-3
+                                    appearance-none
+                                    rounded-xl
+                                    bg-[#ECECEC]
+                                    dark:bg-[#292929]
+                                    text-sm
+                                    text-gray-700
+                                    dark:text-gray-100
+                                    border-2 border-transparent
+                                    focus:border-blue-500
+                                    outline-none
+                                "
+                            >
+                                <option value="MORNING">Manhã</option>
+                                <option value="AFTERNOON">Tarde</option>
+                                <option value="NIGHT">Noite</option>
+                            </select>
+
+                            <ChevronDown
+                                size={18}
+                                className="
+                                    absolute
+                                    right-4
+                                    top-1/2
+                                    -translate-y-1/2
+                                    text-gray-500
+                                    pointer-events-none
+                                "
+                            />
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
@@ -199,7 +256,7 @@ export default function RegisterLostItem() {
 
                     <div className="flex flex-col gap-3 mt-4 w-full">
                         <Button variant="primary" className="w-full py-3" disabled={isSubmitting}>
-                            Registrar item
+                            {isSubmitting ? "Registrando..." : "Registrar item"}
                         </Button>
                         <Button variant="secondary" className="w-full py-3" disabled={isSubmitting}>
                             Cancelar

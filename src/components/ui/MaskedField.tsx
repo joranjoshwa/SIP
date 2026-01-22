@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Calendar, Clock } from "lucide-react";
 
 type Mode = "date" | "time";
@@ -17,8 +17,8 @@ type Props = {
   ghostText?: string;
   placeholder?: string;
   showRightChevron?: boolean;
-  /** what to do when invalid on blur */
   invalidBehavior?: "revert" | "clear";
+  onFocusChange?: (focused: boolean) => void;
 };
 
 export function MaskedField({
@@ -34,10 +34,15 @@ export function MaskedField({
   placeholder = mode === "date" ? "DD/MM/AAAA" : "HH:MM",
   showRightChevron = mode === "time",
   invalidBehavior = "revert",
+  onFocusChange,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
   const showGhost = !focused && !value;
+
+  useEffect(() => {
+    onFocusChange?.(!showGhost);
+  }, [showGhost]);
 
   // Keep the last valid *masked string* (ex: "23:45" or "12/09/2025")
   const lastValidMaskedRef = useRef<string>("");
@@ -144,16 +149,14 @@ export function MaskedField({
     const parsed = parseCurrent(value);
 
     if (parsed === null) {
-      const next =
-        invalidBehavior === "clear" ? "" : lastValidMaskedRef.current || "";
-
+      const next = invalidBehavior === "clear" ? "" : lastValidMaskedRef.current || "";
       onChange(next);
       onValidChange?.(next ? parseCurrent(next) : null);
     } else {
-      // ensure last valid is synced even if value came from outside
       lastValidMaskedRef.current = value;
     }
-  }, [value, parseCurrent, onChange, onValidChange, invalidBehavior]);
+  }, [value, parseCurrent, onChange, onValidChange, invalidBehavior, onFocusChange]);
+
 
   const LeftIcon = mode === "date" ? Calendar : Clock;
 
@@ -207,6 +210,7 @@ export function MaskedField({
               e.preventDefault();
               e.stopPropagation();
               setFocused(true);
+              onFocusChange?.(true);
               inputRef.current?.focus();
             }}
             onClick={(e) => e.stopPropagation()}
