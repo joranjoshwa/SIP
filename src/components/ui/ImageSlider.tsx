@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronRight, ChevronLeft, ImageOff } from "lucide-react";
 import { ItemDTO } from "@/src/types/item";
@@ -12,58 +12,116 @@ interface ImageSliderProps {
 export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const nextImage = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % item.pictures.length);
+    const [dragX, setDragX] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+
+    const nextImage = () => setCurrentIndex((p) => (p + 1) % item.pictures.length);
+    const prevImage = () => setCurrentIndex((p) => (p - 1 + item.pictures.length) % item.pictures.length);
+
+    const startXRef = useRef<number | null>(null);
+    const startYRef = useRef<number | null>(null);
+    const THRESHOLD_PX = 50;
+
+    const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (item.pictures.length <= 1) return;
+        if (e.pointerType === "mouse") return;
+
+        startXRef.current = e.clientX;
+        startYRef.current = e.clientY;
+        setIsDragging(true);
+        setDragX(0);
+
+        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     };
 
-    const prevImage = () => {
-        setCurrentIndex(
-            (prevIndex) => (prevIndex - 1 + item.pictures.length) % item.pictures.length
+    const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDragging) return;
+        if (startXRef.current == null || startYRef.current == null) return;
+
+        const dx = e.clientX - startXRef.current;
+        const dy = e.clientY - startYRef.current;
+
+        if (Math.abs(dy) > Math.abs(dx)) return;
+
+        setDragX(dx);
+    };
+
+    const onPointerUpOrCancel = () => {
+        if (!isDragging) return;
+
+        if (dragX <= -THRESHOLD_PX) nextImage();
+        else if (dragX >= THRESHOLD_PX) prevImage();
+
+        setIsDragging(false);
+        setDragX(0);
+        startXRef.current = null;
+        startYRef.current = null;
+    };
+
+    const baseUrl = process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string;
+
+    if (item.pictures.length === 0) {
+        return (
+            <div className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden flex items-center justify-center text-gray-400 dark:text-gray-600">
+                <ImageOff className="w-16 h-16 md:w-20 md:h-20" />
+            </div>
         );
-    };
-
+    }
 
     return (
-        <div className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden">
-            {item.pictures.length > 0 ? (
-                <Image
-                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL as string + item.pictures[currentIndex].url as string}
-                    alt={item.description || "Item sem descrição"}
-                    fill
-                    className="object-contain object-center rounded-xl"
-                />
-            ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
-                    <ImageOff className="w-16 h-16 md:w-20 md:h-20" />
-                </div>
-            )}
+        <div
+            className="relative w-full h-64 md:h-[60vh] md:w-[80%] rounded-xl overflow-hidden"
+            style={{ touchAction: "pan-y" }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUpOrCancel}
+            onPointerCancel={onPointerUpOrCancel}
+        >
+
+            <div
+                className={[
+                    "h-full w-full flex",
+                    isDragging ? "" : "transition-transform duration-300 ease-out",
+                ].join(" ")}
+                style={{
+                    transform: `translateX(calc(${-currentIndex * 100}% + ${dragX}px))`,
+                }}
+            >
+                {item.pictures.map((pic, idx) => (
+                    <div key={pic.id ?? `${pic.url}-${idx}`} className="relative h-full w-full flex-shrink-0">
+                        <Image
+                            src={baseUrl + (pic.url as string)}
+                            alt={item.description || "Item sem descrição"}
+                            fill
+                            className="object-contain object-center"
+                            draggable={false}
+                            priority={idx === currentIndex}
+                        />
+                    </div>
+                ))}
+            </div>
 
             {item.pictures.length > 1 && (
-                <button
-                    onClick={prevImage}
-                    className="absolute left-0 top-0 bottom-0
-                            flex items-center justify-center
-                            w-10 rounded-full"
-                >
-                    <ChevronLeft
-                        className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
-                    />
-                </button>
-            )}
+                <>
+                    <button
+                        onClick={prevImage}
+                        type="button"
+                        aria-label="Imagem anterior"
+                        className="absolute left-0 top-0 bottom-0 flex items-center justify-center w-10"
+                    >
+                        <ChevronLeft className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]" />
+                    </button>
 
-            {item.pictures.length > 1 && (
-                <button
-                    onClick={nextImage}
-                    className="absolute right-0 top-0 bottom-0
-                            flex items-center justify-center
-                            w-10 rounded-full"
-                >
-                    <ChevronRight
-                        className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]"
-                    />
-                </button>
+                    <button
+                        onClick={nextImage}
+                        type="button"
+                        aria-label="Próxima imagem"
+                        className="absolute right-0 top-0 bottom-0 flex items-center justify-center w-10"
+                    >
+                        <ChevronRight className="h-8 w-8 text-white drop-shadow-[0_0_4px_rgba(0,0,0,0.9)]" />
+                    </button>
+                </>
             )}
-
         </div>
     );
 };
