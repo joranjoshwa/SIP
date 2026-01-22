@@ -75,7 +75,10 @@ export default function DashboardLayout({
                         <SideBarItem icon={Search} text="Buscar" href="/dashboard/items/search" exact />
 
                         {role === Role.COMMON && (
-                            <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/items/list/donation-today" exact />
+                            <>
+                                <SideBarItem icon={HandHeart} text="Itens para doação" href="/dashboard/items/list/donation-today" exact />
+                                <SideBarItem icon={Calendar1} text="Horários" href="/dashboard/schedule" exact />
+                            </>
                         )}
 
                         {role === Role.ADMIN && (
