@@ -69,6 +69,8 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                         fill
                         sizes="400px"
                         className="w-10 h-10 object-cover rounded-2xl"
+                        loading="lazy"
+                        unoptimized
                     />
                 ) : (
                     <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-600" />

@@ -1,4 +1,4 @@
-import { NextResponse, type MiddlewareConfig, type NextRequest } from "next/server";
+import { NextResponse, type ProxyConfig, type NextRequest } from "next/server";
 import { isTokenExpired, extractRoleFromToken } from "./utils/token";
 import { Role } from "./enums/role";
 
@@ -44,7 +44,7 @@ const ADMIN_AREA: RegExp[] = [
 const isRoot = (role: Role) => role === Role.ROOT;
 const isAdmin = (role: Role) => role === Role.ADMIN;
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const { pathname, search } = request.nextUrl;
     const token = request.cookies.get("token")?.value;
 
@@ -82,6 +82,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
 }
 
-export const config: MiddlewareConfig = {
+export const config: ProxyConfig = {
     matcher: ["/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
