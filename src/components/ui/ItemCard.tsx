@@ -11,7 +11,7 @@ function getTimeBgColor(days?: number) {
     if (days >= 7 && days < 14) {
         return "bg-[#F9E9D0] dark:bg-[#4A2E00]";
     }
-    return "bbg-[#D0F9EF] dark:bg-[#005641]";
+    return "bg-[#D0F9EF] dark:bg-[#005641]";
 }
 
 function formatDays(days?: number): string {
@@ -69,6 +69,8 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                         fill
                         sizes="400px"
                         className="w-10 h-10 object-cover rounded-2xl"
+                        loading="lazy"
+                        unoptimized
                     />
                 ) : (
                     <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-600" />

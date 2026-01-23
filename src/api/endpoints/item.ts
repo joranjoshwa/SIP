@@ -166,7 +166,7 @@ export const editItem = async (
 
 export const deleteItem = async (itemId: string, token: string) => {
     try {
-        await api.delete(`/items/root/delete/${itemId}`, {
+        await api.delete(`/items/admin/delete/${itemId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
