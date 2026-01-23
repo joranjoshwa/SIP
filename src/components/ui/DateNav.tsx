@@ -2,7 +2,7 @@
 
 type Props = {
   dates: number[];
-  current: number;
+  current: number | null;
   onSelectDate: (day: number) => void;
 };
 

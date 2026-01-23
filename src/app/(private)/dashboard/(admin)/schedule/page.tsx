@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Calendar } from "lucide-react";
 
-import { getRecoverySchedule } from "@/src/api/endpoints/recovery";
+import { getRecoverySchedule, getRecoverySelf } from "@/src/api/endpoints/recovery";
 import { AdminActionsMobile } from "@/src/components/ui/AdminActionsMobile";
 import DateNav from "@/src/components/ui/DateNav";
 import HorarioGroup, { HorarioItem } from "@/src/components/ui/HorarioGroup";
@@ -11,6 +11,7 @@ import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { formatGroupLabel } from "@/src/utils/formatGroupLabel";
 import { getNextDays } from "@/src/utils/getNextDays";
 import { extractEmailFromToken } from "@/src/api/axios";
+import { extractRoleFromToken } from "@/src/utils/token";
 
 type HorarioItemWithDate = HorarioItem & { _rawDate: Date };
 type Nullable<T> = T | null;
@@ -23,7 +24,7 @@ export default function Schedule() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const [selectedDay, setSelectedDay] = useState(days[0]);
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [allItems, setAllItems] = useState<HorarioItemWithDate[]>([]);
   const [groupedItems, setGroupedItems] = useState<
     { label: string; items: HorarioItem[] }[]
@@ -45,17 +46,40 @@ export default function Schedule() {
           throw new Error("Não foi possível extrair o email do token");
         }
 
-        const data = await getRecoverySchedule(token, email, 0, 50);
+        const role = extractRoleFromToken(token);
 
-        const items: HorarioItemWithDate[] = (data?.content ?? [])
+        let rawRecoveries: any[] = [];
+
+        if (role === "ADMIN") {
+          const data = await getRecoverySchedule(token, "", 0, 50);
+          rawRecoveries = data?.content ?? [];
+        } else {
+          const data = await getRecoverySelf(token, email, {
+            page: 0,
+            size: 50,
+          });
+
+          rawRecoveries =
+            data?.content?.flatMap(
+              (group: any) => group.recovery
+            ) ?? [];
+        }
+
+        const items: HorarioItemWithDate[] = rawRecoveries
           .map((entry: any): Nullable<HorarioItemWithDate> => {
-            const pickupDate = new Date(entry.requestDate);
-            if (Number.isNaN(pickupDate.getTime())) return null;
+            const rawDate = entry.pickupDate ?? entry.requestDate;
+            const pickupDate = new Date(rawDate);
+
+            if (!rawDate || Number.isNaN(pickupDate.getTime())) return null;
 
             return {
               id: entry.id,
+              itemId: entry.item.id,
               title: entry?.item?.description ?? "Item",
-              user: entry?.item?.owner?.name ?? "Usuário não informado",
+              user:
+                role === "ADMIN"
+                  ? entry?.user?.name ?? "Usuário não informado"
+                  : "Você",
               time: pickupDate.toLocaleTimeString("pt-BR", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -70,7 +94,7 @@ export default function Schedule() {
 
         setAllItems(items);
 
-        console.log(data);
+        console.log("Recoveries normalizadas:", rawRecoveries);
       } catch (err: any) {
         console.error("Erro completo:", err);
         setError("Erro ao carregar os horários");
@@ -85,17 +109,19 @@ export default function Schedule() {
   useEffect(() => {
     const today = new Date();
 
-    const filtered = allItems.filter((item) => {
-      const d = item._rawDate;
-      const selectedDate = new Date();
-      selectedDate.setDate(selectedDay);
-    
-      return (
-        d.getDate() === selectedDate.getDate() &&
-        d.getMonth() === selectedDate.getMonth() &&
-        d.getFullYear() === selectedDate.getFullYear()
-      );
-    });
+    const filtered = selectedDay === null
+      ? allItems
+      : allItems.filter((item) => {
+        const d = item._rawDate;
+        const selectedDate = new Date();
+        selectedDate.setDate(selectedDay);
+
+        return (
+          d.getDate() === selectedDate.getDate() &&
+          d.getMonth() === selectedDate.getMonth() &&
+          d.getFullYear() === selectedDate.getFullYear()
+        );
+      });
 
     const map = new Map<string, HorarioItemWithDate[]>();
 
@@ -125,7 +151,8 @@ export default function Schedule() {
       <DateNav
         dates={days}
         current={selectedDay}
-        onSelectDate={setSelectedDay}
+        onSelectDate={(day) =>
+          setSelectedDay((prev) => (prev === day ? null : day))}
       />
 
       <ScrollableArea>
