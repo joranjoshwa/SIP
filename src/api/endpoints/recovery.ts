@@ -42,6 +42,34 @@ export const getRecoverySchedule = async (
 
   return response.data;
 };
+
+export async function getRecoverySelf(
+  token: string,
+  email: string,
+  filters?: RecoveriesByUserFilters
+): Promise<RecoveryHistoryApiResponse> {
+  const response = await api.get<RecoveryHistoryApiResponse>(
+    "/items/recovery-self",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      params: {
+        email,
+        page: filters?.page ?? 0,
+        size: filters?.size ?? 50,
+        q: filters?.q,
+        category: filters?.category,
+        status: filters?.status,
+        dateStart: filters?.dateStart,
+        dateEnd: filters?.dateEnd,
+      },
+    }
+  );
+
+  return response.data;
+}
+
 const getCategoryValueFromPtLabel = (label?: string) => {
   if (!label) return undefined;
   const key = label.trim().toUpperCase() as keyof typeof CategoryEnum;
