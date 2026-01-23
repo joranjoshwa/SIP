@@ -181,6 +181,7 @@ export default function EditSchedule() {
         try {
             setIsSaving(true);
             await onSubmit();
+            clearFields();
             setIsOpen(false);
             setRefreshKey((prev) => prev + 1);
         } catch (err: any) {
@@ -188,6 +189,13 @@ export default function EditSchedule() {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const clearFields = () => {
+        setWeekDay("");
+        setTimeStart("");
+        setTimeEnd("");
+        setError(null);
     };
 
     return (

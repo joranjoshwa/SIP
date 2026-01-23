@@ -19,6 +19,7 @@
 
 # env
 .env.local
+next.config.ts
 
 # production
 /build
