@@ -11,7 +11,7 @@ function getTimeBgColor(days?: number) {
     if (days >= 7 && days < 14) {
         return "bg-[#F9E9D0] dark:bg-[#4A2E00]";
     }
-    return "bbg-[#D0F9EF] dark:bg-[#005641]";
+    return "bg-[#D0F9EF] dark:bg-[#005641]";
 }
 
 function formatDays(days?: number): string {
