@@ -4,6 +4,7 @@ import HorarioCard from "./HorarioCard";
 
 export type HorarioItem = {
   id: number;
+  itemId: string;
   title: string;
   user: string;
   time: string;
@@ -25,6 +26,7 @@ export default function HorarioGroup({ label, items }: Props) {
         {items.map(item => (
           <HorarioCard
             key={item.id}
+            itemId={item.itemId}
             title={item.title}
             user={item.user}
             time={item.time}
