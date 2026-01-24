@@ -74,7 +74,7 @@ export default function EditItem() {
                 if (data.pictures && data.pictures.length > 0) {
                     const existingImages: ImageItem[] = data.pictures.map(pic => ({
                         id: pic.id,
-                        preview: pic.url!,
+                        preview: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${pic.url!}`,
                         existing: true,
                     }));
 
