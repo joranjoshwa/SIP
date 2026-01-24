@@ -153,7 +153,7 @@ export function ItemCarousel({ title = "", items = [], seeAllHref }: Props) {
                             data-carousel-item="true"
                             className="snap-start flex-none shrink-0 w-[140px] md:w-[160px]"
                         >
-                            <ItemCard id={item.id} picture={item.picture} description={item.description} time={item.time} />
+                            <ItemCard id={item.id} picture={item.picture} description={item.description} time={item.time} isCarrosel />
                         </div>
                     ))}
                 </div>

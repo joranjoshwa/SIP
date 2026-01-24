@@ -51,8 +51,11 @@ function timeAgoPtBr(date: DateInput, now: Date = new Date()) {
     return rtf.format(-Math.floor(diffSec / year), "year");
 }
 
+type Props = ItemCard & {
+    isCarrosel?: boolean
+}
 
-export default function ItemCard({ id, picture, description, time, date }: ItemCard) {
+export default function ItemCard({ id, picture, description, time, date, isCarrosel = false }: Props) {
     const bg = getTimeBgColor(time);
     const validPhoto = picture && picture.trim() !== "";
 
@@ -77,8 +80,8 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
                 )}
             </div>
 
-            <div className="py-2 space-y-2 min-h-[5rem]">
-                <h3 className="text-sm font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100">
+            <div className="py-2 space-y-2">
+                <h3 className={`${!isCarrosel ? "min-h-[36px]" : ""} text-sm font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100`}>
                     {description}
                 </h3>
 
