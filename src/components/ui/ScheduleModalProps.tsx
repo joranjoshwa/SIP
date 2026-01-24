@@ -8,6 +8,8 @@ import { AvailableScheduleResponse, AvailableTime, DayOfWeek } from "@/src/types
 import { useLayoutEffect } from "react";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
+type Slot = { startTime: string; endTime: string };
+type DaySchedule = { availableTimeList: Slot[] };
 
 type Props = {
     action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
@@ -85,6 +87,18 @@ const weekOffsetFromNow = (d: Date) => {
     return Math.round((dStart.getTime() - nowStart.getTime()) / msWeek);
 };
 
+const sortSlots = (list: Slot[]) =>
+    [...list].sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+const sortScheduleSlots = <T extends DaySchedule>(schedule: T[]) =>
+    schedule.map((day) => ({
+        ...day,
+        availableTimeList: sortSlots(day.availableTimeList),
+    })) as T[];
+
+const toHHMM = (d: Date) =>
+    `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
 export function SchedulePickupModal({
     action,
     confirmLabel = "Confirmar solicitação",
@@ -132,7 +146,26 @@ export function SchedulePickupModal({
     })();
     const thisWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 0);
     const nextWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 1);
+    const [now, setNow] = useState(() => new Date());
 
+    const isToday = dateStr.length === 10 && formatBR(now) === dateStr;
+
+    const visibleSlots = isToday
+        ? availableTimeSlots.filter((slot) => slot.startTime.slice(0, 5) > toHHMM(now))
+        : availableTimeSlots;
+
+    useEffect(() => {
+        if (!open) return;
+
+        setNow(new Date());
+        const id = window.setInterval(() => setNow(new Date()), 60_000);
+        return () => window.clearInterval(id);
+    }, [open]);
+
+    useEffect(() => {
+        if (!isToday || !timeStr) return;
+        if (timeStr <= toHHMM(now)) setTimeStr("");
+    }, [isToday, now, timeStr]);
 
     useEffect(() => {
         const handler = () => setOpen(true);
@@ -180,7 +213,9 @@ export function SchedulePickupModal({
         (async () => {
             try {
                 const data = await getSchedule();
-                if (mounted) setSchedule(data);
+                if (!mounted) return;
+
+                setSchedule(sortScheduleSlots(data));
             } catch (e) {
                 console.error(e);
             }
@@ -483,9 +518,8 @@ export function SchedulePickupModal({
                                     </p>
                                 ) : (
                                     <div className="grid grid-cols-3 gap-2 overflow-x-auto scrollbar-hide">
-                                        {availableTimeSlots.map((slot) => {
-                                            const label =
-                                                slot.startTime.slice(0, 5) + " - " + slot.endTime.slice(0, 5);
+                                        {visibleSlots.map((slot) => {
+                                            const label = slot.startTime.slice(0, 5) + " - " + slot.endTime.slice(0, 5);
                                             const startTime = slot.startTime.slice(0, 5);
                                             const selected = timeStr === startTime;
 
