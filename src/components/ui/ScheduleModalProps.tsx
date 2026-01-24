@@ -147,12 +147,33 @@ export function SchedulePickupModal({
     const thisWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 0);
     const nextWeekOptions = quickDayOptions.filter((o) => weekOffsetFromNow(o.date) === 1);
     const [now, setNow] = useState(() => new Date());
+    const resetModal = () => {
+        setDateStr("");
+        setTimeStr("");
+        setDescription("");
+        setAvailableTimeSlots([]);
+        setActiveField(null);
+        setSubmitting(false);
+
+        setShowQuickPanel(false);
+        setQuickPhase("exit");
+    };
+
 
     const isToday = dateStr.length === 10 && formatBR(now) === dateStr;
 
     const visibleSlots = isToday
         ? availableTimeSlots.filter((slot) => slot.startTime.slice(0, 5) > toHHMM(now))
         : availableTimeSlots;
+        
+
+    useEffect(() => {
+        if (state.status !== "success") return;
+
+        resetModal();
+        const t = setTimeout(() => setOpen(false), 150);
+        return () => clearTimeout(t);
+    }, [state.status]);
 
     useEffect(() => {
         if (!open) return;
