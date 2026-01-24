@@ -59,6 +59,7 @@ export default function EditItem() {
                 const token = getTokenFromCookie();
                 if (!token) {
                     setError("Usuário não autenticado.");
+                    setLoading(false);
                     return;
                 }
 
