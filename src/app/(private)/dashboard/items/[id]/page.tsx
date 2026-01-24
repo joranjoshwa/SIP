@@ -131,7 +131,11 @@ export default async function ItemPage({ params }: Props) {
                                 <div className="flex gap-2 flex-nowrap text-black w-max">
                                     <span className={`${baseClass} shrink-0`}>
                                         <Calendar className="w-4 h-4" />
-                                        {new Date(item.findingAt).toLocaleDateString()}
+                                        {new Date(item.findingAt).toLocaleDateString("pt-BR", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                        })}
                                     </span>
 
                                     <span className={`${baseClass} shrink-0`}>

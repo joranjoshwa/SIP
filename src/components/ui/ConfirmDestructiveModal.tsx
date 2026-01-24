@@ -102,7 +102,7 @@ export function ConfirmDestructiveModal({
                                         />
                                     ) : (
                                         <Image
-                                            src={preview.imageUrl}
+                                            src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + preview.imageUrl}
                                             alt=""
                                             fill
                                             className="object-cover"
