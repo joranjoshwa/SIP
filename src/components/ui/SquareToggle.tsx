@@ -34,7 +34,7 @@ export const SquareToggle = forwardRef<SquareToggleRef, Props>(
                     type="button"
                     onClick={toggle}
                     className={`w-12 h-6 flex items-center rounded-2xl transition ${enabled
-                            ? "bg-[#D4EED9] dark:bg-[#183E1F]"
+                            ? "bg-[#D4EED9] dark:bg-[#005A11]"
                             : "bg-[#ECECEC] dark:bg-[#292929]"
                         }`}
                 >
