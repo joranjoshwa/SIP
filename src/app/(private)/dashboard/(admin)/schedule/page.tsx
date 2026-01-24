@@ -66,6 +66,7 @@ export default function Schedule() {
         }
 
         const items: HorarioItemWithDate[] = rawRecoveries
+          .filter((entry: any) => entry.status === "APPROVED")
           .map((entry: any): Nullable<HorarioItemWithDate> => {
             const rawDate = entry.pickupDate ?? entry.requestDate;
             const pickupDate = new Date(rawDate);
