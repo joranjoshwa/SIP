@@ -150,7 +150,7 @@ export default function DashboardLayout({
                 </div>
             </aside>
 
-            <main className="flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
+            <main className="relative flex flex-1 min-w-0 min-h-0 flex-col md:pt-16 pr-0 md:pr-8">
                 <RouteLoadingOverlay show={routeLoading} darkMode={darkMode} />
 
                 <div className="block md:hidden flex items-center justify-center gap-2 px-4 pt-8 mb-[1.5rem]">

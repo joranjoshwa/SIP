@@ -109,7 +109,7 @@ export default function CaensAccountUpsertPage() {
             console.log("status:", err?.response?.status);
             console.log("data:", err?.response?.data);
             console.log("headers:", err?.response?.headers);
-            console.log("message:", err?.message); // this is the generic axios one
+            console.log("message:", err?.message);
             const msg =
                 err?.response?.data?.message ||
                 err?.message ||
@@ -133,7 +133,7 @@ export default function CaensAccountUpsertPage() {
                         handleImageUpload={handleImageUpload}
                     />
 
-                    <div className="flex flex-col gap-4 mt-5">
+                    <div className="flex flex-col gap-4 mt-5 px-2">
                         <InputField
                             value={form.name}
                             onChange={(e) =>
@@ -166,22 +166,21 @@ export default function CaensAccountUpsertPage() {
                             disabled={loading}
                         />
 
-                        {!isEdit && (
-                            <InputField
-                                onChange={(e) =>
-                                    setForm((prev) => ({ ...prev, cpf: e.target.value }))
-                                }
-                                label="CPF*"
-                                placeholder="Cadastro de pessoa física"
-                                icon={<SquareUserRound className="w-3.5 h-3.5" />}
-                                disabled={loading}
-                            />
-                        )}
+                        <InputField
+                            value={form.cpf}
+                            onChange={(e) =>
+                                setForm((prev) => ({ ...prev, cpf: e.target.value }))
+                            }
+                            label="CPF*"
+                            placeholder="Cadastro de pessoa física"
+                            icon={<SquareUserRound className="w-3.5 h-3.5" />}
+                            disabled={loading}
+                        />
 
                         {!isEdit && (
                             <p className="text-sm text-gray-700 dark:text-gray-300">
-                                Será enviado para o e-mail informado um link para <br />
-                                escolha de uma senha segura.
+                                Será enviado para o e-mail o código de verificação <br />
+                                para acessar os recursos.
                             </p>
                         )}
 
