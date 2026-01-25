@@ -54,6 +54,69 @@ body {
     animation: sheet-enter 180ms ease-out;
 }
 
+@keyframes shimmer-x {
+    0% {
+        transform: translateX(-120%) skewX(-12deg);
+    }
+
+    100% {
+        transform: translateX(120%) skewX(-12deg);
+    }
+}
+
+.skeleton {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+
+    /* Base (subtle) */
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.dark .skeleton {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.skeleton::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.10) 35%,
+            rgba(255, 255, 255, 0.22) 50%,
+            rgba(255, 255, 255, 0.10) 65%,
+            transparent 100%);
+
+    filter: blur(6px);
+    opacity: 0.9;
+    transform: translateX(-120%) skewX(-12deg);
+    animation: shimmer-x 1.15s ease-in-out infinite;
+}
+
+.dark .skeleton::before {
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.06) 35%,
+            rgba(255, 255, 255, 0.12) 50%,
+            rgba(255, 255, 255, 0.06) 65%,
+            transparent 100%);
+    filter: blur(7px);
+    opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton::before {
+        animation: none;
+        transform: none;
+        opacity: 0.35;
+    }
+}
+
+
 @media (max-height: 740px) {
     .filter-scroll {
         max-height: 59svh;
@@ -71,13 +134,13 @@ body {
 
 input {
     background-color: #ECECEC;
-    color: #1F2937; 
+    color: #1F2937;
     caret-color: #1F2937;
 }
 
 .dark input {
     background-color: #292929;
-    color: #F9FAFB; 
+    color: #F9FAFB;
     caret-color: #F9FAFB;
 }
 
