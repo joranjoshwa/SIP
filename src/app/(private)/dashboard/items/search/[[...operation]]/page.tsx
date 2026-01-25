@@ -11,6 +11,7 @@ import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { useParams } from "next/navigation";
+import { Loading } from "@/src/components/ui/Loading";
 
 export default function SearchPage() {
     const params = useParams<{ operation?: "delete" }>();
@@ -233,11 +234,8 @@ export default function SearchPage() {
                         !loading && <SearchNotFound />
                     )}
 
-                    {loading && (
-                        <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
-                            Carregando…
-                        </p>
-                    )}
+                    <Loading isLoading={loading} />
+
                 </ScrollableArea>
             </div>
         </section>
