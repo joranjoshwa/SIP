@@ -8,10 +8,11 @@ type Props = {
     label?: string;
     initialValue?: boolean;
     onChange: (enabled: boolean) => void;
+    className?: string,
 };
 
 export const SquareToggle = forwardRef<SquareToggleRef, Props>(
-    ({ label, initialValue = false, onChange }, ref) => {
+    ({ label, initialValue = false, onChange, className }, ref) => {
         const [enabled, setEnabled] = useState(initialValue);
 
         const toggle = () => {
@@ -28,8 +29,8 @@ export const SquareToggle = forwardRef<SquareToggleRef, Props>(
         }));
 
         return (
-            <div className="flex items-center justify-between">
-                {label && <span className="text-sm">{label}</span>}
+            <div className={"flex items-center justify-between" + className}>
+                {label && <span className="text-sm mr-2">{label}</span>}
                 <button
                     type="button"
                     onClick={toggle}

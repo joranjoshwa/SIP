@@ -80,8 +80,9 @@ export default function SearchPage() {
         submitFilters({ itemName: query });
     };
 
-    const handleToggleChange = () =>
-        updateFilters({ donation: !filters.donation });
+    const handleToggleChange = () => {
+        submitFilters({ donation: !filters.donation });
+    }
 
     const handleCleanFilters = () => {
         const reset = {
@@ -190,7 +191,7 @@ export default function SearchPage() {
                     className={`transition-opacity duration-300 ${showFilters ? "opacity-0 pointer-events-none" : "opacity-100"
                         }`}
                 >
-                    <FilterBar active={activeFilters} onSelect={toggleFilter} />
+                    <FilterBar active={activeFilters} onSelect={toggleFilter} handleToggleChange={handleToggleChange} />
                 </div>
 
                 <div
@@ -207,7 +208,6 @@ export default function SearchPage() {
                             filterGroup="search"
                             handleCategorySelection={handleCategorySelection}
                             handleDateSelection={handleDateChange}
-                            handleToggleChange={handleToggleChange}
                             handleSubmit={submitFilters}
                             handleCleanFilters={handleCleanFilters}
                         />
