@@ -17,7 +17,7 @@ export function AdminActions() {
                 aria-expanded={open}
                 aria-controls="admin-actions-menu"
                 onClick={() => setOpen((s) => !s)}
-                className="group w-full flex items-center gap-3 rounded-xl px-3 py-2 text-md font-medium transition-colors hover:brightness-105
+                className="group w-full flex items-center gap-3 rounded-xl px-3 min-h-[56px] text-md font-medium transition-colors hover:brightness-105
                    bg-[#95F8A8] dark:bg-[#183E1F]"
             >
                 {open ? (
