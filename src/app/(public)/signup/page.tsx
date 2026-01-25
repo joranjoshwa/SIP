@@ -79,7 +79,7 @@ export default function SignUp() {
 
     return (
 
-        <>
+        <main role="main">
             <AuthCard headerContent={<Logo className="mb-4" />}>
 
                 <InputField
@@ -169,6 +169,6 @@ export default function SignUp() {
             </AuthCard>
 
             <Loading isLoading={loading} />
-        </>
+        </main>
     );
 }

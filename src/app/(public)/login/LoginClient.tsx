@@ -137,6 +137,7 @@ export default function Login() {
                 }
             >
                 <InputField
+                    name="email"
                     label="Email institucional"
                     type="email"
                     placeholder="Email institucional"

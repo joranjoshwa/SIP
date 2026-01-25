@@ -14,6 +14,7 @@ type Props = {
     disabled?: boolean;
     onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     accept?: string;
+    name?: string;
 };
 
 export const InputField = ({
@@ -30,6 +31,7 @@ export const InputField = ({
     disabled,
     onPressEnter,
     accept,
+    name,
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
@@ -68,6 +70,7 @@ export const InputField = ({
                 )}
 
                 <input
+                    name={name}
                     ref={inputRef}
                     id={id}
                     type={type}
