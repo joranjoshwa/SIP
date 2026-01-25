@@ -75,13 +75,15 @@ export const FilterBar = ({ active, onSelect, page = "search", handleToggleChang
                     </button>
                 );
             })}
-            <div className="mt-2">
-                <SquareToggle
-                    ref={toggleRef}
-                    label="Para ser doado:"
-                    onChange={handleToggleChange as ((enabled: boolean) => void)}
-                />
-            </div>
+            {page === "search" && (
+                <div className="mt-2">
+                    <SquareToggle
+                        ref={toggleRef}
+                        label="Para ser doado:"
+                        onChange={handleToggleChange as ((enabled: boolean) => void)}
+                    />
+                </div>
+            )}
         </div>
     );
 };
