@@ -31,7 +31,7 @@ export function AdminActionsMobile({ positionFab, positionOptions }: Props) {
                     onClick={() => setOpen(false)}
                     className="
             fixed inset-0 z-40 md:hidden
-            bg-black/40 backdrop-blur-[1px]
+            bg-black/60 backdrop-blur-[1px]
             transition
           "
                 />
@@ -42,7 +42,7 @@ export function AdminActionsMobile({ positionFab, positionOptions }: Props) {
           fixed z-50 md:hidden
           w-72 ${positionOptions ? positionOptions : "right-8 bottom-[23%]"}
           rounded-xl
-          text-white
+        text-white
           transition-all duration-200
           ${open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
         `}
