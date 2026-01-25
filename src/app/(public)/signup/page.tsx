@@ -90,6 +90,7 @@ export default function SignUp() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required={true}
+                    autoComplete="name"
                 />
 
                 <InputField
@@ -100,6 +101,7 @@ export default function SignUp() {
                     value={cpf}
                     onChange={handleCpfChange}
                     required
+                    autoComplete="off"
                 />
 
                 <InputField
@@ -110,6 +112,7 @@ export default function SignUp() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    autoComplete="email"
                 />
 
                 <InputField
@@ -120,6 +123,7 @@ export default function SignUp() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     required
+                    autoComplete="tel"
                 />
 
                 <InputField
@@ -130,6 +134,7 @@ export default function SignUp() {
                     icon={<Upload size={18} />}
                     onChange={(e) => setProfileImage(e.target.files ? e.target.files[0] : null)}
                     required
+                    autoComplete="off"
                 >
                     <span className="text-sm text-gray-500 cursor-pointer">
                         {profileImage
@@ -143,6 +148,7 @@ export default function SignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    autoComplete="new-password"
                 />
 
                 {error && <p className="text-red-600 text-sm">{error}</p>}

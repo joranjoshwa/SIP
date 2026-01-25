@@ -32,16 +32,17 @@ export function ImagePicker({
 
     return (
         <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="item-images" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Imagens do item (até {maxImages})
             </label>
 
             <input
                 ref={fileInputRef}
+                id="item-images"
                 type="file"
                 accept="image/*"
                 multiple
-                className="hidden"
+                className="sr-only"
                 onChange={handleInputChange}
             />
 
@@ -50,10 +51,11 @@ export function ImagePicker({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     className="px-3 py-2 rounded-md text-sm font-medium hover:opacity-80 transition"
+                    aria-label="Adicionar imagens do item"
                 >
                     <Image
                         src={uploadSrc}
-                        alt="Upload"
+                        alt=""
                         width={18}
                         height={18}
                         className="object-contain"
@@ -73,6 +75,7 @@ export function ImagePicker({
                                 type="button"
                                 onClick={() => onRemoveImage(index)}
                                 className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-600 text-white text-xs flex items-center justify-center hover:scale-110 transition"
+                                aria-label={`Remover imagem ${index + 1}`}
                             >
                                 ✕
                             </button>
