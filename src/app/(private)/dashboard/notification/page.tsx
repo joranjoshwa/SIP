@@ -49,7 +49,7 @@ export default function Notification() {
                 className="px-5 mb-0"
             />
 
-            <main className="flex-1 min-h-0">
+            <main className="flex flex-col min-h-0">
                 <ScrollableArea>
                     <NotificationList />
                 </ScrollableArea>

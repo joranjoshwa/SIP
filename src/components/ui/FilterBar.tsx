@@ -10,12 +10,14 @@ import {
 } from "lucide-react";
 import { FilterType } from "@/src/types/item";
 import { JSX } from "react/jsx-runtime";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
+import { SquareToggle, SquareToggleRef } from "./SquareToggle";
 
 type Props = {
     active: FilterType[];
     onSelect: (value: FilterType) => void;
     page?: "search" | "requests" | "requestsSelf";
+    handleToggleChange?: (enabled: boolean) => void;
 };
 
 type FilterOption = {
@@ -24,7 +26,8 @@ type FilterOption = {
     icon?: JSX.Element;
 };
 
-export const FilterBar = ({ active, onSelect, page = "search" }: Props) => {
+export const FilterBar = ({ active, onSelect, page = "search", handleToggleChange }: Props) => {
+    const toggleRef = useRef<SquareToggleRef>(null);
     const baseClass =
         "flex items-center gap-2 px-3 py-2 rounded-full text-[12px] md:text-sm font-medium cursor-pointer transition-colors border shrink-0";
 
@@ -32,7 +35,6 @@ export const FilterBar = ({ active, onSelect, page = "search" }: Props) => {
         search: [
             { key: "categoria", label: "Categoria", icon: <Filter className="w-4 h-4" /> },
             { key: "data", label: "Data", icon: <CalendarDays className="w-4 h-4" /> },
-            { key: "donation", label: "Doação", icon: <HandHeart className="w-4 h-4" /> },
         ],
         requests: [
             {
@@ -73,6 +75,15 @@ export const FilterBar = ({ active, onSelect, page = "search" }: Props) => {
                     </button>
                 );
             })}
+            {page === "search" && (
+                <div className="mt-2">
+                    <SquareToggle
+                        ref={toggleRef}
+                        label="Para ser doado:"
+                        onChange={handleToggleChange as ((enabled: boolean) => void)}
+                    />
+                </div>
+            )}
         </div>
     );
 };

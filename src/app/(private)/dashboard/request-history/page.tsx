@@ -11,6 +11,13 @@ import type { RecoveryHistoryApiResponse, RecoveryHistoryItem } from "@/src/type
 import { HistoryRequestList } from "@/src/components/ui/HistoryRequestList";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { SearchFilter } from "@/src/components/ui/SearchFilter";
+import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
+import loadingGif from "@/src/assets/loading.gif";
+import { useTheme } from "@/src/context/ThemeContext";
+import loadingWhite from "@/src/assets/loading-white.gif";
+import logo from "@/src/assets/sip-icon.svg";
+import Image from "next/image";
+import { Loading } from "@/src/components/ui/Loading";
 
 const mapRecoveryResponseToHistoryItems = (
     page: RecoveryHistoryApiResponse
@@ -44,7 +51,7 @@ const PAGE_SIZE = 20;
 
 export default function RequestHistory() {
     const [data, setData] = useState<RecoveryHistoryItem[]>([]);
-    const [loading, setLoading] = useState(true); 
+    const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     const [pageNumber, setPageNumber] = useState(0);
     const [hasMore, setHasMore] = useState(true);
@@ -61,6 +68,9 @@ export default function RequestHistory() {
         dateEnd: null,
         status: null,
     });
+
+    const { theme } = useTheme();
+    const darkMode = theme === "dark";
 
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -83,21 +93,29 @@ export default function RequestHistory() {
     }, []);
 
     const fetchPage = useCallback(
-        async (opts: { page: number; mode: "replace" | "append"; qOverride?: string }) => {
+        async (opts: {
+            page: number;
+            mode: "replace" | "append";
+            qOverride?: string;
+            filtersOverride?: LocalFilters;
+        }) => {
             const token = getTokenFromCookie();
             if (!token) return;
 
             const email = extractEmailFromToken(token);
             if (!email) return;
 
-            const qToSend = (opts.qOverride ?? query).trim();
+            const rawQ = opts.qOverride ?? query;
+            const qToSend = typeof rawQ === "string" ? rawQ.trim() : "";
+
+            const f = opts.filtersOverride ?? filters;
 
             try {
                 if (opts.mode === "replace") setLoading(true);
                 else setLoadingMore(true);
 
                 const response = await getRecoveriesByUser(email, {
-                    ...filters,
+                    ...f,
                     q: qToSend || undefined,
                     page: opts.page,
                     size: PAGE_SIZE,
@@ -115,6 +133,7 @@ export default function RequestHistory() {
         [filters, query, mapAndAppend]
     );
 
+
     const toggleFilter = () => setShowFilters((prev) => !prev);
 
     const updateFilters = (patch: Partial<LocalFilters>) => {
@@ -129,18 +148,28 @@ export default function RequestHistory() {
 
     const handleStatusChange = (status: RequestStatus | null) => updateFilters({ status });
 
-    const handleRunSearch = (query: string) => {
-        setQuery(query);
-        onSubmitFilters();
-    }
+    const handleRunSearch = (q: string) => {
+        setQuery(q);
+        onSubmitFilters(q);
+    };
 
     const handleCleanFilters = () => {
-        setFilters({ category: [], dateStart: null, dateEnd: null, status: null });
+        const cleared: LocalFilters = {
+            category: [],
+            dateStart: null,
+            dateEnd: null,
+            status: null,
+        };
+
+        setFilters(cleared);
         setActiveFilters([]);
         setShowFilters(false);
+        setQuery("");   
 
-        setQuery("");
-        onSubmitFilters("");
+        setHasMore(true);
+        setPageNumber(0);
+
+        fetchPage({ page: 0, mode: "replace", qOverride: "", filtersOverride: cleared });
     };
 
     useEffect(() => {
@@ -212,7 +241,7 @@ export default function RequestHistory() {
             <SearchBar
                 className="mb-2"
                 handleRunSearch={handleRunSearch}
-                handleSearch={setQuery}
+                handleSearch={(v) => setQuery(String(v ?? ""))}
             />
 
             <div className="relative flex flex-col flex-1 min-h-0">
@@ -249,14 +278,10 @@ export default function RequestHistory() {
                     </div>
                 </div>
 
-                {loading && (
-                    <p className="mt-4 text-sm text-zinc-500 dark:text-neutral-400">
-                        Carregando…
-                    </p>
-                )}
+                <Loading isLoading={loading} />
 
                 <ScrollableArea className="pb-16 mt-2">
-                    {!loading &&
+                    {!loading && data.length > 0 &&
                         data.map((item) => (
                             <HistoryRequestList
                                 key={item.recoveryId}
@@ -270,10 +295,10 @@ export default function RequestHistory() {
 
                     <div ref={loadMoreRef} className="h-10" />
 
-                    {loadingMore && (
-                        <p className="mt-2 text-sm text-zinc-500 dark:text-neutral-400">
-                            Carregando mais…
-                        </p>
+                    <Loading isLoading={loadingMore} />
+
+                    {!loading && data.length === 0 && (
+                        <SearchNotFound />
                     )}
                 </ScrollableArea>
             </div>

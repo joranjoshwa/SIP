@@ -100,7 +100,7 @@ export const ImageSlider: React.FC<ImageSliderProps> = ({ item }) => {
                 }}
             >
                 {item.pictures.map((pic, idx) => (
-                    <div key={pic.id ?? `${pic.url}-${idx}`} className="relative h-full w-full flex-shrink-0">
+                    <div key={pic.id ?? `${pic.url}-${idx}`} className="relative h-full w-full flex-shrink-0 rounded-2xl">
                         <Image
                             src={baseUrl + (pic.url as string)}
                             alt={item.description || "Item sem descrição"}

@@ -19,6 +19,7 @@ type VisibleFiltersConfig = Record<
 const FILTER_VISIBILITY: VisibleFiltersConfig = {
     search: {
         status: false,
+        donation: false
     },
 
     requestsSelf: {
