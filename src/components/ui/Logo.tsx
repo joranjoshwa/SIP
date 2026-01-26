@@ -17,7 +17,7 @@ export const Logo = ({ className, mode = "light", imageClassName="" }: Props) =>
     const logoSrc = theme === "dark" ? logoBranca : logo;
 
     return (
-        <div className={`flex items-center justify-center ${className}`}>
+        <div suppressHydrationWarning className={`flex items-center justify-center ${className}`}>
             <Image
                 src={logoSrc}
                 alt="Logo SIP"

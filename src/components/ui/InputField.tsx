@@ -53,10 +53,12 @@ export const InputField = ({
             )}
 
             <div
-                className={`flex items-center rounded-xl px-4 py-3 bg-[#ECECEC] border-2 border-transparent
-                            focus-within:border-2 focus-within:border-blue-500
-                            dark:bg-[#292929] dark:border-gray-700
-                            ${type === "file" ? "cursor-pointer" : ""}`}
+                className={`flex items-center rounded-xl px-4 py-3 bg-[#ECECEC]
+                    outline outline-2 outline-transparent outline-offset-2
+                    focus-within:outline-[#3E9F50]
+                    dark:bg-[#292929]
+                    ${type === "file" ? "cursor-pointer" : ""}`}
+
                 onClick={() => {
                     if (type === "file" && !disabled) {
                         inputRef.current?.click();

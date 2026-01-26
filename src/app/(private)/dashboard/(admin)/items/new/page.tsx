@@ -131,7 +131,7 @@ export default function RegisterLostItem() {
             <ScrollableArea>
                 <form
                     onSubmit={handleSubmit}
-                    className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl"
+                    className="flex flex-col gap-4 md:px-2 md:gap-6 w-full max-w-3xl"
                 >
                     <InputField
                         label="Descrição"
@@ -159,7 +159,7 @@ export default function RegisterLostItem() {
                                     text-gray-700
                                     dark:text-gray-100
                                     border-2 border-transparent
-                                    focus:border-blue-500
+                                    focus:border-[#3E9F50]
                                     outline-none
                                 "
                                 required
@@ -216,7 +216,7 @@ export default function RegisterLostItem() {
                                     text-gray-700
                                     dark:text-gray-100
                                     border-2 border-transparent
-                                    focus:border-blue-500
+                                    focus:border-[#3E9F50]
                                     outline-none
                                 "
                             >
@@ -255,7 +255,7 @@ export default function RegisterLostItem() {
 
 
                     <div className="flex flex-col gap-3 mt-4 w-full">
-                        <Button variant="primary" className="w-full py-3" disabled={isSubmitting}>
+                        <Button variant="primary" className="w-full py-3" type="submit" disabled={isSubmitting}>
                             {isSubmitting ? "Registrando..." : "Registrar item"}
                         </Button>
                         <Button variant="secondary" className="w-full py-3" disabled={isSubmitting}>

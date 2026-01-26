@@ -18,6 +18,7 @@ export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
     const router = useRouter();
     const [selectedRequest, setSelectedRequest] = useState<WithdrawalRequestItem | null>(null);
     const [localRequests, setLocalRequests] = useState<WithdrawalRequestItem[]>(requestsItemArr);
+    const [modalMode, setModalMode] = useState<"approve" | "reject" | null>(null);
 
     useEffect(() => {
         setLocalRequests(requestsItemArr);
@@ -25,23 +26,25 @@ export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
 
     const handleApprove = (req: WithdrawalRequestItem) => {
         setSelectedRequest(req);
-        openReviewPickupModal("approve", "default");
+        setModalMode("approve");
+        setTimeout(() => openReviewPickupModal("approve", "default"), 0);
     };
 
     const handleReject = (req: WithdrawalRequestItem) => {
         setSelectedRequest(req);
-        openReviewPickupModal("reject", "default");
+        setModalMode("reject");
+        setTimeout(() => openReviewPickupModal("reject", "default"), 0);
     };
 
     const approveAction = async (prev: ActionState, formData: FormData): Promise<ActionState> => {
         const itemId = formData.get("itemId") as string;
-        
+
         try {
             await reviewRequest(itemId, "APPROVED");
-            
+
             router.refresh();
             setTimeout(() => setSelectedRequest(null), 1000);
-            
+
             return { status: "success" };
         } catch (error) {
             return {
@@ -56,10 +59,10 @@ export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
 
         try {
             await reviewRequest(itemId, "REFUSED");
-            
+
             router.refresh();
             setTimeout(() => setSelectedRequest(null), 1000);
-            
+
             return { status: "success" };
         } catch (error) {
             return {
@@ -68,6 +71,8 @@ export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
             };
         }
     };
+
+    const modalAction = modalMode === "reject" ? rejectAction : approveAction;
 
     return (
         <div className="w-full rounded-lg pt-3 md:w-[90%] md:pt-0">
@@ -95,35 +100,21 @@ export function RequestsTab({ requestsItemArr, itemStatus }: Props) {
                 )}
             </div>
 
-            {selectedRequest && (
+            {selectedRequest && modalMode && (
                 <ReviewPickupModal
-                    action={approveAction}
-                    mode="approve"
+                    action={modalAction}
+                    mode={modalMode}
                     channel="default"
                     requestData={{
                         userName: selectedRequest.user?.name || "Usuário desconhecido",
                         userAvatar: selectedRequest.user?.avatar,
-                        date: selectedRequest.date,
                         description: selectedRequest.description,
+                        date: selectedRequest.date,
                     }}
                     itemId={selectedRequest.id}
                 />
             )}
 
-            {selectedRequest && (
-                <ReviewPickupModal
-                    action={rejectAction}
-                    mode="reject"
-                    channel="default"
-                    requestData={{
-                        userName: selectedRequest.user?.name || "Usuário desconhecido",
-                        userAvatar: selectedRequest.user?.avatar,
-                        description: selectedRequest.description,
-                        date: selectedRequest.date
-                    }}
-                    itemId={selectedRequest.id}
-                />
-            )}
         </div>
     );
 }

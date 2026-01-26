@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useActionState } from "react";
 import { Button } from "./Button";
+import Image from "next/image";
 
 type ActionState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -118,10 +119,13 @@ export function ReviewPickupModal({
 
                         <div className="flex items-center gap-3 mb-4">
                             {requestData.userAvatar ? (
-                                <img
-                                    src={requestData.userAvatar}
+                                <Image
+                                    src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + requestData.userAvatar}
                                     alt={requestData.userName}
+                                    width={36}
+                                    height={36}
                                     className="w-10 h-10 rounded-full object-cover"
+                                    unoptimized
                                 />
                             ) : (
                                 <div className="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
@@ -169,20 +173,24 @@ export function ReviewPickupModal({
                             }}
                             className="space-y-2"
                         >
-
                             <Button
+                                type="button"
                                 variant="secondary"
-                                onClick={handleClose}>
+                                onClick={handleClose}
+                            >
                                 Cancelar
                             </Button>
 
                             <Button
+                                type="submit"
                                 variant="primary"
-                                onClick={handleClose}
-                                className={`${isReject ? "bg-[#FFD1D1] dark:bg-[#6D0000]" : ""}`}>
+                                disabled={submitting}
+                                className={`${isReject ? "bg-[#FFD1D1] dark:bg-[#6D0000]" : ""}`}
+                            >
                                 {isReject ? "Rejeitar Pedido" : "Aprovar pedido"}
                             </Button>
                         </form>
+
 
                         {state.status === "success" && (
                             <div

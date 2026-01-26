@@ -4,7 +4,7 @@ import { Button } from "@/src/components/ui/Button";
 import { CategoryItem } from "@/src/components/ui/CategoryItem";
 import { InputField } from "@/src/components/ui/InputField";
 import { CategoryKey, categoryKeyToCategory, categoryToCategoryKey } from "@/src/constants/categories";
-import { Area, DayPeriod, EditItemRequest, ItemDTO } from "@/src/types/item";
+import { Area, DayPeriod, EditItemRequest, ItemDTO, ItemStatus } from "@/src/types/item";
 import { useEffect, useRef, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
@@ -42,6 +42,7 @@ export default function EditItem() {
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
     const [images, setImages] = useState<ImageItem[]>([]);
+    const [status, setStatus] = useState<ItemStatus>();
     const { popup, openPopup, closePopup } = useTopPopup(3000);
 
 
@@ -70,6 +71,7 @@ export default function EditItem() {
                 setArea(data.area ?? null);
                 setDayPeriod(data.dayPeriod ?? "MORNING");
                 setSelectedCategory(data.category ? categoryToCategoryKey(data.category) : null);
+                setStatus(data.status);
 
                 if (data.pictures && data.pictures.length > 0) {
                     const existingImages: ImageItem[] = data.pictures.map(pic => ({
@@ -162,7 +164,7 @@ export default function EditItem() {
 
             openPopup("Item atualizado com sucesso!", "success");
             setIsSubmitting(false);
-            
+
             setTimeout(() => {
                 router.push("/dashboard");
             }, 3000);
@@ -202,15 +204,17 @@ export default function EditItem() {
         );
     }
 
+    console.log(status);
+
     return (
-        <main className="w-full flex flex-col px-4 py-4 md:ml-3 md:pl-6 md:pb-0 min-h-0">
+        <main className="w-full flex flex-col px-4 py-4 md:ml-3 md:pb-0 min-h-0">
             <PageHeader title="Detalhes do item" showBell={false} />
-            <h1 className="text-lg md:text-xl font-semibold mb-4">
+            <h1 className="text-lg md:text-xl font-semibold mb-4 md:pl-2">
                 Editar “{name}”
             </h1>
 
             <ScrollableArea>
-                <form className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl" onSubmit={handleSubmit}>
+                <form className="flex flex-col gap-4 md:gap-6 w-full max-w-3xl md:pl-2" onSubmit={handleSubmit}>
                     <InputField
                         label="Nome"
                         placeholder="Ex.: Marmita rosa com amarelo pequena"
@@ -224,6 +228,7 @@ export default function EditItem() {
                         placeholder="Descreva o item..."
                         required
                         value={description}
+                        disabled={status !== "DISPONIBLE"}
                         onChange={(e) => setDescription(e.target.value)}
                     />
 
@@ -234,9 +239,12 @@ export default function EditItem() {
 
                         <div className="relative w-full">
                             <select
-                                className="w-full px-3 py-3 appearance-none rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 border-2 border-transparent focus:border-blue-500 outline-none"
+                                className="w-full px-3 py-3 appearance-none rounded-xl 
+                                    bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 
+                                    border-2 border-transparent focus:border-[#3E9F50] outline-none"
                                 required
                                 value={area ?? ""}
+                                disabled={status !== "DISPONIBLE"}
                                 onChange={(e) => setArea(e.target.value as Area)}
                             >
                                 <option value="">Selecione uma das opções</option>
@@ -277,7 +285,9 @@ export default function EditItem() {
                                 disabled
                                 className="
                                     w-full px-4 py-3 appearance-none rounded-xl bg-[#ECECEC] dark:bg-[#292929] text-sm text-gray-700 dark:text-gray-100 
-                                    border-2 border-transparent focus:border-blue-500 outline-none cursor-not-allowed disabled:opacity-60
+                                    border-2 border-transparent cursor-not-allowed disabled:opacity-60 border-2 border-transparent
+                                    focus:border-[#3E9F50]
+                                    outline-none
                                 "
                             >
                                 <option value="MORNING">Manhã</option>
@@ -320,13 +330,16 @@ export default function EditItem() {
                         Se você não selecionar novas imagens, as atuais serão mantidas.
                     </p>
 
-                    <div className="flex flex-col gap-3 mt-4 w-full">
+                    <div className="flex flex-col gap-3 mt-4 mb-4 w-full">
                         <Button variant="secondary" className="w-full py-3" onClick={() => router.back()} disabled={isSubmitting}>
-                            Cancelar
+                            {status === "DISPONIBLE" ? "Cancelar" : "Voltar"}
+                            
                         </Button>
-                        <Button variant="primary" className="w-full py-3 mb-4" disabled={isSubmitting}>
-                            {isSubmitting ? "Salvando..." : "Salvar alterações"}
-                        </Button>
+                        {status === "DISPONIBLE" && (
+                            <Button variant="primary" className="w-full py-3" type="submit" disabled={isSubmitting}>
+                                {isSubmitting ? "Salvando..." : "Salvar alterações"}
+                            </Button>
+                        )}
                     </div>
                 </form>
             </ScrollableArea>

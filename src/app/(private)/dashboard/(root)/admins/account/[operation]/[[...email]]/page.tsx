@@ -106,6 +106,10 @@ export default function CaensAccountUpsertPage() {
             router.refresh();
             router.back();
         } catch (err: any) {
+            console.log("status:", err?.response?.status);
+            console.log("data:", err?.response?.data);
+            console.log("headers:", err?.response?.headers);
+            console.log("message:", err?.message);
             const msg =
                 err?.response?.data?.message ||
                 err?.message ||
@@ -116,8 +120,6 @@ export default function CaensAccountUpsertPage() {
             setLoading(false);
         }
     };
-
-
 
     return (
         <main className="min-h-0 flex flex-col px-4">
@@ -131,13 +133,13 @@ export default function CaensAccountUpsertPage() {
                         handleImageUpload={handleImageUpload}
                     />
 
-                    <div className="flex flex-col gap-4 mt-5">
+                    <div className="flex flex-col gap-4 mt-5 px-2">
                         <InputField
                             value={form.name}
                             onChange={(e) =>
                                 setForm((prev) => ({ ...prev, name: e.target.value }))
                             }
-                            label="Nome completo"
+                            label="Nome completo*"
                             placeholder="Nome completo do servidor da CAENS"
                             disabled={loading}
                         />
@@ -147,7 +149,7 @@ export default function CaensAccountUpsertPage() {
                             onChange={(e) =>
                                 setForm((prev) => ({ ...prev, email: e.target.value }))
                             }
-                            label="Email institucional"
+                            label="Email institucional*"
                             placeholder="Email institucional"
                             icon={<Mail className="w-3.5 h-3.5" />}
                             disabled={loading || emailDisabled}
@@ -158,28 +160,27 @@ export default function CaensAccountUpsertPage() {
                             onChange={(e) =>
                                 setForm((prev) => ({ ...prev, phone: e.target.value }))
                             }
-                            label="Telefone"
+                            label="Telefone*"
                             placeholder="Telefone de contato"
                             icon={<Phone className="w-3.5 h-3.5" />}
                             disabled={loading}
                         />
 
-                        {!isEdit && (
-                            <InputField
-                                onChange={(e) =>
-                                    setForm((prev) => ({ ...prev, cpf: e.target.value }))
-                                }
-                                label="CPF"
-                                placeholder="Cadastro de pessoa física"
-                                icon={<SquareUserRound className="w-3.5 h-3.5" />}
-                                disabled={loading}
-                            />
-                        )}
+                        <InputField
+                            value={form.cpf}
+                            onChange={(e) =>
+                                setForm((prev) => ({ ...prev, cpf: e.target.value }))
+                            }
+                            label="CPF*"
+                            placeholder="Cadastro de pessoa física"
+                            icon={<SquareUserRound className="w-3.5 h-3.5" />}
+                            disabled={loading}
+                        />
 
                         {!isEdit && (
                             <p className="text-sm text-gray-700 dark:text-gray-300">
-                                Será enviado para o e-mail informado um link para <br />
-                                escolha de uma senha segura.
+                                Será enviado para o e-mail o código de verificação <br />
+                                para acessar os recursos.
                             </p>
                         )}
 
