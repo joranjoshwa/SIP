@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { LimitedImage } from "@/src/components/ui/LimitedImage";
 import Link from "next/link";
 import { CalendarClock, ImageOff } from "lucide-react";
 import type { ItemCard } from "@/src/types/item";
@@ -51,8 +51,11 @@ function timeAgoPtBr(date: DateInput, now: Date = new Date()) {
     return rtf.format(-Math.floor(diffSec / year), "year");
 }
 
+type Props = ItemCard & {
+    isCarrosel?: boolean
+}
 
-export default function ItemCard({ id, picture, description, time, date }: ItemCard) {
+export default function ItemCard({ id, picture, description, time, date, isCarrosel = false }: Props) {
     const bg = getTimeBgColor(time);
     const validPhoto = picture && picture.trim() !== "";
 
@@ -63,22 +66,19 @@ export default function ItemCard({ id, picture, description, time, date }: ItemC
         >
             <div className="relative w-full h-[140px] md:h-[170px] flex rounded-2xl items-center justify-center bg-gray-100 dark:bg-neutral-800">
                 {validPhoto ? (
-                    <Image
+                    <LimitedImage
                         src={process.env.NEXT_PUBLIC_IMAGE_BASE_URL + picture}
                         alt={description}
-                        fill
                         sizes="400px"
-                        className="w-10 h-10 object-cover rounded-2xl"
-                        loading="lazy"
-                        unoptimized
+                        className="w-full h-full object-cover rounded-2xl"
                     />
                 ) : (
                     <ImageOff className="w-10 h-10 text-gray-400 dark:text-gray-600" />
                 )}
             </div>
 
-            <div className="py-2 space-y-2 min-h-[5rem]">
-                <h3 className="text-sm font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100">
+            <div className="py-2 space-y-2">
+                <h3 className={`${!isCarrosel ? "min-h-[36px]" : ""} text-sm font-medium leading-snug line-clamp-2 text-gray-800 dark:text-gray-100`}>
                     {description}
                 </h3>
 

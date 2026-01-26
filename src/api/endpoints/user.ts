@@ -3,6 +3,20 @@ import { ApiResponse, ChangePasswordRequest } from "../../types/user";
 import { extractEmailFromToken } from "../../utils/token";
 import { api } from "../axios";
 
+export class ApiError extends Error {
+    status?: number;
+    data?: any;
+
+    constructor(message: string, status?: number, data?: any) {
+        super(message);
+        this.name = "ApiError";
+        this.status = status;
+        this.data = data;
+    }
+}
+
+const isGenericAxiosMessage = (msg?: string) =>
+    !!msg && /^Request failed with status code \d+$/i.test(msg);
 
 function extractNiceMessage(err: unknown, fallback: string) {
     if (err instanceof Error && err.message) return err.message;
@@ -100,7 +114,10 @@ export const resetPassword = async (token: string, password: string) => {
     return data;
 }
 
-export const userUpdate = async (data: { name: string, phone: string }, email: string) => {
+export const userUpdate = async (
+    data: { name: string; phone: string },
+    email: string
+) => {
     try {
         await api.put(`/user/root/update/${email}`, data);
     } catch (err) {
@@ -111,11 +128,20 @@ export const userUpdate = async (data: { name: string, phone: string }, email: s
             e.response?.data?.error ??
             (typeof e.response?.data === "string" ? e.response.data : null);
 
-        throw new Error(apiMsg ?? e.message ?? "Failed to save schedule");
-    }
-}
+        const fallback =
+            e.response?.status === 400
+                ? "Dados inválidos. Verifique nome/telefone e tente novamente."
+                : "Não foi possível atualizar o usuário. Tente novamente.";
 
-export const registerAdmin = async (data: { name: string, phone: string, email: string, cpf: string }) => {
+        const finalMsg =
+            apiMsg ??
+            (isGenericAxiosMessage(e.message) ? fallback : (e.message ?? fallback));
+
+        throw new ApiError(finalMsg, e.response?.status, e.response?.data);
+    }
+};
+
+export const registerAdmin = async (data: { name: string; phone: string; email: string; cpf: string }) => {
     try {
         await api.post(`/authentication/register-admin`, data);
     } catch (err) {
@@ -126,9 +152,16 @@ export const registerAdmin = async (data: { name: string, phone: string, email: 
             e.response?.data?.error ??
             (typeof e.response?.data === "string" ? e.response.data : null);
 
-        throw new Error(apiMsg ?? e.message ?? "Failed to register admin");
+        const fallback =
+            e.response?.status === 400
+                ? "Dados inválidos. Verifique os campos e tente novamente."
+                : "Não foi possível cadastrar o administrador. Tente novamente.";
+
+        const finalMsg = apiMsg ?? (isGenericAxiosMessage(e.message) ? fallback : (e.message ?? fallback));
+
+        throw new ApiError(finalMsg, e.response?.status, e.response?.data);
     }
-}
+};
 
 export const deleteAdmin = async (email: string) => {
     try {

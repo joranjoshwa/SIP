@@ -21,7 +21,6 @@ export const getRecoveries = async (
 
 export const getRecoverySchedule = async (
   token: string,
-  email: string,
   page = 0,
   size = 10,
   sort = "recoveryDateTime,asc"
@@ -106,7 +105,6 @@ export const getRecoveriesByUser = async (
       if (value) search.append("category", value);
     });
 
-    console.log(`/items/recovery-self?${search.toString()}`);
     const { data } = await api.get<RecoveryHistoryApiResponse>(
       `/items/recovery-self?${search.toString()}`
     );

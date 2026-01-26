@@ -1,26 +1,71 @@
-"use client"
+"use client";
 
-import logo from "../../assets/sip-icon.svg"
-import loading from "../../assets/loading.gif"
-import loadingWhite from "../../assets/loading-white.gif"
+import { useEffect, useRef, useState } from "react";
+import logo from "../../assets/sip-icon.svg";
+import loading from "../../assets/loading.gif";
+import loadingWhite from "../../assets/loading-white.gif";
 import Image from "next/image";
 import { useTheme } from "../../context/ThemeContext";
 
 type Props = {
     isLoading: boolean;
     className?: string;
-}
+    minMs?: number;
+};
 
-export const Loading = ({ isLoading, className }: Props) => {
+export const Loading = ({ isLoading, className, minMs = 500 }: Props) => {
     const { theme } = useTheme();
-    
-    if (!isLoading) return null;
+
+    const [visible, setVisible] = useState(false);
+    const startRef = useRef<number | null>(null);
+    const timerRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (isLoading) {
+            startRef.current = Date.now();
+            setVisible(true);
+
+            if (timerRef.current) {
+                window.clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+            return;
+        }
+
+        if (!visible) return;
+
+        const elapsed = Date.now() - (startRef.current ?? Date.now());
+        const remaining = Math.max(0, minMs - elapsed);
+
+        if (timerRef.current) window.clearTimeout(timerRef.current);
+
+        timerRef.current = window.setTimeout(() => {
+            setVisible(false);
+            startRef.current = null;
+            timerRef.current = null;
+        }, remaining);
+
+        return () => {
+            if (timerRef.current) {
+                window.clearTimeout(timerRef.current);
+                timerRef.current = null;
+            }
+        };
+    }, [isLoading, minMs, visible]);
+
+    useEffect(() => {
+        return () => {
+            if (timerRef.current) window.clearTimeout(timerRef.current);
+        };
+    }, []);
+
+    if (!visible) return null;
 
     const gifSrc = theme === "dark" ? loadingWhite : loading;
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className={`relative h-39 ${className}`}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/40 z-50">
+            <div className={`relative h-39 ${className ?? ""}`}>
                 <Image
                     src={gifSrc}
                     alt="Carregando..."
@@ -31,9 +76,8 @@ export const Loading = ({ isLoading, className }: Props) => {
 
                 <div className="absolute inset-0 flex items-center justify-center">
                     <Image src={logo} alt="Logo SIP" width={90} height={90} priority />
-                </div>  
+                </div>
             </div>
-
         </div>
     );
-}
+};

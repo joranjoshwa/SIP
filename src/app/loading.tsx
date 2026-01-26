@@ -28,7 +28,6 @@ export default function Loading() {
                         alt="Logo SIP"
                         width={90}
                         height={90}
-                        priority
                     />
                 </div>
             </div>

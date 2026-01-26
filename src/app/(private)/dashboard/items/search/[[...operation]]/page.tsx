@@ -11,6 +11,7 @@ import { SearchRequest, FilterType } from "@/src/types/item";
 import { SearchNotFound } from "@/src/components/ui/SearchNotFound";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { useParams } from "next/navigation";
+import { Loading } from "@/src/components/ui/Loading";
 
 export default function SearchPage() {
     const params = useParams<{ operation?: "delete" }>();
@@ -80,8 +81,9 @@ export default function SearchPage() {
         submitFilters({ itemName: query });
     };
 
-    const handleToggleChange = () =>
-        updateFilters({ donation: !filters.donation });
+    const handleToggleChange = () => {
+        submitFilters({ donation: !filters.donation });
+    }
 
     const handleCleanFilters = () => {
         const reset = {
@@ -190,7 +192,7 @@ export default function SearchPage() {
                     className={`transition-opacity duration-300 ${showFilters ? "opacity-0 pointer-events-none" : "opacity-100"
                         }`}
                 >
-                    <FilterBar active={activeFilters} onSelect={toggleFilter} />
+                    <FilterBar active={activeFilters} onSelect={toggleFilter} handleToggleChange={handleToggleChange} />
                 </div>
 
                 <div
@@ -207,7 +209,6 @@ export default function SearchPage() {
                             filterGroup="search"
                             handleCategorySelection={handleCategorySelection}
                             handleDateSelection={handleDateChange}
-                            handleToggleChange={handleToggleChange}
                             handleSubmit={submitFilters}
                             handleCleanFilters={handleCleanFilters}
                         />
@@ -233,11 +234,8 @@ export default function SearchPage() {
                         !loading && <SearchNotFound />
                     )}
 
-                    {loading && (
-                        <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
-                            Carregando…
-                        </p>
-                    )}
+                    <Loading isLoading={loading} />
+
                 </ScrollableArea>
             </div>
         </section>

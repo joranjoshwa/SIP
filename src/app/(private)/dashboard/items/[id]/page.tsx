@@ -103,7 +103,7 @@ export default async function ItemPage({ params }: Props) {
         const email = extractEmailFromToken(token as string);
 
         const baseClass =
-            "flex items-center gap-1 text-xs px-3 py-1 rounded-2xl bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white dark:border-[#183E1F]";
+            "flex items-center gap-1 text-xs px-3 py-[0.4rem] rounded-2xl bg-[#D4EED9] text-black dark:bg-[#183E1F] dark:text-white dark:border-[#183E1F]";
 
         const requestsData: WithdrawalRequestItem[] =
             await getWithdrawalRequests(id, token as string);
@@ -131,7 +131,11 @@ export default async function ItemPage({ params }: Props) {
                                 <div className="flex gap-2 flex-nowrap text-black w-max">
                                     <span className={`${baseClass} shrink-0`}>
                                         <Calendar className="w-4 h-4" />
-                                        {new Date(item.findingAt).toLocaleDateString()}
+                                        {new Date(item.findingAt).toLocaleDateString("pt-BR", {
+                                            day: "2-digit",
+                                            month: "2-digit",
+                                            year: "numeric",
+                                        })}
                                     </span>
 
                                     <span className={`${baseClass} shrink-0`}>
