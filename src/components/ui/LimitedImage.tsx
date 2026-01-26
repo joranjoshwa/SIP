@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { imageLoadLimiter } from "@/src/lib/imageLoadLimiter";
 
-const DEMO_DELAY_MS = 0;
+const DEMO_DELAY_MS = 500;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 type Props = {
