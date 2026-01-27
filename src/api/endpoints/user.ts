@@ -18,20 +18,6 @@ export class ApiError extends Error {
 const isGenericAxiosMessage = (msg?: string) =>
     !!msg && /^Request failed with status code \d+$/i.test(msg);
 
-function extractNiceMessage(err: unknown, fallback: string) {
-    if (err instanceof Error && err.message) return err.message;
-
-    const anyErr = err as any;
-    const data = anyErr?.response?.data;
-
-    const apiMsg =
-        data?.message ??
-        data?.error ??
-        (typeof data === "string" ? data : null);
-
-    return apiMsg ?? anyErr?.message ?? fallback;
-}
-
 export const verifyToken = async (token: string): Promise<ApiResponse> => {
     try {
         const { data } = await api.post(`/user/account/verify/${token}`);
@@ -48,11 +34,12 @@ export const verifyToken = async (token: string): Promise<ApiResponse> => {
     }
 }
 
-export const resendVerifyToken = async (token: string): Promise<ApiResponse> => {
-    const email = extractEmailFromToken(token);
+export const resendVerifyAccount = async (token: string | null, emailParam: string | null): Promise<ApiResponse> => {
+    
+    const email = token != null ? extractEmailFromToken(token) : emailParam;
 
     if (!email) {
-        throw new Error("Não foi possível extrair o email de token.");
+        throw new Error( token != null ? "Não foi possível extrair o email de token." : "Falha ao validar email. Tente novamente ou entre em contato com o suporte.");
     }
 
     try {

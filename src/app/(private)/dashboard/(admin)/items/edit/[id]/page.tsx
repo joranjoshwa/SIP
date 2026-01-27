@@ -157,7 +157,7 @@ export default function EditItem() {
             if (newImages.length > 0) {
                 await Promise.all(
                     newImages.map(img =>
-                        uploadItemImage(itemId, img.file!)
+                        uploadItemImage(itemId, img.file!, "edit")
                     )
                 );
             }

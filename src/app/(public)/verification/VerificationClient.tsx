@@ -7,7 +7,7 @@ import { Button } from "@/src/components/ui/Button";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     resendReactivationToken,
-    resendVerifyToken,
+    resendVerifyAccount,
     verifyReactivationToken,
     verifyToken,
 } from "@/src/api/endpoints/user";
@@ -83,7 +83,7 @@ export default function VerificationClient() {
         setInfoMsg(null);
 
         try {
-            await resendVerifyToken(token);
+            await resendVerifyAccount(token, null);
             setInfoMsg("Novo link enviado para seu e-mail.");
         } catch (err) {
             setErrorMsg(extractNiceMessage(err, "Erro ao reenviar link. Tente novamente."));
