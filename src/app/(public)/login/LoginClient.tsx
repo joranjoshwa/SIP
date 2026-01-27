@@ -1,20 +1,20 @@
 "use client";
 
-import { Mail } from "lucide-react";
-import { AuthCard } from "@/src/components/layout/AuthCard";
-import { InputField } from "@/src/components/ui/InputField";
-import { Logo } from "@/src//components/ui/Logo";
-import { PasswordField } from "@/src/components/ui/PasswordField";
-import { TextLink } from "@/src/components/ui/TextLink";
-import { Button } from "@/src/components/ui/Button";
-import { useAuth } from "@/src/context/AuthContext";
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { TopPopup } from "@/src/components/ui/TopPopup";
-import { ApiResponse } from "@/src/types/user";
-import { AxiosError } from "axios";
-import { requestReactivation, resendVerifyToken } from "@/src/api/endpoints/user";
-import { Loading } from "@/src/components/ui/Loading";
+import {Mail} from "lucide-react";
+import {AuthCard} from "@/src/components/layout/AuthCard";
+import {InputField} from "@/src/components/ui/InputField";
+import {Logo} from "@/src//components/ui/Logo";
+import {PasswordField} from "@/src/components/ui/PasswordField";
+import {TextLink} from "@/src/components/ui/TextLink";
+import {Button} from "@/src/components/ui/Button";
+import {useAuth} from "@/src/context/AuthContext";
+import {useEffect, useState} from "react";
+import {useRouter, useSearchParams} from "next/navigation";
+import {TopPopup} from "@/src/components/ui/TopPopup";
+import {ApiResponse} from "@/src/types/user";
+import {AxiosError} from "axios";
+import {requestReactivation, resendVerifyAccount} from "@/src/api/endpoints/user";
+import {Loading} from "@/src/components/ui/Loading";
 
 export default function Login() {
     const { login } = useAuth();
@@ -29,6 +29,7 @@ export default function Login() {
     const [error, setError] = useState("");
     const [showPopup, setShowPopup] = useState(false);
     const [blocked, setBlocked] = useState(false);
+    const [notVerified, setNotVerified] = useState(false);
     const [popup, setPopup] = useState<{ message: string; isOpen: boolean }>({
         message: "",
         isOpen: false,
@@ -82,10 +83,18 @@ export default function Login() {
                     err.response.data.message ?? Object.values(err.response.data).join(" | ");
 
                 setError(errors);
+                setBlocked(false);
+                setNotVerified(false);
 
                 if (errors.includes("Usuário bloqueado por excesso de tentativas")) {
                     setBlocked(true);
                 }
+
+                if (errors.includes("Usuário ainda não foi verificado. Procure o código no seu email e faça a verificação.")) {
+                    setNotVerified(true);
+                    setError("Usuário ainda não foi verificado.");
+                }
+
             } else {
                 setError("Erro inesperado");
             }
@@ -101,13 +110,35 @@ export default function Login() {
         setError("");
 
         try {
-            await resendVerifyToken(null, email);
+            await requestReactivation(email);
             setPopup({
                 message: "E-mail de reativação enviado! Verifique sua caixa de entrada.",
                 isOpen: true,
             });
         } catch {
             setError("Erro ao solicitar reativação. Tente novamente.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResendVerification = async (email: string) => {
+        if (!email) {
+            setError("Informe o e-mail para reenviar a verificação.");
+            return;
+        }
+
+        setLoading(true);
+        setError("");
+
+        try {
+            await resendVerifyAccount(null, email);
+            setPopup({
+                message: "E-mail de verificação reenviado! Confira sua caixa de entrada.",
+                isOpen: true,
+            });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Erro ao reenviar verificação.");
         } finally {
             setLoading(false);
         }
@@ -164,6 +195,13 @@ export default function Login() {
                             className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
                         >
                             {error} Clique aqui para reativar a conta.
+                        </p>
+                    ) : notVerified ? (
+                        <p
+                            onClick={() => handleResendVerification(email)}
+                            className="text-red-600 text-sm cursor-pointer underline hover:text-red-800"
+                        >
+                            {error} Clique aqui para reenviar o e-mail de verificação.
                         </p>
                     ) : (
                         <p className="text-red-600 text-sm">{error}</p>
