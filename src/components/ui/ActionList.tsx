@@ -35,7 +35,7 @@ export const ActionList = ({ userRole }: Props) => {
             key: "donation",
             label: "Itens para doação",
             Icon: HandHeart,
-            onClick: () => router.push("/dashboard/donation"),
+            onClick: () => router.push("/dashboard/items/list/donation-today"),
             role: [RoleUser.ADMIN]
         },
         {

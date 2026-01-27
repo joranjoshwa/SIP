@@ -14,6 +14,7 @@ type Props = {
     disabled?: boolean;
     onPressEnter?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     accept?: string;
+    name?: string;
 };
 
 export const InputField = ({
@@ -30,6 +31,7 @@ export const InputField = ({
     disabled,
     onPressEnter,
     accept,
+    name,
 }: Props) => {
     const [isMozilla, setIsMozilla] = useState(false);
     const id = useId();
@@ -53,6 +55,9 @@ export const InputField = ({
             )}
 
             <div
+                role={type === "file" ? "button" : undefined}
+                tabIndex={type === "file" ? 0 : undefined}
+                aria-disabled={disabled}
                 className={`flex items-center rounded-xl px-4 py-3 bg-[#ECECEC]
                     outline outline-2 outline-transparent outline-offset-2
                     focus-within:outline-[#3E9F50]
@@ -70,6 +75,7 @@ export const InputField = ({
                 )}
 
                 <input
+                    name={name}
                     ref={inputRef}
                     id={id}
                     type={type}
@@ -79,7 +85,7 @@ export const InputField = ({
                     accept={accept}
                     className={`flex-1 outline-none text-sm text-gray-700 placeholder-gray-400 bg-[#ECECEC]
                                 dark:text-gray-100 dark:placeholder-gray-500 dark:bg-[#292929] custom-date-input
-                                ${type === "file" ? "hidden" : ""}
+                                ${type === "file" ? "sr-only" : ""}
                                 disabled:opacity-60 disabled:cursor-not-allowed`}
                     required={required}
                     autoComplete={autoComplete}

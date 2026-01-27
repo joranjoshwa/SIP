@@ -33,7 +33,7 @@ export const SideBarItem = ({
         : false;
 
     const base =
-        "group w-full flex items-center justify-start gap-3 rounded-xl px-3 py-2 text-md font-medium";
+        "group w-full flex items-center justify-start gap-3 rounded-xl px-3 min-h-[48px] text-md font-medium";
 
 
     const combined = [
