@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { areaLabels } from "@/src/constants/areaLabels";
 import { useParams, useRouter } from "next/navigation";
 import { getTokenFromCookie } from "@/src/utils/token";
-import { editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item";
+import { deleteItemImage, editItem, singleItem, uploadItemImage } from "@/src/api/endpoints/item";
 import { PageHeader } from "@/src/components/ui/PageHeader";
 import { ScrollableArea } from "@/src/components/ui/ScrollableArea";
 import { TopPopup } from "@/src/components/ui/TopPopup";
@@ -23,6 +23,7 @@ type ImageItem = {
     preview: string;
     existing?: boolean;
     id?: string;
+    url?: string;
 };
 
 export default function EditItem() {
@@ -42,6 +43,7 @@ export default function EditItem() {
     const [dayPeriod, setDayPeriod] = useState<DayPeriod>("MORNING");
     const [selectedCategory, setSelectedCategory] = useState<CategoryKey | null>(null);
     const [images, setImages] = useState<ImageItem[]>([]);
+    const [removedImages, setRemovedImages] = useState<ImageItem[]>([]);
     const [status, setStatus] = useState<ItemStatus>();
     const { popup, openPopup, closePopup } = useTopPopup(3000);
 
@@ -76,6 +78,7 @@ export default function EditItem() {
                 if (data.pictures && data.pictures.length > 0) {
                     const existingImages: ImageItem[] = data.pictures.map(pic => ({
                         id: pic.id,
+                        url: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${pic.url!}`,
                         preview: `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${pic.url!}`,
                         existing: true,
                     }));
@@ -124,6 +127,10 @@ export default function EditItem() {
         setImages(prev => {
             const img = prev[index];
 
+            if (img.existing && img.url) {
+                setRemovedImages(prev => [...prev, img]);
+            }
+
             if (img.file) {
                 URL.revokeObjectURL(img.preview);
             }
@@ -154,6 +161,14 @@ export default function EditItem() {
 
             const newImages = images.filter(img => img.file);
 
+            if (removedImages.length > 0) {
+                await Promise.all(
+                    removedImages.map(img =>
+                        deleteItemImage(itemId, img.url!)
+                    )
+                );
+            }
+
             if (newImages.length > 0) {
                 await Promise.all(
                     newImages.map(img =>
@@ -163,9 +178,10 @@ export default function EditItem() {
             }
 
             openPopup("Item atualizado com sucesso!", "success");
-            setIsSubmitting(false);
+            setRemovedImages([]);
 
             setTimeout(() => {
+                setIsSubmitting(false);
                 router.push("/dashboard");
             }, 3000);
         } catch (error: any) {
@@ -333,7 +349,7 @@ export default function EditItem() {
                     <div className="flex flex-col gap-3 mt-4 mb-4 w-full">
                         <Button variant="secondary" className="w-full py-3" onClick={() => router.back()} disabled={isSubmitting}>
                             {status === "DISPONIBLE" ? "Cancelar" : "Voltar"}
-                            
+
                         </Button>
                         {status === "DISPONIBLE" && (
                             <Button variant="primary" className="w-full py-3" type="submit" disabled={isSubmitting}>

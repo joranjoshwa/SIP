@@ -82,9 +82,9 @@ export const itemForDonation = async (
 ): Promise<CarouselItem[]> => {
     return fetchItems(
         {
-            page, 
-            size, 
-            status: "CHARITY", 
+            page,
+            size,
+            status: "CHARITY",
             category: category ? getCategoryEnum(category) : undefined,
         },
         withTimeLeft
@@ -152,6 +152,18 @@ export const uploadItemImage = async (itemId: string, file: File, edit: string |
             },
         });
     }
+};
+
+export const deleteItemImage = async (
+    itemId: string,
+    imageUrl: string
+): Promise<void> => {
+    await api.delete("/items/admin/image/delete", {
+        data: {
+            itemId,
+            imageUrl,
+        },
+    });
 };
 
 export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
