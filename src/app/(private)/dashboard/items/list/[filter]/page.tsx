@@ -12,6 +12,7 @@ import {
     itemAboutToBeDonated,
     itemForDonation,
 } from "@/src/api/endpoints/item";
+import { Loading } from "@/src/components/ui/Loading";
 
 type FilterKey = "last-48h" | "about-to-be-donated" | "donation-today";
 
@@ -47,9 +48,10 @@ export default function ItemsListByFilterPage() {
     const [hasMore, setHasMore] = useState(true);
     const [loading, setLoading] = useState(false);
 
-    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const fetchingRef = useRef(false);
 
-    const pageSize = 10;
+
+    const pageSize = 26;
 
     const fetchByFilter = useCallback(
         async (category: string, page: number, size: number) => {
@@ -62,7 +64,8 @@ export default function ItemsListByFilterPage() {
 
     const load = useCallback(
         async (reset = false) => {
-            if (loading) return;
+            if (fetchingRef.current) return;
+            fetchingRef.current = true;
 
             setLoading(true);
             try {
@@ -77,43 +80,44 @@ export default function ItemsListByFilterPage() {
                 setHasMore(data.length === pageSize);
             } catch (e) {
                 console.error("Erro ao carregar itens:", e);
+                setHasMore(false);
             } finally {
                 setLoading(false);
+                fetchingRef.current = false;
             }
         },
-        [chosenCategory, page, pageSize, loading, fetchByFilter]
+        [chosenCategory, page, pageSize, fetchByFilter]
     );
 
-    // reset when filter/category changes
+
     useEffect(() => {
         setItems([]);
         setPage(0);
         setHasMore(true);
-        // load first page
         load(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filter, chosenCategory]);
 
-    // load next page
     useEffect(() => {
-        if (page === 0) return; // first page already loaded by load(true)
+        if (page === 0) return;
         load(false);
     }, [page, load]);
 
-    // infinite scroll listener
-    useEffect(() => {
-        const el = scrollAreaRef.current;
-        if (!el) return;
-
-        const onScroll = () => {
+    const handleScroll = useCallback(
+        (e: React.UIEvent<HTMLDivElement>) => {
             if (loading || !hasMore) return;
+
+            const el = e.currentTarget;
+
+            const canScroll = el.scrollHeight > el.clientHeight + 5;
+            if (!canScroll) return;
+
             const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 80;
             if (nearBottom) setPage((p) => p + 1);
-        };
+        },
+        [loading, hasMore]
+    );
 
-        el.addEventListener("scroll", onScroll);
-        return () => el.removeEventListener("scroll", onScroll);
-    }, [loading, hasMore]);
 
     return (
         <div className="flex flex-col bg-white text-gray-900 dark:bg-neutral-900 dark:text-neutral-100 min-h-0">
@@ -125,8 +129,8 @@ export default function ItemsListByFilterPage() {
                 <CategoryItem handleCategorySelection={setChosenCategory} />
             </section>
 
-            <ScrollableArea>
-                <div ref={scrollAreaRef} className="flex-1 overflow-y-auto px-5 pb-5 pt-3 scroll-smooth">
+            <ScrollableArea onScroll={handleScroll}>
+                <div className="px-5 pb-5 pt-3">
                     {items.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-7 gap-3 justify-center place-items-center mt-4">
                             {items.map((item) => (
@@ -147,13 +151,10 @@ export default function ItemsListByFilterPage() {
                         )
                     )}
 
-                    {loading && (
-                        <p className="mt-4 text-center text-sm text-gray-500 dark:text-neutral-400">
-                            Carregando itens…
-                        </p>
-                    )}
+                    <Loading isLoading={loading} />
                 </div>
             </ScrollableArea>
+
         </div>
     );
 }

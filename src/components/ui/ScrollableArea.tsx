@@ -5,14 +5,16 @@ import { forwardRef } from "react";
 type Props = {
     children: React.ReactNode;
     className?: string;
+    onScroll?: React.UIEventHandler<HTMLDivElement>;
 };
 
 export const ScrollableArea = forwardRef<HTMLDivElement, Props>(
-    ({ children, className }, ref) => {
+    ({ children, className, onScroll }, ref) => {
         return (
             <div
                 ref={ref}
-                className={`overflow-y-auto flex-1 min-h-0 scrollbar-hide ${className}`}
+                onScroll={onScroll}
+                className={`overflow-y-auto flex-1 min-h-0 scrollbar-hide ${className ?? ""}`}
             >
                 {children}
             </div>
