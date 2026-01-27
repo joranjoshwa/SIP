@@ -51,7 +51,7 @@ export default function Schedule() {
         let rawRecoveries: any[] = [];
 
         if (role === "ADMIN") {
-          const data = await getRecoverySchedule(token, "", 0, 50);
+          const data = await getRecoverySchedule(token, 0, 0);
           rawRecoveries = data?.content ?? [];
         } else {
           const data = await getRecoverySelf(token, email, {
