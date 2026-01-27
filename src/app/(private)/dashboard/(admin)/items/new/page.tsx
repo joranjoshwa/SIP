@@ -92,7 +92,7 @@ export default function RegisterLostItem() {
             if (images.length > 0) {
                 await Promise.all(
                     images.map(img =>
-                        uploadItemImage(created.itemId, img.file)
+                        uploadItemImage(created.itemId, img.file, null)
                     )
                 );
             }

@@ -52,7 +52,7 @@ export const itemFromLast48Hours = async (
                 .toISOString()
                 .split("T")[0],
             category: getCategoryEnum(category),
-            status: "DISPONIBLE"
+            //status: "DISPONIBLE"
         },
         toCarouselItem
     );
@@ -135,15 +135,23 @@ export const createItem = async (data: CreateItemRequest, token: string): Promis
     return response.data;
 };
 
-export const uploadItemImage = async (itemId: string, file: File): Promise<void> => {
+export const uploadItemImage = async (itemId: string, file: File, edit: string | null): Promise<void> => {
     const formData = new FormData();
     formData.append("itemImages", file);
 
-    await api.post(`/items/admin/images/${itemId}`, formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
+    if (edit == null) {
+        await api.post(`/items/admin/images/${itemId}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+    } else {
+        await api.post(`/items/admin/images/${itemId}?edit=${edit}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+    }
 };
 
 export const singleItem = async (id: UUID, token: string): Promise<ItemDTO> => {
