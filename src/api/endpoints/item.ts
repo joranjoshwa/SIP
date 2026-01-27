@@ -52,7 +52,7 @@ export const itemFromLast48Hours = async (
                 .toISOString()
                 .split("T")[0],
             category: getCategoryEnum(category),
-            status: "DISPONIBLE"
+            //status: "DISPONIBLE"
         },
         toCarouselItem
     );
