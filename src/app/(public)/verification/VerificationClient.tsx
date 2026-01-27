@@ -83,7 +83,7 @@ export default function VerificationClient() {
         setInfoMsg(null);
 
         try {
-            await resendVerifyToken(token);
+            await resendVerifyToken(token, null);
             setInfoMsg("Novo link enviado para seu e-mail.");
         } catch (err) {
             setErrorMsg(extractNiceMessage(err, "Erro ao reenviar link. Tente novamente."));

@@ -48,8 +48,9 @@ export const verifyToken = async (token: string): Promise<ApiResponse> => {
     }
 }
 
-export const resendVerifyToken = async (token: string): Promise<ApiResponse> => {
-    const email = extractEmailFromToken(token);
+export const resendVerifyToken = async (token: string | null, emailParam: string | null): Promise<ApiResponse> => {
+    
+    const email = token != null ? extractEmailFromToken(token) : emailParam;
 
     if (!email) {
         throw new Error("Não foi possível extrair o email de token.");

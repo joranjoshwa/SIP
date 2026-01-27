@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { TopPopup } from "@/src/components/ui/TopPopup";
 import { ApiResponse } from "@/src/types/user";
 import { AxiosError } from "axios";
-import { requestReactivation } from "@/src/api/endpoints/user";
+import { requestReactivation, resendVerifyToken } from "@/src/api/endpoints/user";
 import { Loading } from "@/src/components/ui/Loading";
 
 export default function Login() {
@@ -101,7 +101,7 @@ export default function Login() {
         setError("");
 
         try {
-            await requestReactivation(email);
+            await resendVerifyToken(null, email);
             setPopup({
                 message: "E-mail de reativação enviado! Verifique sua caixa de entrada.",
                 isOpen: true,
