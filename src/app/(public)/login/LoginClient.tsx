@@ -211,7 +211,7 @@ export default function Login() {
                     Esqueci minha senha
                 </TextLink>
 
-                <Button variant="primary" onClick={handleLogin}>
+                <Button type="button" variant="primary" onClick={handleLogin}>
                     {loading ? "Entrando..." : "Entrar na conta"}
                 </Button>
 
@@ -221,7 +221,7 @@ export default function Login() {
                     <div className="border-t border-gray-300 w-1/3" />
                 </div>
 
-                <Button variant="secondary" onClick={handleSignUp}>
+                <Button type="button" variant="secondary" onClick={handleSignUp}>
                     Criar nova conta
                 </Button>
 

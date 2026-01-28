@@ -128,12 +128,12 @@ export const SearchFilter = ({
             )}
 
             <div className="mt-10">
-                <Button variant="secondary" onClick={cleanFilters}>
+                <Button type="button" variant="secondary" onClick={cleanFilters}>
                     Limpar Filtros
                 </Button>
             </div>
             <div className="mt-2">
-                <Button variant="primary" onClick={handleSubmit}>
+                <Button type="button" variant="primary" onClick={handleSubmit}>
                     Salvar Filtros
                 </Button>
             </div>

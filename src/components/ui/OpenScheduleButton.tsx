@@ -18,6 +18,7 @@ export function OpenScheduleButton({
 
     return (
         <Button
+            type="button"
             variant="secondary"
             className={className}
             onClick={() => openSchedulePickupModal(channel)}

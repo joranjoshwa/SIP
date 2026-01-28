@@ -258,7 +258,7 @@ export default function RegisterLostItem() {
                         <Button variant="primary" className="w-full py-3" type="submit" disabled={isSubmitting}>
                             {isSubmitting ? "Registrando..." : "Registrar item"}
                         </Button>
-                        <Button variant="secondary" className="w-full py-3" disabled={isSubmitting}>
+                        <Button type="button" variant="secondary" className="w-full py-3" disabled={isSubmitting}>
                             Cancelar
                         </Button>
                     </div>

@@ -42,6 +42,7 @@ export function ItemDeleteButton({
     return (
         <>
             <Button
+                type="button"
                 onClick={() => setOpen(true)}
                 className={[
                     "block w-full py-3 min-h-[48px] rounded-xl font-medium text-sm transition-colors",

@@ -200,6 +200,7 @@ export default function CaensAccountUpsertPage() {
 
                     <div className="mt-auto flex flex-col gap-3">
                         <Button
+                            type="button"
                             variant="tertiary"
                             onClick={() => router.back()}
                             disabled={loading}
@@ -208,6 +209,7 @@ export default function CaensAccountUpsertPage() {
                         </Button>
 
                         <Button
+                            type="button"
                             variant="primary"
                             onClick={onSubmit}
                             disabled={!canSubmit || loading}
