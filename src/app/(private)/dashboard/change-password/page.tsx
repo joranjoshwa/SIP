@@ -93,6 +93,7 @@ const ChangePassword = () => {
                             />
 
                             <Button
+                                type="submit"
                                 variant="primary"
                                 className={loading ? "opacity-70" : ""}
                             >

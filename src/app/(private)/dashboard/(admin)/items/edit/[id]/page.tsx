@@ -331,7 +331,7 @@ export default function EditItem() {
                     </p>
 
                     <div className="flex flex-col gap-3 mt-4 mb-4 w-full">
-                        <Button variant="secondary" className="w-full py-3" onClick={() => router.back()} disabled={isSubmitting}>
+                        <Button type="button" variant="secondary" className="w-full py-3" onClick={() => router.back()} disabled={isSubmitting}>
                             {status === "DISPONIBLE" ? "Cancelar" : "Voltar"}
                             
                         </Button>
