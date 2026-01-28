@@ -80,7 +80,7 @@ export default function ResetPassword() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                     />
 
-                    <Button variant="primary" className={loading ? "opacity-70" : ""}>
+                    <Button type="submit" variant="primary" className={loading ? "opacity-70" : ""}>
                         {loading ? "Redefinindo..." : "Redefinir Senha"}
                     </Button>
 
