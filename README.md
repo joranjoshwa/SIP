@@ -2,6 +2,7 @@
 🚀 Projeto SIP
 
 Link Backend: https://github.com/lucaseduardo76/SIP/
+Link Figma: https://www.figma.com/design/SbgtYf4AQaS4ih8e7ef4Ce/SIP?node-id=0-1&p=f
 
 Este é um projeto desenvolvido com React.js e Tailwind CSS. O objetivo é criar uma aplicação moderna, responsiva e de fácil manutenção utilizando componentes reutilizáveis e estilização eficiente com Tailwind.
 
