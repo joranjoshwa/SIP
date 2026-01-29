@@ -93,7 +93,7 @@ export default function SearchPage() {
             category: [],
             dateStart: null,
             dateEnd: null,
-            donation: false,
+            donation: filters.donation,
             itemName: null,
             lastDays: null,
         };
