@@ -69,6 +69,7 @@ export default function CaensAccountUpsertPage() {
                     email: admin.email ?? "",
                     profileImageUrl: admin.profileImageUrl ?? null,
                     phone: admin.phone,
+                    cpf: admin.cpf ?? "",
                 });
 
             } finally {
