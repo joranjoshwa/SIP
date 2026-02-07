@@ -77,7 +77,7 @@ export default function ResetPassword() {
                         label="Confirmar Senha"
                         placeholder="Confirme sua nova senha"
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                  onChange={(e) => setConfirmPassword(e.target.value)}
                     />
 
                     <Button type="submit" variant="primary" className={loading ? "opacity-70" : ""}>
