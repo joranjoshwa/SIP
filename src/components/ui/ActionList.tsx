@@ -65,6 +65,7 @@ export const ActionList = ({ userRole }: Props) => {
                 if(role && !role.includes(userRole as Role) ) return;
                 return (
                     <Button
+                        type="button"
                         key={key}
                         variant="primary"
                         onClick={onClick}

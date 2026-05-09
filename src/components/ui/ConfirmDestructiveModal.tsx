@@ -149,6 +149,7 @@ export function ConfirmDestructiveModal({
 
                     <div className="mt-5 space-y-2">
                         <Button
+                            type="button"
                             variant="tertiary"
                             onClick={() => onOpenChange(false)}
                             disabled={loading}
@@ -163,6 +164,7 @@ export function ConfirmDestructiveModal({
                         </Button>
 
                         <Button
+                            type="button"
                             variant="primary"
                             onClick={handleConfirm}
                             disabled={loading}

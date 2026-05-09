@@ -154,6 +154,7 @@ export default function SignUp() {
                 {error && <p className="text-red-600 text-sm">{error}</p>}
 
                 <Button
+                    type="button"
                     variant="primary"
                     onClick={handleSignUp}
                 >
@@ -161,6 +162,7 @@ export default function SignUp() {
                 </Button>
 
                 <Button
+                    type="button"
                     variant="secondary"
                     onClick={handleLogin}
                 >

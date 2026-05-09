@@ -1,5 +1,6 @@
 export enum Area {
     REFEITORIO_CENTRAL = "RC",
+    AUDITORIO = "AUDITORIO",
     BLOCO_1 = "BLOCK_ONE",
     BLOCO_2 = "BLOCK_TWO",
     BLOCO_3 = "BLOCK_THREE",

@@ -2,6 +2,7 @@ import { Area } from "../types/item";
 
 export const areaLabels: Record<Area, string> = {
     RC: "Cantina",
+    AUDITORIO: "Auditório",
     BLOCK_ONE: "Bloco 1",
     BLOCK_TWO: "Bloco 2",
     BLOCK_THREE: "Bloco 3",

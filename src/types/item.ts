@@ -34,7 +34,7 @@ export type PaginatedApiResponse<T> = {
 export type ItemStatus = 'DISPONIBLE' | 'CLAIMED' | 'CHARITY';
 export type DayPeriod = 'MORNING' | 'AFTERNOON' | 'NIGHT';
 export type Category = 'BOTTLE' | 'CLOTHING' | 'ELECTRONIC' | 'ACCESSORY' | 'CONTAINER' | 'BOOK' | 'SCHOOL_SUPPLY' | 'DOCUMENT' | 'OTHER';
-export type Area = 'RC' | 'BLOCK_ONE' | 'BLOCK_TWO' | 'BLOCK_THREE' | 'BLOCK_FOUR' | 'BLOCK_FIVE' | 'BLOCK_SIX' | 'BLOCK_SEVEN' | 'BLOCK_EIGHT' | 'BLOCK_NINE' | 'LIBRARY' | 'VIDEO_ROOM';
+export type Area = 'RC' | 'AUDITORIO' | 'BLOCK_ONE' | 'BLOCK_TWO' | 'BLOCK_THREE' | 'BLOCK_FOUR' | 'BLOCK_FIVE' | 'BLOCK_SIX' | 'BLOCK_SEVEN' | 'BLOCK_EIGHT' | 'BLOCK_NINE' | 'LIBRARY' | 'VIDEO_ROOM';
 
 export interface ItemDTO {
     id: string;

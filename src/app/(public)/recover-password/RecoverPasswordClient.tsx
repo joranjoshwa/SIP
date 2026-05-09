@@ -14,12 +14,13 @@ import { Loading } from "@/src/components/ui/Loading";
 export default function ResetPassword() {
     const searchParams = useSearchParams();
     const router = useRouter();
-    const token = searchParams?.get("token") || null;
+    const token = decodeURIComponent(searchParams.get("token") ?? "");
 
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -77,10 +78,10 @@ export default function ResetPassword() {
                         label="Confirmar Senha"
                         placeholder="Confirme sua nova senha"
                         value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                  onChange={(e) => setConfirmPassword(e.target.value)}
                     />
 
-                    <Button variant="primary" className={loading ? "opacity-70" : ""}>
+                    <Button type="submit" variant="primary" className={loading ? "opacity-70" : ""}>
                         {loading ? "Redefinindo..." : "Redefinir Senha"}
                     </Button>
 

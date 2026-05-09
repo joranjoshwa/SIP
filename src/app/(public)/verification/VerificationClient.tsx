@@ -123,7 +123,7 @@ export default function VerificationClient() {
                 subtitle={infoMsg ?? "Agora você já pode acessar a sua conta."}
                 headerContent={<CheckCircle className="w-12 h-12 text-green-600" suppressHydrationWarning />}
             >
-                <Button variant="primary" onClick={handleSendLogin}>
+                <Button type="button" variant="primary" onClick={handleSendLogin}>
                     Ir para login
                 </Button>
             </AuthCard>
@@ -148,13 +148,13 @@ export default function VerificationClient() {
             )}
 
             {tokenType === TokenType.VERIFICATION && (
-                <Button variant="secondary" onClick={handleResend}>
+                <Button type="button" variant="secondary" onClick={handleResend}>
                     Reenviar e-mail
                 </Button>
             )}
 
             {tokenType === TokenType.REACTIVATE && (
-                <Button variant="secondary" onClick={handleResendReactivation}>
+                <Button type="button" variant="secondary" onClick={handleResendReactivation}>
                     Reenviar link de reativação
                 </Button>
             )}

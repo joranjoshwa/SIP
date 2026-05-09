@@ -314,11 +314,12 @@ export default function EditSchedule() {
                             </div>
                         )}
 
-                        <Button variant="secondary" onClick={() => setIsOpen(false)}>
+                        <Button type="button" variant="secondary" onClick={() => setIsOpen(false)}>
                             Cancelar
                         </Button>
 
                         <Button
+                            type="button"
                             variant="primary"
                             className="my-2"
                             onClick={handleSave}

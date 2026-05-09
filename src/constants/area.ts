@@ -2,6 +2,7 @@ import { Area } from "../enums/area";
 
 export const AreaLabels: Record<Area, string> = {
     [Area.REFEITORIO_CENTRAL]: "Refeitório Central",
+    [Area.AUDITORIO]: "Auditório",
     [Area.BLOCO_1]: "Bloco 1",
     [Area.BLOCO_2]: "Bloco 2",
     [Area.BLOCO_3]: "Bloco 3",

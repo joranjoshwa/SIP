@@ -43,11 +43,12 @@ export function ApproveRequestModal({
       </p>
 
       <div className="flex flex-col gap-3">
-        <Button variant="secondary" onClick={onClose}>
+        <Button type="button" variant="secondary" onClick={onClose}>
           Cancelar
         </Button>
 
         <Button
+          type="button"
           onClick={handleApprove}
           className="
             bg-green-200 text-green-800

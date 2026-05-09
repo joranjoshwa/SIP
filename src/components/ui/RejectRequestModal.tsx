@@ -43,11 +43,12 @@ export function RejectRequestModal({
       </p>
 
       <div className="flex flex-col gap-3">
-        <Button variant="secondary" onClick={onClose}>
+        <Button type="button" variant="secondary" onClick={onClose}>
           Cancelar
         </Button>
 
         <Button
+          type="button"
           onClick={handleReject}
           className="
             bg-red-200 text-red-800
