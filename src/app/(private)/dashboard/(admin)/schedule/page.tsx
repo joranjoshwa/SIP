@@ -85,7 +85,9 @@ export default function Schedule() {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
-              image: entry?.item?.pictures?.[0]?.url ?? "/placeholder.jpg",
+              image: entry?.item?.pictures?.[0]?.url
+              ? `${process.env.NEXT_PUBLIC_IMAGE_BASE_URL}${entry.item.pictures[0].url}`
+              : "/placeholder.jpg",
               _rawDate: pickupDate,
             };
           })
